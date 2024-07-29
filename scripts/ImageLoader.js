@@ -42,9 +42,9 @@ class ImageLoader {
 
     imageLoaded(e) {
         this.loadedImagesCount++;
-        console.log("Image chagée : ", e.target.currentSrc); // affiche le nom de l'image chargée
+        if (debug) console.log("Image chagée : ", e.target.currentSrc); // affiche le nom de l'image chargée
         if (this.loadedImagesCount == this.lstPaths.length) {
-            console.log("Tout a été chargé");
+            if (debug) console.log("Tout a été chargé");
             this.callBack();
         }
     }

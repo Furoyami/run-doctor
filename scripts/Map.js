@@ -10,12 +10,13 @@ class Map {
         this.map.x = 0;
         this.map.y = 0;
         this.tileTextures = [];
+        this.lstEnemiesCoords = [];
     }
 
     InitMap() {
         let myGrid = new Grid();
 
-        console.log("-------------------------------------------------- Map Init --------------------------------------------------");
+        if (debug) console.log("-------------------------------------------------- Map Init --------------------------------------------------");
 
         //attribution des valeurs de la grille
         this.map.nbLines = myGrid.getGridNbLines();
@@ -39,23 +40,24 @@ class Map {
                         [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
                         [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1],
                         [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
-                        [0, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 8, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 2, 0, 0, 1],
                         [1, 1, 1, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1],
                         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 1],
                         [0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1],
                         [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
                         [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                     ];
                 this.map.level.keys = 0;
-                console.log("Map lvl 1 chargée");
+                this.map.level.enemies = 3;
+                if (debug) console.log("Map lvl 1 chargée");
                 break;
             case 2:
                 this.map.level =
@@ -80,7 +82,8 @@ class Map {
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     ];
                 this.map.level.keys = 0;
-                console.log("Map lvl 2 chargée");
+                this.map.level.enemies = null;
+                if (debug) console.log("Map lvl 2 chargée");
                 break;
 
             default:
@@ -89,7 +92,7 @@ class Map {
     }
 
     LoadTextures() {
-        console.log("Chargement textures...");
+        if (debug) console.log("Chargement textures...");
         this.tileTextures[0] = null;
         this.tileTextures[1] = new Image();
         this.tileTextures[1].name = "BRICK";
@@ -113,7 +116,7 @@ class Map {
         this.tileTextures[7].name = "TARDIS_RB";
         this.tileTextures[7].src = "images/tardis_rb.png";
 
-        console.log("Toutes les textures sont chargées !");
+        if (debug) console.log("Toutes les textures sont chargées !");
 
     }
 
@@ -192,17 +195,35 @@ class Map {
         this.map.level.keys -= 1;
     }
 
+
+    /** 
+     *  Lis la map du niveau et compte le nombre de clés
+     */
     Read() {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
                 let id = this.map.level[line][col];
-                // compte les clés dans le niveau
                 if (id == 3) {
                     this.map.level.keys += 1;
                 }
+                else if (id == 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
+                    //position de départ d'un ennemi
+                    //quand on trouve l'id 8, on stocke less coordonnées de l'id dans la liste
+                    let enemyStartCoords = {
+                        x: col,
+                        y: line
+                    };
+                    this.lstEnemiesCoords.push(enemyStartCoords);
+                }
             }
         }
+    }
 
+    /**
+     * retourne la liste des positions de dpart des ennemis pour pouvoir l'utiliser ailleurs
+     */
+    getEnemiesStartPos() {
+        return this.lstEnemiesCoords;
     }
 
     Draw(pCtx) {
@@ -228,5 +249,9 @@ class Map {
 
     getNbKeysInLevel() {
         return this.map.level.keys;
+    }
+
+    getNbEnemiesInLevel() {
+        return this.map.level.enemies;
     }
 }

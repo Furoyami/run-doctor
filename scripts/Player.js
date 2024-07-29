@@ -3,7 +3,6 @@ class Player {
     }
 
     CreatePlayer() {
-
         // création du joueur
         let imgPlayer = imageLoader.getImage("images/doctor_tile.png");
         spritePlayer = new Sprite(imgPlayer);
@@ -18,8 +17,7 @@ class Player {
         spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
         spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
-        spritePlayer.startAnimation("IDLE");
-
+        spritePlayer.startAnimation("IDLE_RIGHT");
     }
 
     Update(dt) {

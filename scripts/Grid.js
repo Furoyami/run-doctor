@@ -15,10 +15,10 @@ class Grid {
         }
     }
     InitGrid() {
-        console.log("Init Grid");
+        if (debug) console.log("Init Grid");
 
         let cellHeight = HEIGHT / this.height;
-        console.log("cellHeight =", cellHeight);
+        if (debug) console.log("cellHeight =", cellHeight);
 
         this.cellSize = cellHeight; // pour avoir une cellule carré
 

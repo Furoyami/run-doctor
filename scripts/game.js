@@ -22,21 +22,17 @@ let gameReady = false;
 let myGrid = new Grid();
 let myMap = new Map();
 let player = new Player();
-let hole = new Hole();
-let enemy = new Enemy();
-
-let pathfinder = new Pathfinder();
 
 // ------------------------ Gestion des images ------------------------
 
 let imageLoader = new ImageLoader();
 
-let lstSprites = [];
-let lstEnemies = [];
-let lstHoles = [];
 let spritePlayer;
 let spriteEnemy;
-let spriteHole;
+
+// debug
+
+let debug = false;
 
 // Chargement son et musique
 
@@ -49,8 +45,6 @@ function rnd(min, max) {
 }
 
 // ------------------------ GESTION DES TOUCHES CLAVIER ------------------------
-
-// --------------------- gère l'appui des touches clavier ---------------------
 
 function enableUpKey() {
     k_up = true;
@@ -167,28 +161,40 @@ function load() {
     imageLoader.add("images/hole_tile.png");
     imageLoader.add("images/dalek_tile.png");
 
-    // réinit des listes 
-    lstSprites = [];
-    lstEnemies = [];
-    lstHoles = [];
+    // init des listes 
+    globalThis.lstSprites = [];
+    globalThis.lstEnemies = [];
 
     imageLoader.start(startGame);
 }
 
 function startGame() {
-    console.log("StartGame");
+    if (debug) console.log("StartGame");
 
     gameReady = true;
-    lstSprites = [];
     myGrid.InitGrid();
     myMap.InitMap();
     player.CreatePlayer();
 
-    enemy.CreateEnemy(10, 10);
+    let nbEnemies = myMap.getNbEnemiesInLevel();
+
+    // boucle de creation des ennemis
+    for (let i = 0; i < nbEnemies; i++) {
+        enemy = new Enemy();
+        lstEnemies.push(enemy);
+        // ----- console.log(enemy); ----- <-- ce log est bizarre même si tout fonctionne, à creuser
+    }
+
+    // boucle d'ajout des sprites ennemis à la liste de sprite
+    for (let i = 0; i < lstEnemies.length; i++) {
+        // récupère les coordonnées de départ de l'ennemi depuis la map
+        let enemyCoords = myMap.getEnemiesStartPos()[i];
+        enemy.CreateEnemy(enemyCoords.y, enemyCoords.x);
+        lstSprites.push(spriteEnemy);
+    }
 
     lstSprites.push(spritePlayer);
 
-    pathfinder.init(myGrid, player.getPlayerPos(), enemy.getEnemyPos());
 }
 
 function update(dt) {
@@ -200,10 +206,12 @@ function update(dt) {
         sprite.update(dt);
     });
     player.Update(dt);
-    enemy.Update(dt);
-    hole.Update(dt);
 
-    pathfinder.findPath();
+    lstEnemies.forEach(enemy => {
+        enemy.Update(dt);
+        // update à rework 1 seul dalek bouge et il déconne
+    });
+
 }
 
 function draw(pCtx) {
@@ -219,8 +227,7 @@ function draw(pCtx) {
     // si le jeu est prêt
     //myGrid.DrawGrid(pCtx);
     myMap.Draw(pCtx);
-    enemy.Draw(pCtx);
-    hole.Draw(pCtx);
+
     lstSprites.forEach(sprite => {
         sprite.draw(pCtx);
     });

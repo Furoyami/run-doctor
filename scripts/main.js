@@ -14,7 +14,7 @@ function run() {
 }
 
 function init() {
-    console.log("Init");
+    if (debug) console.log("Init");
     load();
     interval = setInterval(run, 1000 / 60); // remplace le delta time
 }

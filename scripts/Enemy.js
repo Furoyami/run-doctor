@@ -24,14 +24,10 @@ class Enemy {
         spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
         spriteEnemy.addAnimation("LEFT", [2, 3], 0.5);
 
-        lstEnemies.push(spriteEnemy);
+        return this.spriteEnemy;
     }
 
     Update(dt) {
-        lstEnemies.forEach(enemy => {
-            enemy.update(dt);
-        });
-
         // ---------- DEPLACEMENT ----------
         let playerPos = player.getPlayerPos();
         let playerX = playerPos[1] * myGrid.cellSize;
@@ -155,7 +151,7 @@ class Enemy {
             spriteEnemy.dist = 0;
         }
 
-        console.log("id sous le dalek: " + myMap.getUnderEnemyID(0, 1));
+        if (debug) console.log("id sous le dalek: " + myMap.getUnderEnemyID(0, 1));
 
     }
 
