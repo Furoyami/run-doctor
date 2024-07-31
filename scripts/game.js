@@ -24,7 +24,6 @@ let gameReady = false;
 let myGrid = new Grid();
 let myMap = new Map();
 let player = new Player();
-let enemy = new Enemy();
 
 // ------------------------ Gestion des images ------------------------
 
@@ -179,16 +178,14 @@ function startGame() {
     lstSprites.push(spritePlayer);
 
     // ----- creation ennemis -----
+    // boucle de création des ennemis
     let nbEnemies = myMap.getNbEnemiesInLevel();
     for (let i = 0; i < nbEnemies; i++) {
-        lstEnemies.push(enemy);
-        console.log("----- Ennemi ajouté à la liste des ennemis -----");
-    }
-
-    for (let i = 0; i < lstEnemies.length; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
-        let spriteEnemy = lstEnemies[i].CreateEnemy(enemyPos.y, enemyPos.x, i);
-        lstSprites.push(spriteEnemy);
+        let enemy = new Enemy(enemyPos.y, enemyPos.x);
+        lstEnemies.push(enemy);
+        lstSprites.push(enemy.spriteEnemy);
+        console.log("----- Ennemi ajouté à la liste des ennemis -----");
     }
 
 }
@@ -203,8 +200,7 @@ function update(dt) {
     });
     player.Update(dt);
 
-    for (let i = 0; i < lstEnemies.length; i++) {
-        console.log(lstEnemies[i]);
+    for (let enemy of lstEnemies) {
         enemy.Update(dt);
     }
 }
