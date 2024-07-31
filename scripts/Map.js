@@ -219,13 +219,6 @@ class Map {
         }
     }
 
-    /**
-     * retourne la liste des positions de dpart des ennemis pour pouvoir l'utiliser ailleurs
-     */
-    getEnemiesStartPos() {
-        return this.lstEnemiesCoords;
-    }
-
     Draw(pCtx) {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
@@ -253,5 +246,12 @@ class Map {
 
     getNbEnemiesInLevel() {
         return this.map.level.enemies;
+    }
+
+    /**
+    * retourne la liste des positions de dpart des ennemis pour pouvoir l'utiliser ailleurs
+    */
+    getEnemiesStartPos() {
+        return this.lstEnemiesCoords;
     }
 }

@@ -18,6 +18,8 @@ class Player {
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
         spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
         spritePlayer.startAnimation("IDLE_RIGHT");
+
+        return spritePlayer;
     }
 
     Update(dt) {

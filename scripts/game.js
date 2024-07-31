@@ -9,6 +9,8 @@ const HEIGHT = canvas.height;
 
 // ------------------------ Initialisations ------------------------
 
+let lstSprites = [];
+let lstEnemies = [];
 
 let k_right = false;
 let k_left = false;
@@ -22,6 +24,7 @@ let gameReady = false;
 let myGrid = new Grid();
 let myMap = new Map();
 let player = new Player();
+let enemy = new Enemy();
 
 // ------------------------ Gestion des images ------------------------
 
@@ -161,10 +164,6 @@ function load() {
     imageLoader.add("images/hole_tile.png");
     imageLoader.add("images/dalek_tile.png");
 
-    // init des listes 
-    globalThis.lstSprites = [];
-    globalThis.lstEnemies = [];
-
     imageLoader.start(startGame);
 }
 
@@ -174,26 +173,23 @@ function startGame() {
     gameReady = true;
     myGrid.InitGrid();
     myMap.InitMap();
+
+    // ----- creation joueur -----
     player.CreatePlayer();
+    lstSprites.push(spritePlayer);
 
+    // ----- creation ennemis -----
     let nbEnemies = myMap.getNbEnemiesInLevel();
-
-    // boucle de creation des ennemis
     for (let i = 0; i < nbEnemies; i++) {
-        enemy = new Enemy();
         lstEnemies.push(enemy);
-        // ----- console.log(enemy); ----- <-- ce log est bizarre même si tout fonctionne, à creuser
+        console.log("----- Ennemi ajouté à la liste des ennemis -----");
     }
 
-    // boucle d'ajout des sprites ennemis à la liste de sprite
     for (let i = 0; i < lstEnemies.length; i++) {
-        // récupère les coordonnées de départ de l'ennemi depuis la map
-        let enemyCoords = myMap.getEnemiesStartPos()[i];
-        enemy.CreateEnemy(enemyCoords.y, enemyCoords.x);
+        let enemyPos = myMap.getEnemiesStartPos()[i];
+        let spriteEnemy = lstEnemies[i].CreateEnemy(enemyPos.y, enemyPos.x, i);
         lstSprites.push(spriteEnemy);
     }
-
-    lstSprites.push(spritePlayer);
 
 }
 
@@ -207,11 +203,10 @@ function update(dt) {
     });
     player.Update(dt);
 
-    lstEnemies.forEach(enemy => {
+    for (let i = 0; i < lstEnemies.length; i++) {
+        console.log(lstEnemies[i]);
         enemy.Update(dt);
-        // update à rework 1 seul dalek bouge et il déconne
-    });
-
+    }
 }
 
 function draw(pCtx) {
