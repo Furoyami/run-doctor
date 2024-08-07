@@ -169,7 +169,6 @@ function load() {
 function startGame() {
     if (debug) console.log("StartGame");
 
-    gameReady = true;
     myGrid.InitGrid();
     myMap.InitMap();
 
@@ -180,14 +179,17 @@ function startGame() {
     // ----- creation ennemis -----
     // boucle de création des ennemis
     let nbEnemies = myMap.getNbEnemiesInLevel();
+    // ----- REMETTRE LA BOUCLE AVEC LE BON PARAM APRES DEBUG !!!! -----
     for (let i = 0; i < nbEnemies; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
+
         let enemy = new Enemy(enemyPos.y, enemyPos.x);
         lstEnemies.push(enemy);
         lstSprites.push(enemy.spriteEnemy);
-        console.log("----- Ennemi ajouté à la liste des ennemis -----");
+        if (debug) console.log("----- Ennemi ajouté à la liste des ennemis -----");
     }
 
+    gameReady = true;
 }
 
 function update(dt) {
@@ -201,7 +203,7 @@ function update(dt) {
     player.Update(dt);
 
     for (let enemy of lstEnemies) {
-        enemy.Update(dt);
+        enemy.Update(dt, lstEnemies);
     }
 }
 
@@ -216,7 +218,7 @@ function draw(pCtx) {
         return;
     }
     // si le jeu est prêt
-    //myGrid.DrawGrid(pCtx);
+    myGrid.DrawGrid(pCtx);
     myMap.Draw(pCtx);
 
     lstSprites.forEach(sprite => {

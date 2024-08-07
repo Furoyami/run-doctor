@@ -13,6 +13,11 @@ const CONST = {
     KEYD: "KeyD",
     KEYS: "KeyS",
     KEYA: "KeyA",
-    KEYR: "KeyR"
+    KEYR: "KeyR",
+
+    VOID: 0,
+    WALL: 1,
+    LADDER: 2,
+    KEY: 3
 
 };
