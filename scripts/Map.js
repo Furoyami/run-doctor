@@ -218,10 +218,10 @@ class Map {
                 }
                 else if (id == 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
                     //position de départ d'un ennemi
-                    //quand on trouve l'id 8, on stocke less coordonnées de l'id dans la liste
+                    //quand on trouve l'id 8, on stocke les coordonnées de l'id dans la liste
                     let enemyStartCoords = {
-                        x: col,
-                        y: line
+                        col: col,
+                        line: line
                     };
                     this.lstEnemiesCoords.push(enemyStartCoords);
                 }
@@ -270,5 +270,13 @@ class Map {
 
     getCurrentMapLevel() {
         return this.map.level;
+    }
+
+    getMapNbLines() {
+        return this.map.nbLines;
+    }
+
+    getMapNbColumns() {
+        return this.map.nbColumns;
     }
 }

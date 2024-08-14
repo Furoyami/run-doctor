@@ -1,7 +1,6 @@
-
 class Enemy {
     constructor(pLine = 0, pCol = 0, pTargetCol, pTargetLine, pMap) {
-        this.map = pMap;
+        this.map = pMap.getCurrentMapLevel();
         let imgEnemy = imageLoader.getImage("images/dalek_tile.png");
         this.spriteEnemy = new Sprite(imgEnemy);
         this.spriteEnemy.setTileSheet(40, 41);
@@ -20,46 +19,48 @@ class Enemy {
         this.targetCol = pTargetCol;
         this.targetLine = pTargetLine;
 
-        this.path = [];
+        this.path;
         this.pathfinding = new Pathfinding(this.map);
 
         if (debug) console.log("----- Enemy créé -----");
     }
 
     Update(dt, pTargetCol, pTargetLine) {
-        // console.log("----- Update -----");
 
         this.targetCol = pTargetCol;
         this.targetLine = pTargetLine;
 
-        // console.log("position actuelle enemy: ", "col: ", this.spriteEnemy.col, "line: ", this.spriteEnemy.line);
-        // console.log("position actuelle cible: ", "col: ", this.targetCol, "line: ", this.targetLine);
+        if (pTargetCol < 0 || pTargetCol >= 32 || pTargetLine < 0 || pTargetLine >= 18) {
+            console.log("Cible hors des limites de la carte");
+            return;
+        }
 
-        console.log("here:", this.path);
-        //  >>> 1er log vide à voir pourquoi 
 
-        if (this.path.length === 0) {
+        // console.log("here:", this.path);
+        //  >>> 1 log vide à voir pourquoi
+        // si la col d'un ennemi dépasse la pos 18 il ne fonctionne plus
+        // la map est de 32 * 18 doit y avoir un lien
+
+        if (!this.path || this.path.length === 0) {
             // lance un calcul pour trouver un chemin
-            console.log("Aucun chemin existant, calcul en cours");
             this.path = this.pathfinding.findPath(
                 { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
                 { x: this.targetCol, y: this.targetLine }
             );
 
             if (this.path.length > 0) {
-                console.log("Chemin trouvé !", this.path);
+                // console.log("Chemin trouvé !", this.path);
             } else {
-                console.log("Aucun chemin trouvé");
+                // console.log("Aucun chemin trouvé");
             }
         } else {
             // suit le chemin calculé
-            let nextStep = this.path.shift();
-            console.log(`Prochain déplacement: ${nextStep.x}, ${nextStep.y}`);
+            const nextStep = this.path.shift();
+            // console.log(`Prochain déplacement: ${nextStep.x}, ${nextStep.y}`);
 
             // nextStep est en col / line
-            this.spriteEnemy.x = (nextStep.x * myGrid.cellSize);
-            this.spriteEnemy.y = (nextStep.y * myGrid.cellSize);
+            this.spriteEnemy.x = nextStep.x * myGrid.cellSize;
+            this.spriteEnemy.y = nextStep.y * myGrid.cellSize;
         }
-
     }
 }

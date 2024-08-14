@@ -8,6 +8,7 @@ class Pathfinding {
     }
 
     findPath(start, goal) {
+
         const openSet = [];
         const closedSet = [];
 
@@ -29,21 +30,32 @@ class Pathfinding {
             openSet.splice(openSet.indexOf(current), 1);
             closedSet.push(current);
 
-            const neighbors = [
+            // Liste des potentiels voisins
+            const potentialNeighbors = [
                 { x: current.x - 1, y: current.y },
                 { x: current.x + 1, y: current.y },
                 { x: current.x, y: current.y - 1 },
                 { x: current.x, y: current.y + 1 }
             ];
 
+            // Filtrer les voisins valides avant de les ajouter
+            const neighbors = [];
+            for (let n of potentialNeighbors) {
+                if (n.x >= 0 && n.x < this.map[0].length && n.y >= 0 && n.y < this.map.length) {
+                    neighbors.push(n);
+                } else {
+                    // console.log(`Neighbor potentiel (${n.x}, ${n.y}) est hors limites et ne sera pas ajouté.`);
+                }
+            }
 
             for (let neighbor of neighbors) {
-                if (neighbor.x < 0 || neighbor.x >= this.map.length || neighbor.y < 0 || neighbor.y >= this.map[0].length || this.map[neighbor.x][neighbor.y] === 1) {
+                if (neighbor.x < 0 || neighbor.x >= this.map[0].length || neighbor.y < 0 || neighbor.y >= this.map.length || this.map[neighbor.y][neighbor.x] === 1) {
                     continue;
                 }
 
                 const neighborNode = new Node(neighbor.x, neighbor.y);
                 if (closedSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y)) {
+                    // console.log(`Neighbor (${neighbor.x}, ${neighbor.y}) est déjà dans closedSet`);
                     continue;
                 }
 
@@ -62,6 +74,7 @@ class Pathfinding {
             }
         }
 
+        // console.warn('Aucun chemin trouvé');
         return [];
     }
 }

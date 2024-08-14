@@ -172,6 +172,7 @@ function startGame() {
     myGrid.InitGrid();
     myMap.InitMap();
 
+
     // ----- creation joueur -----
     player.CreatePlayer();
     lstSprites.push(spritePlayer);
@@ -184,7 +185,7 @@ function startGame() {
     for (let i = 0; i < nbEnemies; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
 
-        let enemy = new Enemy(enemyPos.y, enemyPos.x, player.getPlayerPos()[1], player.getPlayerPos()[0], myMap.getCurrentMapLevel());
+        let enemy = new Enemy(enemyPos.line, enemyPos.col, player.getPlayerPos()[1], player.getPlayerPos()[0], myMap);
         lstEnemies.push(enemy);
         lstSprites.push(enemy.spriteEnemy);
         if (debug) console.log("----- Ennemi ajouté à la liste des ennemis -----");
