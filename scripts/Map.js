@@ -34,7 +34,6 @@ class Map {
         switch (pLevel) {
             case 1:
                 this.map.level =
-                    // la map comporte 33 colonnes alors qu'elle est definie à 32
                     [
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -251,6 +250,9 @@ class Map {
         }
     }
 
+
+    // ----- GETTERS -----
+
     getNbKeysInLevel() {
         return this.map.level.keys;
     }
@@ -264,5 +266,9 @@ class Map {
     */
     getEnemiesStartPos() {
         return this.lstEnemiesCoords;
+    }
+
+    getCurrentMapLevel() {
+        return this.map.level;
     }
 }

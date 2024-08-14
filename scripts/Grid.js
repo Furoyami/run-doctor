@@ -59,7 +59,7 @@ class Grid {
     }
 
 
-    // GETTERS
+    // ----- GETTERS -----
 
 
 

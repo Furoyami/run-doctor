@@ -176,6 +176,7 @@ function startGame() {
     player.CreatePlayer();
     lstSprites.push(spritePlayer);
 
+
     // ----- creation ennemis -----
     // boucle de création des ennemis
     let nbEnemies = myMap.getNbEnemiesInLevel();
@@ -183,7 +184,7 @@ function startGame() {
     for (let i = 0; i < nbEnemies; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
 
-        let enemy = new Enemy(enemyPos.y, enemyPos.x);
+        let enemy = new Enemy(enemyPos.y, enemyPos.x, player.getPlayerPos()[1], player.getPlayerPos()[0], myMap.getCurrentMapLevel());
         lstEnemies.push(enemy);
         lstSprites.push(enemy.spriteEnemy);
         if (debug) console.log("----- Ennemi ajouté à la liste des ennemis -----");
@@ -202,9 +203,10 @@ function update(dt) {
     });
     player.Update(dt);
 
-    for (let enemy of lstEnemies) {
-        enemy.Update(dt, lstEnemies);
-    }
+    // for (let enemy of lstEnemies) {
+    lstEnemies.forEach(enemy => {
+        enemy.Update(dt, player.getPlayerPos()[1], player.getPlayerPos()[0],);
+    });
 }
 
 function draw(pCtx) {
@@ -224,5 +226,4 @@ function draw(pCtx) {
     lstSprites.forEach(sprite => {
         sprite.draw(pCtx);
     });
-
 }
