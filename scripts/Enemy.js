@@ -8,6 +8,7 @@ class Enemy {
         this.spriteEnemy.line = pLine;
         this.spriteEnemy.x = this.spriteEnemy.col * myGrid.cellSize;
         this.spriteEnemy.y = this.spriteEnemy.line * myGrid.cellSize;
+        this.spriteEnemy.speed = myGrid.cellSize;
         this.spriteEnemy.vX = 0;
         this.spriteEnemy.vY = 0;
         this.spriteEnemy.dist = 0;
@@ -22,45 +23,72 @@ class Enemy {
         this.path;
         this.pathfinding = new Pathfinding(this.map);
 
+        this.hasReachedTarget = false;
+
+        // Garder une trace de l'ancienne position de la cible
+        this.previousTargetCol = pTargetCol;
+        this.previousTargetLine = pTargetLine;
+
         if (debug) console.log("----- Enemy créé -----");
     }
 
     Update(dt, pTargetCol, pTargetLine) {
+        // Si l'ennemi a déjà atteint sa cible, ne pas mettre à jour
+        if (this.hasReachedTarget) return;
 
-        this.targetCol = pTargetCol;
-        this.targetLine = pTargetLine;
+        // Si la cible a changé de position, recalculer un nouveau chemin depuis la position actuelle
+        if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
+            this.targetCol = pTargetCol;
+            this.targetLine = pTargetLine;
 
-        if (pTargetCol < 0 || pTargetCol >= 32 || pTargetLine < 0 || pTargetLine >= 18) {
-            console.log("Cible hors des limites de la carte");
-            return;
-        }
-
-
-        // console.log("here:", this.path);
-        //  >>> 1 log vide à voir pourquoi
-        // si la col d'un ennemi dépasse la pos 18 il ne fonctionne plus
-        // la map est de 32 * 18 doit y avoir un lien
-
-        if (!this.path || this.path.length === 0) {
-            // lance un calcul pour trouver un chemin
+            // Recalculer le chemin à partir de la position actuelle de l'ennemi
             this.path = this.pathfinding.findPath(
                 { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
                 { x: this.targetCol, y: this.targetLine }
             );
 
-            if (this.path.length > 0) {
-                // console.log("Chemin trouvé !", this.path);
-            } else {
-                // console.log("Aucun chemin trouvé");
-            }
-        } else {
-            // suit le chemin calculé
-            const nextStep = this.path.shift();
-            // console.log(`Prochain déplacement: ${nextStep.x}, ${nextStep.y}`);
+            // Mettre à jour les positions cibles précédentes
+            this.previousTargetCol = pTargetCol;
+            this.previousTargetLine = pTargetLine;
+        }
 
-            // nextStep est en col / line
-            this.spriteEnemy.x = nextStep.x * myGrid.cellSize;
-            this.spriteEnemy.y = nextStep.y * myGrid.cellSize;
+        if (!this.path || this.path.length === 0) {
+            // Calcule un chemin s'il n'y en a pas
+            this.path = this.pathfinding.findPath(
+                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                { x: this.targetCol, y: this.targetLine }
+            );
+        } else {
+            let nextStep = this.path[0];
+            let targetX = nextStep.x * myGrid.cellSize;
+            let targetY = nextStep.y * myGrid.cellSize;
+
+            // Distance à parcourir cette frame (calée sur le delta time)
+            let moveDistance = this.spriteEnemy.speed * dt;
+
+            // Distance actuelle vers la prochaine cellule
+            let dx = targetX - this.spriteEnemy.x;
+            let dy = targetY - this.spriteEnemy.y;
+
+            let distToNextCell = Math.sqrt(dx * dx + dy * dy);
+
+            if (moveDistance > distToNextCell) {
+                // Aligner exactement sur la cellule suivante
+                this.spriteEnemy.x = targetX;
+                this.spriteEnemy.y = targetY;
+                this.path.shift();  // On retire le prochain step une fois atteint
+
+                // Vérifie si le chemin est vide
+                if (this.path.length === 0) this.hasReachedTarget = true;
+            } else {
+                // Déplacement proportionnel à la distance restante
+                this.spriteEnemy.x += (dx / distToNextCell) * moveDistance;
+                this.spriteEnemy.y += (dy / distToNextCell) * moveDistance;
+            }
+
+            // Mettre à jour la position du sprite en termes de grille (col/line)
+            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
+            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
         }
     }
 }
