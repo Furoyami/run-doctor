@@ -29,7 +29,7 @@ class Enemy {
         this.previousTargetCol = pTargetCol;
         this.previousTargetLine = pTargetLine;
 
-        this.startLeftOrRightAnimation();
+        this.facePlayerDirection();
 
         if (debug) console.log("----- Enemy créé -----");
     }
@@ -53,7 +53,7 @@ class Enemy {
             this.previousTargetCol = pTargetCol;
             this.previousTargetLine = pTargetLine;
 
-            this.startLeftOrRightAnimation();
+            this.facePlayerDirection();
         }
 
         if (!this.path || this.path.length === 0) {
@@ -94,12 +94,20 @@ class Enemy {
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
         }
+
+        // id under current enemy
+        let belowTile = myMap.getUnderEnemyID(this, 0, 1);
+
+        // gère la chute
+        if (belowTile === CONST.VOID) {
+
+        }
     }
 
     /**
      *  Déclenche l'animation de l'ennemi en fonction de sa position par rapport au joueur
      */
-    startLeftOrRightAnimation() {
+    facePlayerDirection() {
         if (this.spriteEnemy.col > this.targetCol) {
             this.spriteEnemy.startAnimation("LEFT");
         } else if (this.spriteEnemy.col < this.targetCol) {

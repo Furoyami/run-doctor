@@ -129,7 +129,7 @@ class Map {
         return id;
     }
 
-    getUnderEnemyID(pOffsetX, pOffsetY) {
+    getUnderEnemyID(enemy, pOffsetX, pOffsetY) {
         let enemyPos = enemy.getEnemyPos();
         let enemyLine = enemyPos[0] + pOffsetY;
         let enemyCol = enemyPos[1] + pOffsetX;
