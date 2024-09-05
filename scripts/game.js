@@ -204,7 +204,6 @@ function update(dt) {
     });
     player.Update(dt);
 
-    // for (let enemy of lstEnemies) {
     lstEnemies.forEach(enemy => {
         enemy.Update(dt, player.getPlayerPos()[1], player.getPlayerPos()[0],);
     });

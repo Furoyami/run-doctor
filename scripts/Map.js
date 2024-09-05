@@ -129,23 +129,12 @@ class Map {
         return id;
     }
 
-    getUnderEnemyID(pOffsetX, pOffsetY, lstEnemies) {
-        let id;
+    getUnderEnemyID(pOffsetX, pOffsetY) {
+        let enemyPos = enemy.getEnemyPos();
+        let enemyLine = enemyPos[0] + pOffsetY;
+        let enemyCol = enemyPos[1] + pOffsetX;
 
-        lstEnemies.forEach(enemy => {
-            let enemyPos = enemy.getEnemyPos();
-            let enemyLine = enemyPos[0] + pOffsetY;
-            let enemyCol = enemyPos[1] + pOffsetX;
-
-            // Vérification des limites de la grille
-            if (enemyLine >= 0 && enemyLine < this.map.nbLines &&
-                enemyCol >= 0 && enemyCol < this.map.nbColumns) {
-
-                id = this.map.level[enemyLine][enemyCol];
-            } else {
-                // console.error(`Position invalide: enemyLine = ${enemyLine}, enemyCol = ${enemyCol}`);
-            }
-        });
+        let id = this.map.level[enemyLine][enemyCol];
 
         return id;
     }
@@ -160,7 +149,7 @@ class Map {
 
     isLadder(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == 2) {
+        if (id == CONST.LADDER) {
             return true;
         }
         return false;
@@ -168,7 +157,7 @@ class Map {
 
     isWall(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == 1) {
+        if (id == CONST.WALL) {
             return true;
         }
         return false;
@@ -176,7 +165,7 @@ class Map {
 
     isEmpty(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == 0) {
+        if (id == CONST.VOID) {
             return true;
         }
         return false;
@@ -186,21 +175,21 @@ class Map {
         let playerPos = player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.map.level[playerLine][playerCol] = 0;
+        this.map.level[playerLine][playerCol] = CONST.VOID;
     }
 
     FillBrick(pOffsetX, pOffsetY) {
         let playerPos = player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.map.level[playerLine][playerCol] = 1;
+        this.map.level[playerLine][playerCol] = CONST.WALL;
     }
 
     CollectKey(pX, pY) {
         let line = pY / myGrid.cellSize;
         let col = pX / myGrid.cellSize;
-        if (this.map.level[line][col] == 3) {
-            this.map.level[line][col] = 0; // remplace les clés par du vide
+        if (this.map.level[line][col] == CONST.KEY) {
+            this.map.level[line][col] = CONST.VOID; // remplace les clés par du vide
         }
         this.map.level.keys -= 1;
     }
@@ -213,7 +202,7 @@ class Map {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
                 let id = this.map.level[line][col];
-                if (id == 3) {
+                if (id == CONST.KEY) {
                     this.map.level.keys += 1;
                 }
                 else if (id == 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
@@ -235,8 +224,8 @@ class Map {
                 let id = this.map.level[line][col];
                 // Montre le TARDIS quand toutes les clés sont ramassées
                 if (this.map.level.keys != 0) {
-                    if (id == 4 || id == 5 || id == 6 || id == 7) {
-                        id = 0;
+                    if (id == CONST.TARDIS_LT || id == CONST.TARDIS_RT || id == CONST.TARDIS_LB || id == CONST.TARDIS_RB) {
+                        id = CONST.VOID;
                     }
                     else {
                         id = this.map.level[line][col];

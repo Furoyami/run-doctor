@@ -43,7 +43,7 @@ class Player {
         // Déplacement
         if (k_right && spritePlayer.vX == 0 && spritePlayer.vY == 0
             && spritePlayer.x < WIDTH - myGrid.cellSize
-            && myMap.getUnderPlayerID(0, 1) != 0 && myMap.getUnderPlayerID(1, 0) != 1) {
+            && myMap.getUnderPlayerID(0, 1) != CONST.VOID && myMap.getUnderPlayerID(1, 0) != CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_RIGHT");
             spritePlayer.vX = 2.5;
@@ -52,7 +52,7 @@ class Player {
 
         if (k_left && spritePlayer.vX == 0 && spritePlayer.vY == 0
             && spritePlayer.x > 0
-            && myMap.getUnderPlayerID(0, 1) != 0 && myMap.getUnderPlayerID(-1, 0) != 1) {
+            && myMap.getUnderPlayerID(0, 1) != CONST.VOID && myMap.getUnderPlayerID(-1, 0) != CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_LEFT");
             spritePlayer.vX = - 2.5;
@@ -84,7 +84,7 @@ class Player {
             spritePlayer.dist = 0;
         }
         // ramasse les clés
-        if (myMap.getUnderPlayerID(0, 0) == 3 && spritePlayer.vX == 0) {
+        if (myMap.getUnderPlayerID(0, 0) == CONST.KEY && spritePlayer.vX == 0) {
             myMap.CollectKey(spritePlayer.x, spritePlayer.y);
             sndKey.play();
         }

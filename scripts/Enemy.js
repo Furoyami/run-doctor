@@ -29,6 +29,8 @@ class Enemy {
         this.previousTargetCol = pTargetCol;
         this.previousTargetLine = pTargetLine;
 
+        this.startLeftOrRightAnimation();
+
         if (debug) console.log("----- Enemy créé -----");
     }
 
@@ -50,6 +52,8 @@ class Enemy {
             // Mettre à jour les positions cibles précédentes
             this.previousTargetCol = pTargetCol;
             this.previousTargetLine = pTargetLine;
+
+            this.startLeftOrRightAnimation();
         }
 
         if (!this.path || this.path.length === 0) {
@@ -90,5 +94,22 @@ class Enemy {
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
         }
+    }
+
+    /**
+     *  Déclenche l'animation de l'ennemi en fonction de sa position par rapport au joueur
+     */
+    startLeftOrRightAnimation() {
+        if (this.spriteEnemy.col > this.targetCol) {
+            this.spriteEnemy.startAnimation("LEFT");
+        } else if (this.spriteEnemy.col < this.targetCol) {
+            this.spriteEnemy.startAnimation("RIGHT");
+        }
+    }
+
+    getEnemyPos() {
+        let enemyCol = this.spriteEnemy.col;
+        let enemyLine = this.spriteEnemy.line;
+        return [enemyLine, enemyCol];
     }
 }

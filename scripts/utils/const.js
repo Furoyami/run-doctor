@@ -18,6 +18,10 @@ const CONST = {
     VOID: 0,
     WALL: 1,
     LADDER: 2,
-    KEY: 3
+    KEY: 3,
+    TARDIS_LT: 4,
+    TARDIS_RT: 5,
+    TARDIS_LB: 6,
+    TARDIS_RB: 7
 
 };
