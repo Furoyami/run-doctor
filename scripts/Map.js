@@ -131,8 +131,9 @@ class Map {
 
     getUnderEnemyID(enemy, pOffsetX, pOffsetY) {
         let enemyPos = enemy.getEnemyPos();
-        let enemyLine = enemyPos[0] + pOffsetY;
-        let enemyCol = enemyPos[1] + pOffsetX;
+
+        let enemyLine = Math.round(enemyPos[0] + pOffsetY);
+        let enemyCol = Math.round(enemyPos[1] + pOffsetX);
 
         let id = this.map.level[enemyLine][enemyCol];
 
