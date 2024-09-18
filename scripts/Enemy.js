@@ -9,10 +9,7 @@ class Enemy {
         this.spriteEnemy.x = this.spriteEnemy.col * myGrid.cellSize;
         this.spriteEnemy.y = this.spriteEnemy.line * myGrid.cellSize;
         this.spriteEnemy.speed = myGrid.cellSize;
-        // this.spriteEnemy.vX = 0;
-        // this.spriteEnemy.vY = 0;
-        // this.spriteEnemy.dist = 0;
-        // this.spriteEnemy.lastVx = 0;
+
         this.spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
         this.spriteEnemy.addAnimation("LEFT", [2, 3], 0.5);
 
@@ -40,82 +37,85 @@ class Enemy {
         // Si l'ennemi a déjà atteint sa cible, ne pas mettre à jour
         if (this.hasReachedTarget) return;
 
-        // Si la cible a changé de position, recalculer un nouveau chemin depuis la position actuelle
-        if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
-            this.targetCol = pTargetCol;
-            this.targetLine = pTargetLine;
+        // On ne met à jour le pathfinding que si l'ennemi n'est pas en chute
+        if (!this.isFalling) {
+            // Si la cible a changé de position, recalculer un nouveau chemin depuis la position actuelle
+            if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
+                this.targetCol = pTargetCol;
+                this.targetLine = pTargetLine;
 
-            // Recalculer le chemin à partir de la position actuelle de l'ennemi
-            this.path = this.pathfinding.findPath(
-                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                { x: this.targetCol, y: this.targetLine }
-            );
+                // Recalculer le chemin à partir de la position actuelle de l'ennemi
+                this.path = this.pathfinding.findPath(
+                    { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                    { x: this.targetCol, y: this.targetLine }
+                );
 
-            // Mettre à jour les positions cibles précédentes
-            this.previousTargetCol = pTargetCol;
-            this.previousTargetLine = pTargetLine;
+                // Mettre à jour les positions cibles précédentes
+                this.previousTargetCol = pTargetCol;
+                this.previousTargetLine = pTargetLine;
 
-            this.facePlayerDirection();
-        }
-
-        // Si le chemin n'existe pas ou est vide, recalculer
-        if (!this.path || this.path.length === 0) {
-            this.path = this.pathfinding.findPath(
-                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                { x: this.targetCol, y: this.targetLine }
-            );
-        } else {
-            let nextStep = this.path[0];
-            let targetX = nextStep.x * myGrid.cellSize;
-            let targetY = nextStep.y * myGrid.cellSize;
-
-            // Distance à parcourir cette frame (calée sur le delta time)
-            let moveDistance = this.spriteEnemy.speed * dt;
-
-            // Vérifier si l'ennemi est aligné sur la grille en X
-            let isAlignedOnGridX = (this.spriteEnemy.x % myGrid.cellSize === 0);
-
-            // Vérifier la case sous l'ennemi
-            let belowTile = myMap.getUnderEnemyID(this, 0, 1); // Case directement en dessous de l'ennemi
-
-            // Si l'ennemi est en chute
-            if (belowTile === CONST.VOID && !this.isFalling && isAlignedOnGridX) {
-                this.isFalling = true;  // Activer l'état de chute
-                this.fallingCoords = this.getEnemyPos(); // Sauvegarder la colonne lors de l'activation de la chute
-                this.lockedX = this.spriteEnemy.x; // Verrouiller la position X
+                this.facePlayerDirection();
             }
 
-            if (this.isFalling) {
-                // Gestion de la chute : on vérifie continuellement la case sous l'ennemi
-                belowTile = myMap.getUnderEnemyID(this, 0, 1); // Récupérer la case sous l'ennemi à chaque frame
+            // Si le chemin n'existe pas ou est vide, recalculer
+            if (!this.path || this.path.length === 0) {
+                this.path = this.pathfinding.findPath(
+                    { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                    { x: this.targetCol, y: this.targetLine }
+                );
+            }
+        }
 
-                if (belowTile === CONST.VOID) {
-                    // L'ennemi tombe verticalement
-                    this.spriteEnemy.x = this.lockedX; // Bloquer la position X
-                    this.spriteEnemy.y += this.spriteEnemy.speed * dt; // Mouvement en Y
+        // Si l'ennemi est en chute, désactiver le pathfinding et forcer la chute uniquement
+        let tolerance = 1; // Marge de tolérance pour la détection de la case sous l'ennemi
+        let belowTile = myMap.getUnderEnemyID(this, 0, tolerance); // Case directement en dessous de l'ennemi
 
-                    // Actualiser la ligne actuelle pour éviter qu'il passe à travers une case solide
-                    this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
-                } else {
-                    // Si une case solide est détectée, l'ennemi se stabilise
-                    this.isFalling = false;
-                    this.spriteEnemy.y = Math.floor(this.spriteEnemy.y / myGrid.cellSize) * myGrid.cellSize; // Alignement parfait sur la grille
+        if (belowTile === CONST.VOID && !this.isFalling) {
+            this.isFalling = true;  // Activer l'état de chute
+            this.fallingCoords = this.getEnemyPos(); // Sauvegarder la colonne lors de l'activation de la chute
+            this.lockedX = this.spriteEnemy.x; // Verrouiller la position X
+            this.spriteEnemy.startAnimation("FALL");  // Lancer l'animation de chute (si disponible)
+        }
 
-                    // Mettre à jour la position de l'ennemi en grille (colonne et ligne)
-                    this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
-                    this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+        if (this.isFalling) {
+            belowTile = myMap.getUnderEnemyID(this, 0, tolerance); // Vérification continue de la case sous l'ennemi
 
-                    // Recalculer le pathfinding après stabilisation
-                    this.path = this.pathfinding.findPath(
-                        { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                        { x: this.targetCol, y: this.targetLine }
-                    );
-                }
+            if (belowTile === CONST.VOID) {
+                // L'ennemi tombe verticalement
+                this.spriteEnemy.x = this.lockedX; // Bloquer la position X
+                this.spriteEnemy.y += this.spriteEnemy.speed * dt; // Mouvement en Y
+
+                // Mise à jour de la ligne actuelle
+                this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
             } else {
-                // Mouvement normal selon le pathfinding
+                // Si une case solide est détectée, l'ennemi se stabilise
+                this.isFalling = false;
+                this.spriteEnemy.y = Math.round(this.spriteEnemy.y / myGrid.cellSize) * myGrid.cellSize; // Alignement sur la grille
+
+                // Reprendre l'animation normale (en fonction de la direction)
+                this.facePlayerDirection();
+
+                // Mettre à jour la position de l'ennemi en grille (colonne et ligne)
+                this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
+                this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+
+                // Recalculer le pathfinding après stabilisation uniquement si un chemin existe
+                this.path = this.pathfinding.findPath(
+                    { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                    { x: this.targetCol, y: this.targetLine }
+                );
+            }
+        } else {
+            // Mouvement normal selon le pathfinding
+            if (this.path && this.path.length > 0) {
+                let nextStep = this.path[0];
+                let targetX = nextStep.x * myGrid.cellSize;
+                let targetY = nextStep.y * myGrid.cellSize;
+
                 let dx = targetX - this.spriteEnemy.x;
                 let dy = targetY - this.spriteEnemy.y;
                 let distToNextCell = Math.sqrt(dx * dx + dy * dy);
+                let moveDistance = this.spriteEnemy.speed * dt;
 
                 if (moveDistance > distToNextCell) {
                     this.spriteEnemy.x = targetX;

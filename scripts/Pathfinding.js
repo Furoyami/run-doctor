@@ -30,7 +30,7 @@ class Pathfinding {
             openSet.splice(openSet.indexOf(current), 1);
             closedSet.push(current);
 
-            // Liste des potentiels voisins
+            // Liste des potentiels voisins (exclut les diagonales, uniquement déplacements verticaux et horizontaux)
             const potentialNeighbors = [
                 { x: current.x - 1, y: current.y },
                 { x: current.x + 1, y: current.y },
