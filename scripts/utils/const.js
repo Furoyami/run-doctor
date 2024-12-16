@@ -15,10 +15,14 @@ const CONST = {
     KEYA: "KeyA",
     KEYR: "KeyR",
 
-    VOID: 0,
+    WALKABLE_VOID: 0,
+    FALL_ONLY_VOID: 9,
+
     WALL: 1,
+
     LADDER: 2,
     KEY: 3,
+
     TARDIS_LT: 4,
     TARDIS_RT: 5,
     TARDIS_LB: 6,

@@ -180,7 +180,7 @@ function startGame() {
 
     // ----- creation ennemis -----
     // boucle de création des ennemis
-    let nbEnemies = myMap.getNbEnemiesInLevel();
+    let nbEnemies = 1; //myMap.getNbEnemiesInLevel();
     // ----- REMETTRE LA BOUCLE AVEC LE BON PARAM APRES DEBUG !!!! -----
     for (let i = 0; i < nbEnemies; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
@@ -225,5 +225,9 @@ function draw(pCtx) {
 
     lstSprites.forEach(sprite => {
         sprite.draw(pCtx);
+    });
+
+    lstEnemies.forEach(enemy => {
+        enemy.drawPath(pCtx);
     });
 }
