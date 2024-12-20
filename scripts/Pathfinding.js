@@ -7,32 +7,83 @@ class Pathfinding {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
-    isWalkable(x, y) {
-        const tile = this.map[y][x];
-        return tile !== CONST.WALL && tile !== CONST.FALL_ONLY_VOID;
-    }
+    // findPath(start, goal) {
+    //     const openSet = [start];
+    //     const closedSet = [];
 
-    simulateFall(x, y) {
-        // Simule une chute et retourne la première case valide ou null si hors de portée
-        let currentY = y + 1;
-        while (currentY < this.map.length) {
-            const tile = this.map[currentY][x];
-            // Si on atteint une case non-VOID, on vérifie sa validité
-            if (tile !== CONST.FALL_ONLY_VOID && tile !== CONST.WALKABLE_VOID) {
-                return this.isWalkable(x, currentY) ? { x, y: currentY } : null;
-            }
-            currentY++;
-        }
-        return null; // Aucun sol valide trouvé
-    }
+    //     const isTargetOnFallOnlyVoid = () => {
+    //         const targetTile = this.map[goal.y]?.[goal.x];
+    //         return targetTile === CONST.FALL_ONLY_VOID;
+    //     };
 
+    //     while (openSet.length > 0) {
+    //         let current = openSet.reduce((prev, node) => (node.f < prev.f ? node : prev), openSet[0]);
+
+    //         if (current.x === goal.x && current.y === goal.y) {
+    //             let path = [];
+    //             while (current.parent) {
+    //                 path.push(current);
+    //                 current = current.parent;
+    //             }
+    //             path.reverse();
+    //             return path;
+    //         }
+
+    //         openSet.splice(openSet.indexOf(current), 1);
+    //         closedSet.push(current);
+
+    //         const potentialNeighbors = [
+    //             { x: current.x - 1, y: current.y },
+    //             { x: current.x + 1, y: current.y },
+    //             { x: current.x, y: current.y - 1 },
+    //             { x: current.x, y: current.y + 1 }
+    //         ];
+
+    //         const neighbors = [];
+    //         for (let n of potentialNeighbors) {
+    //             if (n.x >= 0 && n.x < this.map[0].length && n.y >= 0 && n.y < this.map.length) {
+    //                 const targetTile = this.map[n.y][n.x];
+
+    //                 // Règles spécifiques aux types de tuiles
+    //                 if (targetTile === CONST.WALL) {
+    //                     continue; // Toujours ignorer les murs
+    //                 }
+
+    //                 if (targetTile === CONST.FALL_ONLY_VOID && !isTargetOnFallOnlyVoid()) {
+    //                     continue; // Ignorer FALL_ONLY_VOID si la cible n'est pas dessus
+    //                 }
+
+    //                 neighbors.push(n);
+    //             }
+    //         }
+
+    //         for (let neighbor of neighbors) {
+    //             if (closedSet.some(n => n.x === neighbor.x && n.y === neighbor.y)) {
+    //                 continue;
+    //             }
+
+    //             const neighborNode = new Node(neighbor.x, neighbor.y);
+    //             const tentative_g = current.g + 1;
+
+    //             if (!openSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y) || tentative_g < neighborNode.g) {
+    //                 neighborNode.g = tentative_g;
+    //                 neighborNode.h = this.heuristic(neighborNode, goal);
+    //                 neighborNode.f = neighborNode.g + neighborNode.h;
+    //                 neighborNode.parent = current;
+
+    //                 if (!openSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y)) {
+    //                     openSet.push(neighborNode);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return [];
+    // }
 
     findPath(start, goal) {
-
-        const openSet = [];
+        const openSet = [start];
         const closedSet = [];
-
-        openSet.push(start);
 
         while (openSet.length > 0) {
             let current = openSet.reduce((prev, node) => (node.f < prev.f ? node : prev), openSet[0]);
@@ -50,7 +101,6 @@ class Pathfinding {
             openSet.splice(openSet.indexOf(current), 1);
             closedSet.push(current);
 
-            // Liste des potentiels voisins (exclut les diagonales, uniquement déplacements verticaux et horizontaux)
             const potentialNeighbors = [
                 { x: current.x - 1, y: current.y },
                 { x: current.x + 1, y: current.y },
@@ -58,51 +108,24 @@ class Pathfinding {
                 { x: current.x, y: current.y + 1 }
             ];
 
-            // Filtrer les voisins valides avant de les ajouter
             const neighbors = [];
             for (let n of potentialNeighbors) {
-                // Vérifier que le voisin est dans les limites de la carte
                 if (n.x >= 0 && n.x < this.map[0].length && n.y >= 0 && n.y < this.map.length) {
+                    const targetTile = this.map[n.y][n.x];
 
-                    let currentTile = this.map[current.y][current.x];
-                    let targetTile = this.map[n.y][n.x];
-
-                    // Empêcher les mouvements impossibles
-
-                    // Les murs sont infranchissables 
-                    if (targetTile === CONST.WALL) {
-                        continue; // Ignorer ce voisin
+                    // Vérifier si la case est accessible
+                    if (this.isTileAccessible(targetTile, goal)) {
+                        neighbors.push(n);
                     }
-
-                    if (targetTile === CONST.FALL_ONLY_VOID) {
-                        const fallTarget = this.simulateFall(n.x, n.y);
-                        if (fallTarget) {
-                            neighbors.push(fallTarget);
-                        }
-                        continue; // Ne pas traiter la case VOID comme un voisin direct
-                    }
-
-
-                    // Si on essaie de monter vers une case, il faut que la case actuelle ne soit pas vide
-                    if (n.y < current.y && currentTile === (CONST.FALL_ONLY_VOID || CONST.WALKABLE_VOID)) continue; // Ignorer ce voisin
-
-                    neighbors.push(n);
-                } else {
-                    // console.log(`Neighbor potentiel (${n.x}, ${n.y}) est hors limites et ne sera pas ajouté.`);
                 }
             }
 
             for (let neighbor of neighbors) {
-                if (neighbor.x < 0 || neighbor.x >= this.map[0].length || neighbor.y < 0 || neighbor.y >= this.map.length || this.map[neighbor.y][neighbor.x] === 1) {
+                if (closedSet.some(n => n.x === neighbor.x && n.y === neighbor.y)) {
                     continue;
                 }
 
                 const neighborNode = new Node(neighbor.x, neighbor.y);
-                if (closedSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y)) {
-                    // console.log(`Neighbor (${neighbor.x}, ${neighbor.y}) est déjà dans closedSet`);
-                    continue;
-                }
-
                 const tentative_g = current.g + 1;
 
                 if (!openSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y) || tentative_g < neighborNode.g) {
@@ -118,7 +141,27 @@ class Pathfinding {
             }
         }
 
-        // console.warn('Aucun chemin trouvé');
         return [];
     }
+
+    /**
+     * Vérifie si une tuile est accessible selon sa nature et la position de la cible.
+     * @param {number} tile - Type de tuile (e.g., WALL, WALKABLE_VOID, FALL_ONLY_VOID).
+     * @param {Object} goal - Position cible { x, y }.
+     * @returns {boolean} - True si la tuile est accessible, false sinon.
+     */
+    isTileAccessible(tile, goal) {
+        if (tile === CONST.WALL) {
+            return false; // Toujours infranchissable
+        }
+
+        if (tile === CONST.FALL_ONLY_VOID) {
+            const goalTile = this.map[goal.y]?.[goal.x];
+            return goalTile === CONST.FALL_ONLY_VOID; // Accessible si la cible est en chute
+        }
+
+        return true; // WALKABLE_VOID ou autres cas franchissables
+    }
+
+
 }

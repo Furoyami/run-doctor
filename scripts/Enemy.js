@@ -36,29 +36,27 @@ class Enemy {
     Update(dt, pTargetCol, pTargetLine) {
         if (this.hasReachedTarget) return;
 
-        if (!this.isFalling) {
-            // Recalculer le chemin si la cible a changé de position et n'est pas en chute
-            if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
-                this.targetCol = pTargetCol;
-                this.targetLine = pTargetLine;
+        // Recalculer le chemin si la cible a changé de position et n'est pas en chute
+        if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
+            this.targetCol = pTargetCol;
+            this.targetLine = pTargetLine;
 
-                this.path = this.pathfinding.findPath(
-                    { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                    { x: this.targetCol, y: this.targetLine }
-                );
+            this.path = this.pathfinding.findPath(
+                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                { x: this.targetCol, y: this.targetLine }
+            );
 
-                this.previousTargetCol = pTargetCol;
-                this.previousTargetLine = pTargetLine;
+            this.previousTargetCol = pTargetCol;
+            this.previousTargetLine = pTargetLine;
 
-                this.facePlayerDirection();
-            }
-            // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
-            if (!this.path || this.path.length === 0) {
-                this.path = this.pathfinding.findPath(
-                    { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                    { x: this.targetCol, y: this.targetLine }
-                );
-            }
+            this.facePlayerDirection();
+        }
+        // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
+        if (!this.path || this.path.length === 0) {
+            this.path = this.pathfinding.findPath(
+                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                { x: this.targetCol, y: this.targetLine }
+            );
         }
 
         // Gestion des chutes et vérifications des VOID
@@ -152,6 +150,7 @@ class Enemy {
         return [this.spriteEnemy.line, this.spriteEnemy.col];
     }
 
+    /** Draw pathfinding for debug */
     drawPath(pCtx) {
         if (this.path && this.path.length > 0) {
             pCtx.save();
