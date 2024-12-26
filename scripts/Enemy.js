@@ -28,8 +28,6 @@ class Enemy {
         this.previousTargetCol = pTargetCol;
         this.previousTargetLine = pTargetLine;
 
-        this.facePlayerDirection();
-
         if (debug) console.log("----- Enemy créé -----");
     }
 
@@ -49,7 +47,7 @@ class Enemy {
             this.previousTargetCol = pTargetCol;
             this.previousTargetLine = pTargetLine;
 
-            this.facePlayerDirection();
+            this.facePathDirection();
         }
         // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
         if (!this.path || this.path.length === 0) {
@@ -62,7 +60,10 @@ class Enemy {
         // Gestion des chutes et vérifications des VOID
         let belowTile = myMap.getUnderEnemyID(this, 0, 1);
 
-        if ((belowTile === CONST.FALL_ONLY_VOID || belowTile === CONST.WALKABLE_VOID) && !this.isFalling) {
+        //check l'alignement sur la cas eavant de déclencher la chute
+        let isAlignedOnTile = (this.spriteEnemy.x % myGrid.cellSize === 0) && (this.spriteEnemy.y % myGrid.cellSize === 0);
+
+        if (isAlignedOnTile && (belowTile === CONST.FALL_ONLY_VOID || belowTile === CONST.WALKABLE_VOID) && !this.isFalling) {
             if (belowTile === CONST.FALL_ONLY_VOID) {
                 this.startFalling();
             } else if (belowTile === CONST.WALKABLE_VOID) {
@@ -84,6 +85,11 @@ class Enemy {
 
     startFalling() {
         this.isFalling = true;
+
+        // réalignement sur la case actuelle
+        this.spriteEnemy.x = Math.round(this.spriteEnemy.x / myGrid.cellSize) * myGrid.cellSize;
+        this.spriteEnemy.y = Math.round(this.spriteEnemy.y / myGrid.cellSize) * myGrid.cellSize;
+
         this.fallingCoords = this.getEnemyPos();
         this.lockedX = this.spriteEnemy.x;
         this.spriteEnemy.startAnimation("FALL");
@@ -102,12 +108,12 @@ class Enemy {
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
 
-            this.facePlayerDirection();
-
             this.path = this.pathfinding.findPath(
                 { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
                 { x: this.targetCol, y: this.targetLine }
             );
+
+            this.facePathDirection();
         }
     }
 
@@ -127,6 +133,8 @@ class Enemy {
                 this.spriteEnemy.y = targetY;
                 this.path.shift();
 
+                if (this.path.length > 1) this.facePathDirection();
+
                 if (this.path.length === 0) this.hasReachedTarget = true;
             } else {
                 this.spriteEnemy.x += (dx / distToNextCell) * moveDistance;
@@ -138,11 +146,19 @@ class Enemy {
         }
     }
 
-    facePlayerDirection() {
-        if (this.spriteEnemy.col > this.targetCol) {
-            this.spriteEnemy.startAnimation("LEFT");
-        } else if (this.spriteEnemy.col < this.targetCol) {
-            this.spriteEnemy.startAnimation("RIGHT");
+    facePathDirection() {
+        if (!this.path || this.path.length < 2) return; //verifie qu'il y a au moins 2 éléments dans le path
+
+        let currentStepX = this.path[0].x;
+        let nextStepX = this.path[1].x;
+
+        // gauche
+        if (nextStepX < currentStepX) {
+            this.spriteEnemy.startAnimation("LEFT", [2, 3], 0.5);
+        }
+        //droite
+        if (nextStepX > currentStepX) {
+            this.spriteEnemy.startAnimation("RIGHT", [0, 1], 0.5);
         }
     }
 
