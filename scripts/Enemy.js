@@ -32,92 +32,85 @@ class Enemy {
     }
 
     Update(dt, pTargetCol, pTargetLine) {
-        if (this.hasReachedTarget) return;
-
-        // Recalculer le chemin si la cible a changé de position et n'est pas en chute
-        if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
-            this.targetCol = pTargetCol;
-            this.targetLine = pTargetLine;
-
-            this.path = this.pathfinding.findPath(
-                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                { x: this.targetCol, y: this.targetLine }
-            );
-
-            this.previousTargetCol = pTargetCol;
-            this.previousTargetLine = pTargetLine;
-
-            this.facePathDirection();
-        }
-        // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
-        if (!this.path || this.path.length === 0) {
-            this.path = this.pathfinding.findPath(
-                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                { x: this.targetCol, y: this.targetLine }
-            );
+        // Vérifier si l'ennemi doit tomber
+        const belowTile = myMap.getUnderEnemyID(this, 0, 1);
+        if (belowTile === CONST.VOID && !this.isFalling) {
+            this.startFalling();
         }
 
-        // Gestion des chutes et vérifications des VOID
-        let belowTile = myMap.getUnderEnemyID(this, 0, 1);
-
-        //check l'alignement sur la cas eavant de déclencher la chute
-        let isAlignedOnTile = (this.spriteEnemy.x % myGrid.cellSize === 0) && (this.spriteEnemy.y % myGrid.cellSize === 0);
-
-        if (isAlignedOnTile && (belowTile === CONST.FALL_ONLY_VOID || belowTile === CONST.WALKABLE_VOID) && !this.isFalling) {
-            if (belowTile === CONST.FALL_ONLY_VOID) {
-                this.startFalling();
-            } else if (belowTile === CONST.WALKABLE_VOID) {
-                const supportTile = myMap.getUnderEnemyID(this, 0, 2); // Vérifie la case sous la case VOID
-                if (supportTile === CONST.WALL) {
-                    // WALKABLE_VOID franchissable, continuer
-                } else {
-                    this.startFalling();
-                }
-            }
-        }
-
+        // Si en chute, gérer la chute
         if (this.isFalling) {
             this.handleFall(dt);
-        } else {
-            this.handlePathfinding(dt);
+            return; // Ne pas continuer le reste de l'update
         }
+
+        // Logique de pathfinding si l'ennemi n'est pas en chute
+        if (
+            this.previousTargetCol !== pTargetCol ||
+            this.previousTargetLine !== pTargetLine ||
+            !this.currentPath ||
+            this.currentPath.length === 0
+        ) {
+            this.targetCol = pTargetCol;
+            this.targetLine = pTargetLine;
+            this.updatePath();
+        }
+
+        this.followPath(dt);
+    }
+
+
+    updatePath() {
+        this.path = this.pathfinding.findPath(
+            { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+            { x: this.targetCol, y: this.targetLine }
+        );
     }
 
     startFalling() {
         this.isFalling = true;
 
-        // réalignement sur la case actuelle
+        // Réalignement précis sur la grille
         this.spriteEnemy.x = Math.round(this.spriteEnemy.x / myGrid.cellSize) * myGrid.cellSize;
         this.spriteEnemy.y = Math.round(this.spriteEnemy.y / myGrid.cellSize) * myGrid.cellSize;
 
-        this.fallingCoords = this.getEnemyPos();
-        this.lockedX = this.spriteEnemy.x;
+        if (debug) console.log("Enemy starts falling at", this.spriteEnemy.col, this.spriteEnemy.line);
+
+        // Ajouter une animation de chute si nécessaire
         this.spriteEnemy.startAnimation("FALL");
     }
 
-    handleFall(dt) {
-        let belowTile = myMap.getUnderEnemyID(this, 0, 1);
 
-        if (belowTile === CONST.FALL_ONLY_VOID || belowTile === CONST.WALKABLE_VOID) {
-            this.spriteEnemy.x = this.lockedX;
+    handleFall(dt) {
+        const belowTile = myMap.getUnderEnemyID(this, 0, 1);
+
+        if (belowTile === CONST.VOID) {
+            // Continuer à tomber
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
         } else {
+            // Arrêter la chute si une case solide est atteinte
             this.isFalling = false;
             this.spriteEnemy.y = Math.round(this.spriteEnemy.y / myGrid.cellSize) * myGrid.cellSize;
-            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
 
-            this.path = this.pathfinding.findPath(
-                { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                { x: this.targetCol, y: this.targetLine }
-            );
+            if (debug) console.log("Enemy stops falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
+            // Recalculer le chemin après la chute
+            this.updatePath();
+
+            // Ajuster l'animation après la chute
             this.facePathDirection();
         }
     }
 
-    handlePathfinding(dt) {
+
+    /**
+     * 
+     * gère les contraintes de déplacement liées au pathfinding
+     */
+    followPath(dt) {
         if (this.path && this.path.length > 0) {
             let nextStep = this.path[0];
             let targetX = nextStep.x * myGrid.cellSize;
@@ -131,8 +124,11 @@ class Enemy {
             if (moveDistance > distToNextCell) {
                 this.spriteEnemy.x = targetX;
                 this.spriteEnemy.y = targetY;
+
+                // on retire l'étape terminée
                 this.path.shift();
 
+                // si au moins un element on verifie la direction pour ajuster le sens de l'animation
                 if (this.path.length > 1) this.facePathDirection();
 
                 if (this.path.length === 0) this.hasReachedTarget = true;

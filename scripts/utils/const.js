@@ -15,11 +15,13 @@ const CONST = {
     KEYA: "KeyA",
     KEYR: "KeyR",
 
-    WALKABLE_VOID: 0,
-    FALL_ONLY_VOID: 9,
+    // franchissable
+    VOID: 0,
 
+    // infranchissable
     WALL: 1,
 
+    // interactions
     LADDER: 2,
     KEY: 3,
 

@@ -31,7 +31,7 @@ class Player {
 
         // // Vérifie les cases sous le joueur
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
-        const FALLVOID = tileUnderPlayer === CONST.WALKABLE_VOID || tileUnderPlayer === CONST.FALL_ONLY_VOID;
+        const FALLVOID = tileUnderPlayer === CONST.VOID;
 
         // // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
@@ -41,7 +41,7 @@ class Player {
         // Déplacements horizontaux (droite et gauche)
         if (k_right && spritePlayer.vX === 0 && spritePlayer.vY === 0
             && spritePlayer.x < WIDTH - myGrid.cellSize
-            && myMap.getUnderPlayerID(0, 1) !== CONST.WALKABLE_VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
+            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_RIGHT");
             spritePlayer.vX = 2.5;
@@ -50,7 +50,7 @@ class Player {
 
         if (k_left && spritePlayer.vX === 0 && spritePlayer.vY === 0
             && spritePlayer.x > 0
-            && myMap.getUnderPlayerID(0, 1) !== CONST.WALKABLE_VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
+            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_LEFT");
             spritePlayer.vX = -2.5;
