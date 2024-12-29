@@ -20,7 +20,6 @@ class Enemy {
         this.path;
         this.pathfinding = new Pathfinding(this.map);
 
-        this.hasReachedTarget = false;
         this.isFalling = false;
         this.fallingCoords = { col: null, line: null };
 
@@ -57,6 +56,7 @@ class Enemy {
         }
 
         this.followPath(dt);
+
     }
 
 
@@ -131,7 +131,6 @@ class Enemy {
                 // si au moins un element on verifie la direction pour ajuster le sens de l'animation
                 if (this.path.length > 1) this.facePathDirection();
 
-                if (this.path.length === 0) this.hasReachedTarget = true;
             } else {
                 this.spriteEnemy.x += (dx / distToNextCell) * moveDistance;
                 this.spriteEnemy.y += (dy / distToNextCell) * moveDistance;
@@ -143,19 +142,25 @@ class Enemy {
     }
 
     facePathDirection() {
-        if (!this.path || this.path.length < 2) return; //verifie qu'il y a au moins 2 éléments dans le path
-
-        let currentStepX = this.path[0].x;
-        let nextStepX = this.path[1].x;
-
-        // gauche
-        if (nextStepX < currentStepX) {
-            this.spriteEnemy.startAnimation("LEFT", [2, 3], 0.5);
+        if (!this.path || this.path.length === 0) {
+            // si aucun chemin on sort de la fonction
+            return;
         }
-        //droite
-        if (nextStepX > currentStepX) {
-            this.spriteEnemy.startAnimation("RIGHT", [0, 1], 0.5);
+
+        // Vérification directionnelle
+        const currentStep = this.path[0];
+        const nextStep = this.path[1];
+
+        if (!nextStep) return; // Pas d'étape suivante, pas besoin de changer la direction
+
+        const dx = nextStep.x - currentStep.x;
+
+        if (dx > 0) {
+            this.spriteEnemy.startAnimation("RIGHT");
+        } else if (dx < 0) {
+            this.spriteEnemy.startAnimation("LEFT");
         }
+
     }
 
     getEnemyPos() {
