@@ -20,8 +20,10 @@ class Enemy {
         this.path;
         this.pathfinding = new Pathfinding(this.map);
 
+        this.hasReachedTarget = false;
         this.isFalling = false;
-        this.fallingCoords = { col: null, line: null };
+        this.lockedX = this.spriteEnemy.x;
+        this.lockedY = this.spriteEnemy.y;
 
         // Garder une trace de l'ancienne position de la cible
         this.previousTargetCol = pTargetCol;
@@ -31,35 +33,44 @@ class Enemy {
     }
 
     Update(dt, pTargetCol, pTargetLine) {
-        // Vérifier si l'ennemi doit tomber
-        const belowTile = myMap.getUnderEnemyID(this, 0, 1);
-        if (belowTile === CONST.VOID && !this.isFalling) {
+        if (this.hasReachedTarget) return;
+
+        if (!this.isFalling) {
+            // Recalculer le chemin si la cible a changé de position et n'est pas en chute
+            if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
+                this.targetCol = pTargetCol;
+                this.targetLine = pTargetLine;
+
+                this.updatePath();
+
+                this.previousTargetCol = pTargetCol;
+                this.previousTargetLine = pTargetLine;
+
+                this.facePathDirection();
+            }
+            // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
+            if (!this.path || this.path.length === 0) {
+                this.updatePath();
+            }
+        }
+
+        // Gestion des chutes et vérifications des VOID
+        let belowTile = myMap.getUnderEnemyID(this, 0, 1);
+
+        if ((belowTile === CONST.VOID) && !this.isFalling) {
             this.startFalling();
         }
 
-        // Si en chute, gérer la chute
         if (this.isFalling) {
             this.handleFall(dt);
-            return; // Ne pas continuer le reste de l'update
+        } else {
+            this.followPath(dt);
         }
-
-        // Logique de pathfinding si l'ennemi n'est pas en chute
-        if (
-            this.previousTargetCol !== pTargetCol ||
-            this.previousTargetLine !== pTargetLine ||
-            !this.currentPath ||
-            this.currentPath.length === 0
-        ) {
-            this.targetCol = pTargetCol;
-            this.targetLine = pTargetLine;
-            this.updatePath();
-        }
-
-        this.followPath(dt);
-
     }
 
-
+    /**
+     * Met à jour le chemin
+     */
     updatePath() {
         this.path = this.pathfinding.findPath(
             { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
@@ -67,8 +78,13 @@ class Enemy {
         );
     }
 
+    /**
+     * Gère le mouvement en état de chute
+     */
     startFalling() {
         this.isFalling = true;
+
+        this.lockedX = this.spriteEnemy.x; // Verrou pour l'alignement pendant la chute
 
         // Réalignement précis sur la grille
         this.spriteEnemy.x = Math.round(this.spriteEnemy.x / myGrid.cellSize) * myGrid.cellSize;
@@ -80,12 +96,16 @@ class Enemy {
         this.spriteEnemy.startAnimation("FALL");
     }
 
-
+    /**
+     * 
+     * gère l'état de chute 
+     */
     handleFall(dt) {
         const belowTile = myMap.getUnderEnemyID(this, 0, 1);
 
         if (belowTile === CONST.VOID) {
             // Continuer à tomber
+            this.spriteEnemy.x = this.lockedX;
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
         } else {
@@ -105,14 +125,15 @@ class Enemy {
         }
     }
 
-
     /**
-     * 
+     *
      * gère les contraintes de déplacement liées au pathfinding
      */
     followPath(dt) {
         if (this.path && this.path.length > 0) {
             let nextStep = this.path[0];
+
+            // convertie en px les coordonnées cible
             let targetX = nextStep.x * myGrid.cellSize;
             let targetY = nextStep.y * myGrid.cellSize;
 
@@ -131,6 +152,8 @@ class Enemy {
                 // si au moins un element on verifie la direction pour ajuster le sens de l'animation
                 if (this.path.length > 1) this.facePathDirection();
 
+                if (this.path.length === 0) this.hasReachedTarget = true;
+
             } else {
                 this.spriteEnemy.x += (dx / distToNextCell) * moveDistance;
                 this.spriteEnemy.y += (dy / distToNextCell) * moveDistance;
@@ -138,9 +161,19 @@ class Enemy {
 
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+
+            if (debug) {
+                console.log('dx:', dx, 'dy:', dy, 'distToNextCell:', distToNextCell);
+                console.log('Enemy position:', this.spriteEnemy.x, this.spriteEnemy.y);
+                console.log('Target position:', targetX, targetY);
+            }
         }
     }
 
+    /**
+     * 
+     * gère le changemen de l'animation en fonction de la direction prise par l'ennemi
+     */
     facePathDirection() {
         if (!this.path || this.path.length === 0) {
             // si aucun chemin on sort de la fonction
@@ -163,11 +196,18 @@ class Enemy {
 
     }
 
+    /**
+     * 
+     * @returns renvoie un tableau contenant la ligne et la colonne de l'ennemi
+     */
     getEnemyPos() {
         return [this.spriteEnemy.line, this.spriteEnemy.col];
     }
 
-    /** Draw pathfinding for debug */
+
+    /**
+     *  Dessine le PF pour debug 
+     */
     drawPath(pCtx) {
         if (this.path && this.path.length > 0) {
             pCtx.save();
