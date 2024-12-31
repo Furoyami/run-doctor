@@ -85,10 +85,9 @@ class Pathfinding {
 
             if (targetTile === CONST.VOID && neighbor.y < current.y && tileBelow === CONST.VOID) return false;
 
-            // Mur infranchissable
-            if (targetTile === CONST.WALL) return false;
-            // Vide infranchissable
-            if (targetTile === CONST.UNWALKABLE_VOID) return false;
+            // Cases infranchissable
+            if (targetTile === CONST.WALL ||
+                targetTile === CONST.UNWALKABLE_VOID) return false;
 
             // Ajoutez d'autres contraintes ici si nécessaire
 

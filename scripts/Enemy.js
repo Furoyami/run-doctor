@@ -137,7 +137,7 @@ class Enemy {
         if (this.path && this.path.length > 0) {
             let nextStep = this.path[0];
 
-            // convertie en px les coordonnées cible
+            // Coordonnées cibles en pixels
             let targetX = nextStep.x * myGrid.cellSize;
             let targetY = nextStep.y * myGrid.cellSize;
 
@@ -146,41 +146,39 @@ class Enemy {
             let distToNextCell = Math.sqrt(dx * dx + dy * dy);
             let moveDistance = this.spriteEnemy.speed * dt;
 
-            if (moveDistance > distToNextCell) {
-                this.spriteEnemy.x = targetX;
-                this.spriteEnemy.y = targetY;
+            // Alignement sur X ou Y avant tout déplacement dans une autre direction
+            let isAlignedX = Math.abs(dx) < 0.1; // Tolérance pour considérer l'alignement
+            let isAlignedY = Math.abs(dy) < 0.1;
 
-                // on retire l'étape terminée
-                this.path.shift();
-
-                // si au moins un element on verifie la direction pour ajuster le sens de l'animation
-                if (this.path.length > 1) this.facePathDirection();
-
-                if (this.path.length === 0) this.hasReachedTarget = true;
-
-            } else {
-                this.spriteEnemy.x += (dx / distToNextCell) * moveDistance;
-                this.spriteEnemy.y += (dy / distToNextCell) * moveDistance;
+            if (!isAlignedX) {
+                // Mouvement prioritaire sur l'axe X
+                this.spriteEnemy.x += Math.sign(dx) * Math.min(Math.abs(dx), moveDistance);
+            } else if (!isAlignedY) {
+                // Mouvement sur l'axe Y une fois aligné sur X
+                this.spriteEnemy.y += Math.sign(dy) * Math.min(Math.abs(dy), moveDistance);
             }
 
-            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
-            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+            // Vérifier si le déplacement sur la cellule cible est terminé
+            if (isAlignedX && isAlignedY) {
+                // Passage à la case suivante
+                this.spriteEnemy.x = targetX;
+                this.spriteEnemy.y = targetY;
+                this.path.shift();
 
-            if (debug) {
-                console.log('dx:', dx, 'dy:', dy, 'distToNextCell:', distToNextCell);
-                console.log('Enemy position:', this.spriteEnemy.x, this.spriteEnemy.y);
-                console.log('Target position:', targetX, targetY);
+                // Mise à jour des coordonnées de la grille
+                this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
+                this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
+
+                // Ajuster l'animation pour la prochaine direction
+                if (this.path.length > 0) {
+                    this.facePathDirection();
+                } else {
+                    this.hasReachedTarget = true; // Si le chemin est vide, la cible est atteinte
+                }
             }
         }
     }
 
-    /**
-    * Vérifie si l'ennemi est bien centré sur la colonne actuelle
-    */
-    // isAlignedToColumn() {
-    //     const centerX = this.spriteEnemy.col * myGrid.cellSize;
-    //     return Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
-    // }
 
     /**
      * 
