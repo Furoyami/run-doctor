@@ -46,7 +46,7 @@ class Grid {
                 y = l * h;
                 x += this.offsetX;
                 let id = this.cells[l][c];
-                if (id == 7) {
+                if (id === 7) {
                     pCtx.fillStyle = "#fff1";
                 } else {
 

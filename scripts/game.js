@@ -75,7 +75,7 @@ function enableLeftKey() {
 }
 
 function keyDown(e) {
-    if (e.code === 116) {
+    if (e.code === KEYF5) {
         // Si c'est F5, laisse le comportement par défaut
         return;
     }
@@ -180,11 +180,9 @@ function startGame() {
 
     // ----- creation ennemis -----
     // boucle de création des ennemis
-    let nbEnemies = 1; //myMap.getNbEnemiesInLevel();
-    // ----- REMETTRE LA BOUCLE AVEC LE BON PARAM APRES DEBUG !!!! -----
+    let nbEnemies = myMap.getNbEnemiesInLevel();
     for (let i = 0; i < nbEnemies; i++) {
         let enemyPos = myMap.getEnemiesStartPos()[i];
-
         let enemy = new Enemy(enemyPos.line, enemyPos.col, player.getPlayerPos()[1], player.getPlayerPos()[0], myMap);
         lstEnemies.push(enemy);
         lstSprites.push(enemy.spriteEnemy);
@@ -220,14 +218,16 @@ function draw(pCtx) {
         return;
     }
     // si le jeu est prêt
-    myGrid.DrawGrid(pCtx);
+    if (debug) myGrid.DrawGrid(pCtx);
     myMap.Draw(pCtx);
 
     lstSprites.forEach(sprite => {
         sprite.draw(pCtx);
     });
 
-    lstEnemies.forEach(enemy => {
-        enemy.drawPath(pCtx);
-    });
+    if (debug) {
+        lstEnemies.forEach(enemy => {
+            enemy.drawPath(pCtx);
+        });
+    }
 }

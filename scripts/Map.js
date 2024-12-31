@@ -142,7 +142,7 @@ class Map {
 
     isSolid(pId) {
         let tileType = this.tileTextures[pId].name;
-        if (tileType == "BRICK") {
+        if (tileType === "BRICK") {
             return true;
         }
         return false;
@@ -150,7 +150,7 @@ class Map {
 
     isLadder(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == CONST.LADDER) {
+        if (id === CONST.LADDER) {
             return true;
         }
         return false;
@@ -158,7 +158,7 @@ class Map {
 
     isWall(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == CONST.WALL) {
+        if (id === CONST.WALL) {
             return true;
         }
         return false;
@@ -166,7 +166,7 @@ class Map {
 
     isEmpty(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id == CONST.VOID) {
+        if (id === CONST.VOID) {
             return true;
         }
         return false;
@@ -203,10 +203,10 @@ class Map {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
                 let id = this.map.level[line][col];
-                if (id == CONST.KEY) {
+                if (id === CONST.KEY) {
                     this.map.level.keys += 1;
                 }
-                else if (id == 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
+                else if (id === 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
                     //position de départ d'un ennemi
                     //quand on trouve l'id 8, on stocke les coordonnées de l'id dans la liste
                     let enemyStartCoords = {

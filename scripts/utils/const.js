@@ -15,6 +15,8 @@ const CONST = {
     KEYA: "KeyA",
     KEYR: "KeyR",
 
+    KEYF5: "F5",
+
     // franchissable
     VOID: 0,
 
