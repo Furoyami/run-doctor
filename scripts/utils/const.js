@@ -28,6 +28,8 @@ const CONST = {
     TARDIS_LT: 4,
     TARDIS_RT: 5,
     TARDIS_LB: 6,
-    TARDIS_RB: 7
+    TARDIS_RB: 7,
+
+    UNWALKABLE_VOID: 9
 
 };

@@ -23,7 +23,6 @@ class Enemy {
         this.hasReachedTarget = false;
         this.isFalling = false;
         this.lockedX = this.spriteEnemy.x;
-        this.lockedY = this.spriteEnemy.y;
 
         // Garder une trace de l'ancienne position de la cible
         this.previousTargetCol = pTargetCol;
@@ -57,7 +56,11 @@ class Enemy {
         // Gestion des chutes et vérifications des VOID
         let belowTile = myMap.getUnderEnemyID(this, 0, 1);
 
-        if ((belowTile === CONST.VOID) && !this.isFalling) {
+        //Vérifie si l'ennemi est bien centré sur la colonne actuelle
+        const centerX = this.spriteEnemy.col * myGrid.cellSize;
+        const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
+
+        if (belowTile === CONST.VOID && isAlignedToColumn && !this.isFalling) {
             this.startFalling();
         }
 
@@ -85,6 +88,7 @@ class Enemy {
         this.isFalling = true;
 
         this.lockedX = this.spriteEnemy.x; // Verrou pour l'alignement pendant la chute
+        this.spriteEnemy.x = this.lockedX;
 
         // Réalignement précis sur la grille
         this.spriteEnemy.x = Math.round(this.spriteEnemy.x / myGrid.cellSize) * myGrid.cellSize;
@@ -171,6 +175,14 @@ class Enemy {
     }
 
     /**
+    * Vérifie si l'ennemi est bien centré sur la colonne actuelle
+    */
+    // isAlignedToColumn() {
+    //     const centerX = this.spriteEnemy.col * myGrid.cellSize;
+    //     return Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
+    // }
+
+    /**
      * 
      * gère le changemen de l'animation en fonction de la direction prise par l'ennemi
      */
@@ -231,4 +243,6 @@ class Enemy {
             pCtx.restore();
         }
     }
+
+
 }

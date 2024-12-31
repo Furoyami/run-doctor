@@ -80,13 +80,15 @@ class Pathfinding {
             if (neighbor.y + 1 < this.map.length) {
                 tileBelow = this.map[neighbor.y + 1][neighbor.x];
             } else {
-                tileBelow = CONST.WALL; // <<< tout de même poser la question pourquoi wall?
+                tileBelow = CONST.WALL;
             }
 
             if (targetTile === CONST.VOID && neighbor.y < current.y && tileBelow === CONST.VOID) return false;
 
             // Mur infranchissable
             if (targetTile === CONST.WALL) return false;
+            // Vide infranchissable
+            if (targetTile === CONST.UNWALKABLE_VOID) return false;
 
             // Ajoutez d'autres contraintes ici si nécessaire
 
