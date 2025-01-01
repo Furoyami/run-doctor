@@ -220,6 +220,10 @@ class Map {
     }
 
     Draw(pCtx) {
+        // Dessiner une couleur de fond sous les textures
+        pCtx.fillStyle = "#101010";
+        pCtx.fillRect(0, 0, this.map.x, this.map.y);
+
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
                 let id = this.map.level[line][col];

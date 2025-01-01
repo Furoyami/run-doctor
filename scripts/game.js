@@ -75,7 +75,7 @@ function enableLeftKey() {
 }
 
 function keyDown(e) {
-    if (e.code === KEYF5) {
+    if (e.code === CONST.KEYF5) {
         // Si c'est F5, laisse le comportement par défaut
         return;
     }
@@ -191,6 +191,17 @@ function startGame() {
 
     gameReady = true;
 }
+
+function restartGame() {
+
+    // réinit listes
+    lstSprites = [];
+    lstEnemies = [];
+
+    startGame();
+
+}
+
 
 function update(dt) {
     if (!gameReady) {
