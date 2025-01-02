@@ -96,9 +96,13 @@ class Player {
             myMap.getUnderPlayerID(0, 0) === 6 || myMap.getUnderPlayerID(0, 0) === 7)
             && spritePlayer.vX === 0 && myMap.getNbKeysInLevel() === 0) {
 
-            myMap.InitMap(1);
-            spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize); // <-- nombre de cases retirées du placement original
-            spritePlayer.y = HEIGHT - (2 * myGrid.cellSize); // 2* pour ne pas le placer dans le sol
+            //reinit le jeu
+            restartGame();
+
+            // une fois plusieurs niveu dispo on chargera le suivant
+            // myMap.InitMap(1);
+            // spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize); // <-- nombre de cases retirées du placement original
+            // spritePlayer.y = HEIGHT - (2 * myGrid.cellSize); // 2* pour ne pas le placer dans le sol
         }
 
         // Réinitialise le niveau si le joueur tombe hors écran
