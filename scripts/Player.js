@@ -12,6 +12,7 @@ class Player {
         spritePlayer.vX = 0;
         spritePlayer.vY = 0;
         spritePlayer.dist = 0;
+        spritePlayer.speed = 2.5;
         spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
         spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
         spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
@@ -29,13 +30,13 @@ class Player {
         const playerCol = playerPos[1];
         const playerLine = playerPos[0];
 
-        // // Vérifie les cases sous le joueur
+        // Vérifie les cases sous le joueur
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
-        // // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
+        // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.vY = 2.5; // Déclenche la chute
+            spritePlayer.vY = spritePlayer.speed; // Déclenche la chute
         }
 
         // Déplacements horizontaux (droite et gauche)
@@ -44,7 +45,7 @@ class Player {
             && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_RIGHT");
-            spritePlayer.vX = 2.5;
+            spritePlayer.vX = spritePlayer.speed;
             spritePlayer.dist = 0;
         }
 
@@ -53,26 +54,26 @@ class Player {
             && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_LEFT");
-            spritePlayer.vX = -2.5;
+            spritePlayer.vX = -spritePlayer.speed;
             spritePlayer.dist = 0;
         }
 
         // Grimpe les échelles
         if (k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0 && myMap.isLadder(0, 0)) {
-            spritePlayer.vY = -2.5;
+            spritePlayer.vY = -spritePlayer.speed;
         }
 
         if (k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0 && myMap.isLadder(0, 1)) {
-            spritePlayer.vY = 2.5;
+            spritePlayer.vY = spritePlayer.speed;
         }
 
-        // Mise à jour des coordonnées du joueur
-        spritePlayer.dist += Math.abs(spritePlayer.vX) + Math.abs(spritePlayer.vY);
+        // Mise à jour des coordonnées du joueur 
+        spritePlayer.dist += (Math.abs(spritePlayer.vX) + Math.abs(spritePlayer.vY)) * dt * 30;
         if (spritePlayer.vX !== 0) {
             spritePlayer.lastVx = spritePlayer.vX;
-            spritePlayer.x += spritePlayer.vX;
+            spritePlayer.x += spritePlayer.vX * dt * 30;
         }
-        spritePlayer.y += spritePlayer.vY;
+        spritePlayer.y += spritePlayer.vY * dt * 30;
 
         // Limite les mouvements à une case
         if (spritePlayer.dist >= myGrid.cellSize) {
@@ -96,13 +97,8 @@ class Player {
             myMap.getUnderPlayerID(0, 0) === 6 || myMap.getUnderPlayerID(0, 0) === 7)
             && spritePlayer.vX === 0 && myMap.getNbKeysInLevel() === 0) {
 
-            //reinit le jeu
+            // Reinit le jeu
             restartGame();
-
-            // une fois plusieurs niveu dispo on chargera le suivant
-            // myMap.InitMap(1);
-            // spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize); // <-- nombre de cases retirées du placement original
-            // spritePlayer.y = HEIGHT - (2 * myGrid.cellSize); // 2* pour ne pas le placer dans le sol
         }
 
         // Réinitialise le niveau si le joueur tombe hors écran
@@ -111,8 +107,8 @@ class Player {
             spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize);
             spritePlayer.y = HEIGHT - (2 * myGrid.cellSize);
         }
-
     }
+
 
 
 
