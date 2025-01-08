@@ -92,7 +92,9 @@ class Map {
 
     LoadTextures() {
         if (debug) console.log("Chargement textures...");
-        this.tileTextures[0] = null;
+        this.tileTextures[0] = new Image();
+        this.tileTextures[0].name = "BGTILE";
+        this.tileTextures[0].src = "images/bgTile.png";
         this.tileTextures[1] = new Image();
         this.tileTextures[1].name = "BRICK";
         this.tileTextures[1].src = "images/brick.png";
@@ -220,12 +222,16 @@ class Map {
     }
 
     Draw(pCtx) {
-        // Dessiner une couleur de fond sous les textures
-        pCtx.fillStyle = "#101010";
-        pCtx.fillRect(0, 0, this.map.x, this.map.y);
-
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
+
+                // positions
+                let x = (col * this.map.cellSize) + myGrid.getGridOffset();
+                let y = (line * this.map.cellSize);
+
+                let backgroundTexture = this.tileTextures[0];
+                if (this.backgroundTexture !== null) pCtx.drawImage(backgroundTexture, x, y);
+
                 let id = this.map.level[line][col];
                 // Montre le TARDIS quand toutes les clés sont ramassées
                 if (this.map.level.keys != 0) {
@@ -238,7 +244,7 @@ class Map {
                 }
                 let texture = this.tileTextures[id];
                 if (texture != null) {
-                    pCtx.drawImage(texture, (col * this.map.cellSize) + myGrid.getGridOffset(), (line * this.map.cellSize));
+                    pCtx.drawImage(texture, x, y);
                 }
             }
         }

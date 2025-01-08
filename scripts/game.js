@@ -20,6 +20,13 @@ let k_down = false;
 let k_b = false;
 let k_v = false;
 
+let activeKeys = {
+    up: false,
+    right: false,
+    down: false,
+    left: false
+};
+
 let gameReady = false;
 let myGrid = new Grid();
 let myMap = new Map();
@@ -75,39 +82,37 @@ function enableLeftKey() {
 }
 
 function keyDown(e) {
-    if (e.code === CONST.KEYF5) {
-        // Si c'est F5, laisse le comportement par défaut
-        return;
-    }
+    if (e.code === CONST.KEYF5) return; // ignorer F5
     e.preventDefault();
 
     switch (e.code) {
         case CONST.ARROWUP:
         case CONST.KEYW:
-            enableUpKey();
+            activeKeys.up = true;
+            if (player.canMoveUp()) enableUpKey();
             break;
 
         case CONST.ARROWRIGHT:
         case CONST.KEYD:
+            activeKeys.right = true;
             enableRightKey();
-
             break;
 
         case CONST.ARROWDOWN:
         case CONST.KEYS:
-            enableDownKey();
+            activeKeys.down = true;
+            if (player.canMoveDown()) enableDownKey();
             break;
 
         case CONST.ARROWLEFT:
         case CONST.KEYA:
+            activeKeys.left = true;
             enableLeftKey();
             break;
 
         // !!! a modifier pour répondre aux conditions de win / lose
         case CONST.KEYR:
-            if (e.code === CONST.KEYR) {
-                restartGame();
-            }
+            if (e.code === CONST.KEYR) restartGame();
             break;
 
         default:
@@ -117,6 +122,9 @@ function keyDown(e) {
             k_left = false;
             break;
     }
+
+    // Affiche l'état des touches après une pression
+    console.log(`Touches (keyDown) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
 }
 
 function keyUp(e) {
@@ -125,22 +133,26 @@ function keyUp(e) {
     switch (e.code) {
         case CONST.ARROWUP:
         case CONST.KEYW:
+            activeKeys.up = false;
             k_up = false;
             break;
 
         case CONST.ARROWRIGHT:
         case CONST.KEYD:
+            activeKeys.right = false;
             k_right = false;
             spritePlayer.startAnimation("IDLE_RIGHT");
             break;
 
         case CONST.ARROWDOWN:
         case CONST.KEYS:
+            activeKeys.down = false;
             k_down = false;
             break;
 
         case CONST.ARROWLEFT:
         case CONST.KEYA:
+            activeKeys.left = false;
             k_left = false;
             spritePlayer.startAnimation("IDLE_LEFT");
             break;
@@ -148,6 +160,20 @@ function keyUp(e) {
         default:
             break;
     }
+
+    // Réactive une touche si d'autres sont encore enfoncées
+    if (activeKeys.right) {
+        enableRightKey();
+    } else if (activeKeys.left) {
+        enableLeftKey();
+    } else if (activeKeys.up) {
+        enableUpKey();
+    } else if (activeKeys.down) {
+        enableDownKey();
+    }
+
+    // Affiche l'état des touches après un relâchement
+    console.log(`Touches (keyUp) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
 
 }
 

@@ -25,14 +25,18 @@ class Player {
     }
 
     Update(dt) {
-        // Récupère la position du joueur en cases
-        const playerPos = this.getPlayerPos();
-        const playerCol = playerPos[1];
-        const playerLine = playerPos[0];
-
         // Vérifie les cases sous le joueur
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
+
+        const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
+        const isLadderCurrent = myMap.isLadder(0, 0); // Échelle sur la case actuelle
+
+        // Ignorer les touches haut et bas si le joueur n'est pas sur ou proche d'une échelle
+        if (!isLadderBelow && !isLadderCurrent) {
+            k_up = false;
+            k_down = false;
+        }
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
@@ -40,7 +44,9 @@ class Player {
         }
 
         // Déplacements horizontaux (droite et gauche)
-        if (k_right && spritePlayer.vX === 0 && spritePlayer.vY === 0
+        if (k_right
+            && spritePlayer.vX === 0
+            && spritePlayer.vY === 0
             && spritePlayer.x < WIDTH - myGrid.cellSize
             && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
 
@@ -49,7 +55,9 @@ class Player {
             spritePlayer.dist = 0;
         }
 
-        if (k_left && spritePlayer.vX === 0 && spritePlayer.vY === 0
+        if (k_left
+            && spritePlayer.vX === 0
+            && spritePlayer.vY === 0
             && spritePlayer.x > 0
             && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
 
@@ -59,11 +67,11 @@ class Player {
         }
 
         // Grimpe les échelles
-        if (k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0 && myMap.isLadder(0, 0)) {
+        if (myMap.isLadder(0, 0) && k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0 && isLadderCurrent) {
             spritePlayer.vY = -spritePlayer.speed;
         }
 
-        if (k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0 && myMap.isLadder(0, 1)) {
+        if (myMap.isLadder(0, 1) && k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0 && isLadderBelow) {
             spritePlayer.vY = spritePlayer.speed;
         }
 
@@ -109,8 +117,15 @@ class Player {
         }
     }
 
+    canMoveUp() {
+        // Retourne true si le joueur peut monter (case actuelle est une échelle)
+        return myMap.isLadder(0, 0);
+    }
 
-
+    canMoveDown() {
+        // Retourne true si le joueur peut descendre (échelle sous le joueur)
+        return myMap.isLadder(0, 1);
+    }
 
     getPlayerPos() {
         // retourne la case et ligne actuelles du joueur
