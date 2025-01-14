@@ -124,7 +124,7 @@ function keyDown(e) {
     }
 
     // Affiche l'état des touches après une pression
-    console.log(`Touches (keyDown) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
+    if (debug) console.log(`Touches (keyDown) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
 }
 
 function keyUp(e) {
@@ -173,7 +173,7 @@ function keyUp(e) {
     }
 
     // Affiche l'état des touches après un relâchement
-    console.log(`Touches (keyUp) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
+    if (debug) console.log(`Touches (keyUp) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
 
 }
 

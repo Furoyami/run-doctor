@@ -29,11 +29,21 @@ class Player {
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
+        // creation d'un offset X pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a)
+        let offsetX;
+        if (spritePlayer.vX > 0) {
+            offsetX = 1;
+        } else {
+            offsetX = 0;
+        }
+
+        // La condition mise à jour
+        const isLadderCurrent = myMap.isLadder(offsetX, 0);
         const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
-        const isLadderCurrent = myMap.isLadder(0, 0); // Échelle sur la case actuelle
+        const isLadderNext = myMap.isLadder(offsetX, 0); // echelle dans la direction de déplacement
 
         // Ignorer les touches haut et bas si le joueur n'est pas sur ou proche d'une échelle
-        if (!isLadderBelow && !isLadderCurrent) {
+        if (!isLadderBelow && !isLadderCurrent && !isLadderNext) {
             k_up = false;
             k_down = false;
         }
@@ -66,12 +76,16 @@ class Player {
             spritePlayer.dist = 0;
         }
 
+        if (k_left && isLadderCurrent) console.log("R.ladder");
+        if (k_right && isLadderCurrent) console.log("L.ladder");
+
+
         // Grimpe les échelles
-        if (myMap.isLadder(0, 0) && k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0 && isLadderCurrent) {
+        if ((isLadderCurrent || isLadderNext) && k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
             spritePlayer.vY = -spritePlayer.speed;
         }
 
-        if (myMap.isLadder(0, 1) && k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0 && isLadderBelow) {
+        if (isLadderBelow && k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
             spritePlayer.vY = spritePlayer.speed;
         }
 
@@ -119,7 +133,13 @@ class Player {
 
     canMoveUp() {
         // Retourne true si le joueur peut monter (case actuelle est une échelle)
-        return myMap.isLadder(0, 0);
+        let offsetX;
+        if (spritePlayer.vX > 0) {
+            offsetX = 1;
+        } else {
+            offsetX = 0;
+        }
+        return myMap.isLadder(offsetX, 0);
     }
 
     canMoveDown() {
