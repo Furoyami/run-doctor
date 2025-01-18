@@ -14,6 +14,8 @@ class Player {
         spritePlayer.dist = 0;
         spritePlayer.speed = 2.5;
         spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
+        spritePlayer.offsetX = null;
+        // ---------------------------- ANIMATIONS -------------------------------
         spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
         spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
@@ -29,18 +31,12 @@ class Player {
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
-        // creation d'un offset X pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a)
-        let offsetX;
-        if (spritePlayer.vX > 0) {
-            offsetX = 1;
-        } else {
-            offsetX = 0;
-        }
+        this.setOffsetX();
 
         // La condition mise à jour
-        const isLadderCurrent = myMap.isLadder(offsetX, 0);
+        const isLadderCurrent = myMap.isLadder(spritePlayer.offsetX, 0);
         const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
-        const isLadderNext = myMap.isLadder(offsetX, 0); // echelle dans la direction de déplacement
+        const isLadderNext = myMap.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
 
         // Ignorer les touches haut et bas si le joueur n'est pas sur ou proche d'une échelle
         if (!isLadderBelow && !isLadderCurrent && !isLadderNext) {
@@ -75,10 +71,6 @@ class Player {
             spritePlayer.vX = -spritePlayer.speed;
             spritePlayer.dist = 0;
         }
-
-        if (k_left && isLadderCurrent) console.log("R.ladder");
-        if (k_right && isLadderCurrent) console.log("L.ladder");
-
 
         // Grimpe les échelles
         if ((isLadderCurrent || isLadderNext) && k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
@@ -131,15 +123,20 @@ class Player {
         }
     }
 
+    setOffsetX() {
+        // creation d'un offset X pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a)
+        spritePlayer.offsetX;
+        if (spritePlayer.vX > 0) {
+            spritePlayer.offsetX = 1;
+        } else {
+            spritePlayer.offsetX = 0;
+        }
+    }
+
     canMoveUp() {
         // Retourne true si le joueur peut monter (case actuelle est une échelle)
-        let offsetX;
-        if (spritePlayer.vX > 0) {
-            offsetX = 1;
-        } else {
-            offsetX = 0;
-        }
-        return myMap.isLadder(offsetX, 0);
+        this.setOffsetX();
+        return myMap.isLadder(spritePlayer.offsetX, 0);
     }
 
     canMoveDown() {
