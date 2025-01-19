@@ -124,7 +124,7 @@ class Player {
     }
 
     setOffsetX() {
-        // creation d'un offset X pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a)
+        //ajuste l'offsetX pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a gauche)
         spritePlayer.offsetX;
         if (spritePlayer.vX > 0) {
             spritePlayer.offsetX = 1;

@@ -95,6 +95,7 @@ function keyDown(e) {
         case CONST.ARROWRIGHT:
         case CONST.KEYD:
             activeKeys.right = true;
+            spritePlayer.startAnimation("RUN_RIGHT");
             enableRightKey();
             break;
 
@@ -107,6 +108,7 @@ function keyDown(e) {
         case CONST.ARROWLEFT:
         case CONST.KEYA:
             activeKeys.left = true;
+            spritePlayer.startAnimation("RUN_LEFT");
             enableLeftKey();
             break;
 
