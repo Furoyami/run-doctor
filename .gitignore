@@ -1,5 +1,7 @@
 # Ignorer le dossier .vscode
 .vscode/
 
-# Ignorer le dossier PSD dans le dossier images
+# Ignorer les dossiers dans le dossier images
 images/PSD/
+images/run/
+images/sources/

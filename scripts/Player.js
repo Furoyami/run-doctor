@@ -21,6 +21,9 @@ class Player {
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
         spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
         spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1);
+        spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.15);
+        spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.15);
+
         spritePlayer.startAnimation("IDLE_RIGHT");
 
 
@@ -47,6 +50,11 @@ class Player {
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
             spritePlayer.vY = spritePlayer.speed; // Déclenche la chute
+            if (spritePlayer.currentAnimation.name === "IDLE_RIGHT" || spritePlayer.currentAnimation.name === "RUN_RIGHT") {
+                spritePlayer.startAnimation("FALL_RIGHT");
+            } else if (spritePlayer.currentAnimation.name === "IDLE_LEFT" || spritePlayer.currentAnimation.name === "RUN_LEFT") {
+                spritePlayer.startAnimation("FALL_LEFT");
+            }
         }
 
         // Déplacements horizontaux (droite et gauche)
@@ -101,19 +109,30 @@ class Player {
             spritePlayer.x = Math.round(spritePlayer.x / myGrid.cellSize) * myGrid.cellSize;
             spritePlayer.y = Math.round(spritePlayer.y / myGrid.cellSize) * myGrid.cellSize;
 
+
+
             // Stoppe l'animation "CLIMB" 
             if ((spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
                 (spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) === CONST.LADDER && myMap.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
-                spritePlayer.startAnimation("IDLE_RIGHT");
+                this.selectIdleDirection();
             }
 
+            // Stoppe les animations "FALL" une fois au sol
+            if (spritePlayer.currentAnimation.name.startsWith("FALL") && myMap.getUnderPlayerID(0, 1) !== CONST.VOID) {
+                this.selectIdleDirection();
+            }
+
+
             // Déclenche le "IDLE" si aucune touche active
-            if (!k_right && !k_left && !k_up && !k_down) {
-                if (spritePlayer.lastVx > 0) {
-                    spritePlayer.startAnimation("IDLE_RIGHT");
-                } else {
-                    spritePlayer.startAnimation("IDLE_LEFT");
-                }
+            if (!k_right &&
+                !k_left &&
+                !k_up &&
+                !k_down &&
+                // empêche les activations du idle pendant la chute
+                spritePlayer.currentAnimation.name !== "FALL_RIGHT" &&
+                spritePlayer.currentAnimation.name !== "FALL_LEFT"
+            ) {
+                this.selectIdleDirection();
             }
         }
 
@@ -137,6 +156,18 @@ class Player {
             myMap.InitMap(1);
             spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize);
             spritePlayer.y = HEIGHT - (2 * myGrid.cellSize);
+        }
+
+        console.log(spritePlayer.currentAnimation.name);
+
+    }
+
+    // selectionne la direction du idle en fonction de la dernière direction connue
+    selectIdleDirection() {
+        if (spritePlayer.lastVx > 0) {
+            spritePlayer.startAnimation("IDLE_RIGHT");
+        } else {
+            spritePlayer.startAnimation("IDLE_LEFT");
         }
     }
 
