@@ -13,8 +13,8 @@ class Enemy {
         // ----- ANIMATIONS -----
         this.spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
         this.spriteEnemy.addAnimation("LEFT", [2, 3], 0.5);
-        this.spriteEnemy.addAnimation("LEVITATE_RIGHT", [4, 5], 0.5);
-        this.spriteEnemy.addAnimation("LEVITATE_LEFT", [6, 7], 0.5);
+        this.spriteEnemy.addAnimation("LEVITATE_RIGHT", [4, 5], 0.15);
+        this.spriteEnemy.addAnimation("LEVITATE_LEFT", [6, 7], 0.15);
 
         // ----- propriétés utilisées pour le pathfinding -----
         this.targetCol = pTargetCol;
