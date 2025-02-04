@@ -95,7 +95,6 @@ function keyDown(e) {
         case CONST.ARROWRIGHT:
         case CONST.KEYD:
             activeKeys.right = true;
-            spritePlayer.startAnimation("RUN_RIGHT");
             enableRightKey();
             break;
 
@@ -108,7 +107,6 @@ function keyDown(e) {
         case CONST.ARROWLEFT:
         case CONST.KEYA:
             activeKeys.left = true;
-            spritePlayer.startAnimation("RUN_LEFT");
             enableLeftKey();
             break;
 
@@ -143,7 +141,7 @@ function keyUp(e) {
         case CONST.KEYD:
             activeKeys.right = false;
             k_right = false;
-            spritePlayer.startAnimation("IDLE_RIGHT");
+            if (player.isAligned()) spritePlayer.startAnimation("IDLE_RIGHT");
             break;
 
         case CONST.ARROWDOWN:
@@ -156,7 +154,7 @@ function keyUp(e) {
         case CONST.KEYA:
             activeKeys.left = false;
             k_left = false;
-            spritePlayer.startAnimation("IDLE_LEFT");
+            if (player.isAligned()) spritePlayer.startAnimation("IDLE_LEFT");
             break;
 
         default:

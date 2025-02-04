@@ -3,15 +3,18 @@ class Enemy {
         this.map = pMap.getCurrentMapLevel();
         let imgEnemy = imageLoader.getImage("images/dalek_tile.png");
         this.spriteEnemy = new Sprite(imgEnemy);
-        this.spriteEnemy.setTileSheet(40, 41);
+        this.spriteEnemy.setTileSheet(40, 45);
         this.spriteEnemy.col = pCol;
         this.spriteEnemy.line = pLine;
         this.spriteEnemy.x = this.spriteEnemy.col * myGrid.cellSize;
         this.spriteEnemy.y = this.spriteEnemy.line * myGrid.cellSize;
         this.spriteEnemy.speed = myGrid.cellSize;
 
+        // ----- ANIMATIONS -----
         this.spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
         this.spriteEnemy.addAnimation("LEFT", [2, 3], 0.5);
+        this.spriteEnemy.addAnimation("LEVITATE_RIGHT", [4, 5], 0.5);
+        this.spriteEnemy.addAnimation("LEVITATE_LEFT", [6, 7], 0.5);
 
         // ----- propriétés utilisées pour le pathfinding -----
         this.targetCol = pTargetCol;
@@ -96,8 +99,13 @@ class Enemy {
 
         if (debug) console.log("Enemy starts falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
-        // Ajouter une animation de chute si nécessaire
-        this.spriteEnemy.startAnimation("FALL");
+        if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
+            this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
+        }
+        else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
+            this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+        }
+
     }
 
     /**
@@ -143,7 +151,6 @@ class Enemy {
 
             let dx = targetX - this.spriteEnemy.x;
             let dy = targetY - this.spriteEnemy.y;
-            let distToNextCell = Math.sqrt(dx * dx + dy * dy);
             let moveDistance = this.spriteEnemy.speed * dt;
 
             // Alignement sur X ou Y avant tout déplacement dans une autre direction
@@ -169,6 +176,18 @@ class Enemy {
                 this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / myGrid.cellSize);
                 this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / myGrid.cellSize);
 
+                let currentTile = myMap.getUnderEnemyID(this, 0, 0);
+                let belowTile = myMap.getUnderEnemyID(this, 0, 1);
+                let aboveTile = myMap.getUnderEnemyID(this, 0, -1);
+                if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
+                    if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
+                        this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
+                    }
+                    else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
+                        this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+                    }
+                }
+
                 // Ajuster l'animation pour la prochaine direction
                 if (this.path.length > 0) {
                     this.facePathDirection();
@@ -184,9 +203,31 @@ class Enemy {
      * 
      * gère le changemen de l'animation en fonction de la direction prise par l'ennemi
      */
+    // facePathDirection() {
+    //     if (!this.path || this.path.length === 0) {
+    //         // si aucun chemin on sort de la fonction
+    //         return;
+    //     }
+
+    //     // Vérification directionnelle
+    //     const currentStep = this.path[0];
+    //     const nextStep = this.path[1];
+
+    //     if (!nextStep) return; // Pas d'étape suivante, pas besoin de changer la direction
+
+    //     const dx = nextStep.x - currentStep.x;
+
+    //     if (dx > 0) {
+    //         this.spriteEnemy.startAnimation("RIGHT");
+    //     } else if (dx < 0) {
+    //         this.spriteEnemy.startAnimation("LEFT");
+    //     }
+
+    // }
+
     facePathDirection() {
-        if (!this.path || this.path.length === 0) {
-            // si aucun chemin on sort de la fonction
+        if (!this.path || this.path.length <= 1) {
+            // si aucun chemin ou une seule étape, on sort de la fonction
             return;
         }
 
@@ -194,16 +235,26 @@ class Enemy {
         const currentStep = this.path[0];
         const nextStep = this.path[1];
 
-        if (!nextStep) return; // Pas d'étape suivante, pas besoin de changer la direction
-
         const dx = nextStep.x - currentStep.x;
 
-        if (dx > 0) {
-            this.spriteEnemy.startAnimation("RIGHT");
-        } else if (dx < 0) {
-            this.spriteEnemy.startAnimation("LEFT");
+        // Vérifier si l'ennemi est sur une échelle
+        let currentTile = myMap.getUnderEnemyID(this, 0, 0);
+        let belowTile = myMap.getUnderEnemyID(this, 0, 1);
+        let aboveTile = myMap.getUnderEnemyID(this, 0, -1);
+        if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
+            if (dx > 0) {
+                this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
+            } else if (dx < 0) {
+                this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+            }
+        } else {
+            // Si l'ennemi n'est pas sur une échelle, utiliser les animations normales
+            if (dx > 0) {
+                this.spriteEnemy.startAnimation("RIGHT");
+            } else if (dx < 0) {
+                this.spriteEnemy.startAnimation("LEFT");
+            }
         }
-
     }
 
     /**
