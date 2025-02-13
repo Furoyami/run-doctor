@@ -14,6 +14,8 @@ const CONST = {
     KEYS: "KeyS",
     KEYA: "KeyA",
     KEYR: "KeyR",
+    KEYQ: "KeyQ",
+    KEYE: "KeyE",
 
     KEYF5: "F5",
 

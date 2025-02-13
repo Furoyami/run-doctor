@@ -110,6 +110,15 @@ function keyDown(e) {
             enableLeftKey();
             break;
 
+        // animation de creusage
+        case CONST.KEYQ:
+            spritePlayer.startAnimation("DIG_LEFT");
+            break;
+
+        case CONST.KEYE:
+            spritePlayer.startAnimation("DIG_RIGHT");
+            break;
+
         // !!! a modifier pour répondre aux conditions de win / lose
         case CONST.KEYR:
             if (e.code === CONST.KEYR) restartGame();
@@ -155,6 +164,15 @@ function keyUp(e) {
             activeKeys.left = false;
             k_left = false;
             if (player.isAligned()) spritePlayer.startAnimation("IDLE_LEFT");
+            break;
+
+        // arret animation de creusage
+        case CONST.KEYQ:
+            spritePlayer.startAnimation("IDLE_LEFT");
+            break;
+
+        case CONST.KEYE:
+            spritePlayer.startAnimation("IDLE_RIGHT");
             break;
 
         default:
