@@ -250,6 +250,8 @@ function restartGame() {
         left: false
     };
 
+    myMap.tardisVisible = false;
+
     startGame();
 
 }

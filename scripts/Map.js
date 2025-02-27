@@ -255,7 +255,6 @@ class Map {
         for (let tileID in this.tileTextures) {
             let texture = this.tileTextures[tileID];
             if (texture instanceof Sprite) {
-                console.log(`tileID : ${tileID}, texture : ${texture.name}`);
                 texture.update(dt);
             }
         }

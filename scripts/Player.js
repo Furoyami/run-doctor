@@ -159,9 +159,6 @@ class Player {
             spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize);
             spritePlayer.y = HEIGHT - (2 * myGrid.cellSize);
         }
-
-        console.log(spritePlayer.currentAnimation.name);
-
     }
 
     // selectionne la direction du idle en fonction de la dernière direction connue
