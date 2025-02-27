@@ -21,10 +21,10 @@ class Player {
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
         spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
         spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1);
-        spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.15);
-        spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.15);
-        spritePlayer.addAnimation("DIG_RIGHT", [22, 23], 0, 25);
-        spritePlayer.addAnimation("DIG_LEFT", [24, 25], 0, 25);
+        spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.075);
+        spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.075);
+        spritePlayer.addAnimation("DIG_RIGHT", [22, 23], 0.05);
+        spritePlayer.addAnimation("DIG_LEFT", [24, 25], 0.05);
 
         spritePlayer.startAnimation("IDLE_RIGHT");
 

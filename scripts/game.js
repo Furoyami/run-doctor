@@ -16,9 +16,6 @@ let k_right = false;
 let k_left = false;
 let k_up = false;
 let k_down = false;
-// b, v controles pour les trous droite / gauche
-let k_b = false;
-let k_v = false;
 
 let activeKeys = {
     up: false,
@@ -206,6 +203,11 @@ function load() {
     imageLoader.add("images/doctor_tile.png");
     imageLoader.add("images/hole_tile.png");
     imageLoader.add("images/dalek_tile.png");
+    imageLoader.add("images/key_tile.png");
+    imageLoader.add("images/tardis_rt_tile.png");
+    imageLoader.add("images/tardis_lt_tile.png");
+    imageLoader.add("images/tardis_rb_tile.png");
+    imageLoader.add("images/tardis_lb_tile.png");
 
     imageLoader.start(startGame);
 }
@@ -215,7 +217,6 @@ function startGame() {
 
     myGrid.InitGrid();
     myMap.InitMap();
-
 
     // ----- creation joueur -----
     player.CreatePlayer();
@@ -242,6 +243,13 @@ function restartGame() {
     lstSprites = [];
     lstEnemies = [];
 
+    let activeKeys = {
+        up: false,
+        right: false,
+        down: false,
+        left: false
+    };
+
     startGame();
 
 }
@@ -252,6 +260,8 @@ function update(dt) {
         return;
     }
     // si le jeu est prêt
+    myMap.Update(dt);
+
     lstSprites.forEach(sprite => {
         sprite.update(dt);
     });
@@ -285,4 +295,15 @@ function draw(pCtx) {
             enemy.drawPath(pCtx);
         });
     }
+
+    // Rendu du HUD
+    drawHUD();
+}
+
+function drawHUD() {
+    hudCtx.fillStyle = "#020509"; // couleur Fond 
+    hudCtx.fillRect(0, 0, hudCanvas.width, hudCanvas.height);
+    hudCtx.fillStyle = "#FFF"; // couleur Texte 
+    hudCtx.font = "35px Pixel";
+    hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30); // Texte
 }

@@ -9,6 +9,7 @@ class Map {
         this.map.y = 0;
         this.tileTextures = [];
         this.lstEnemiesCoords = [];
+        this.tardisVisible = false;
     }
 
     InitMap() {
@@ -39,7 +40,7 @@ class Map {
                         [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
                         [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
                         [9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9, 9, 9, 9, 9, 9, 9, 0, 9, 9, 9, 4, 5, 9, 9, 9, 9, 9, 9, 9, 9, 9],
-                        [9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9, 9, 9, 0, 0, 0, 0, 0, 9, 9, 0, 6, 7, 0, 0, 0, 0, 3, 0, 0, 0, 0], // pourquoi le pf bug sur cette ligne spécifique
+                        [9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9, 9, 9, 0, 0, 0, 0, 0, 9, 9, 0, 6, 7, 0, 0, 0, 0, 3, 0, 0, 0, 0],
                         [9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9, 9, 9, 0, 1, 1, 2, 0, 9, 9, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
                         [9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9, 9, 9, 0, 1, 1, 2, 0, 9, 9, 0, 9, 9, 9, 9, 9, 9, 9, 0, 2, 0, 9],
                         [0, 0, 0, 0, 0, 0, 8, 0, 2, 0, 9, 9, 9, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 2, 0, 0],
@@ -92,6 +93,8 @@ class Map {
 
     LoadTextures() {
         if (debug) console.log("Chargement textures...");
+
+        // Textures fixes
         this.tileTextures[0] = new Image();
         this.tileTextures[0].name = "BGTILE";
         this.tileTextures[0].src = "images/bgTile.png";
@@ -101,21 +104,36 @@ class Map {
         this.tileTextures[2] = new Image();
         this.tileTextures[2].name = "LADDER";
         this.tileTextures[2].src = "images/ladder.png";
-        this.tileTextures[3] = new Image();
+
+        // Tiles animées
+        let imgKey = imageLoader.getImage("images/key_tile.png");
+        this.tileTextures[3] = new Sprite(imgKey);
         this.tileTextures[3].name = "KEY";
-        this.tileTextures[3].src = "images/key.png";
-        this.tileTextures[4] = new Image();
+        this.tileTextures[3].setTileSheet(40, 40);
+        this.tileTextures[3].addAnimation("KEY_ANIM", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0.15, 1);
+        this.tileTextures[3].startAnimation("KEY_ANIM");
+
+        // LT
+        this.tileTextures[4] = new Sprite(imageLoader.getImage("images/tardis_lt_tile.png"));
         this.tileTextures[4].name = "TARDIS_LT";
-        this.tileTextures[4].src = "images/tardis_lt.png";
-        this.tileTextures[5] = new Image();
+        this.tileTextures[4].setTileSheet(40, 40);
+        this.tileTextures[4].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false); // Sans boucle
+        // RT
+        this.tileTextures[5] = new Sprite(imageLoader.getImage("images/tardis_rt_tile.png"));
         this.tileTextures[5].name = "TARDIS_RT";
-        this.tileTextures[5].src = "images/tardis_rt.png";
-        this.tileTextures[6] = new Image();
+        this.tileTextures[5].setTileSheet(40, 40);
+        this.tileTextures[5].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
+        //LB
+        this.tileTextures[6] = new Sprite(imageLoader.getImage("images/tardis_lb_tile.png"));
         this.tileTextures[6].name = "TARDIS_LB";
-        this.tileTextures[6].src = "images/tardis_lb.png";
-        this.tileTextures[7] = new Image();
+        this.tileTextures[6].setTileSheet(40, 40);
+        this.tileTextures[6].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
+        //RB
+        this.tileTextures[7] = new Sprite(imageLoader.getImage("images/tardis_rb_tile.png"));
         this.tileTextures[7].name = "TARDIS_RB";
-        this.tileTextures[7].src = "images/tardis_rb.png";
+        this.tileTextures[7].setTileSheet(40, 40);
+        this.tileTextures[7].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
+
 
         if (debug) console.log("Toutes les textures sont chargées !");
 
@@ -221,11 +239,31 @@ class Map {
         }
     }
 
+    Update(dt) {
+        if (this.map.level.keys === 0 && !this.tardisVisible) {
+            for (let tileID in this.tileTextures) {
+                let texture = this.tileTextures[tileID];
+                if (texture instanceof Sprite &&
+                    (tileID == 4 || tileID == 5 || tileID == 6 || tileID == 7)) {
+                    texture.startAnimation("APPEAR");
+                }
+            }
+            this.tardisVisible = true;
+        }
+
+        // Mise à jour des sprites après
+        for (let tileID in this.tileTextures) {
+            let texture = this.tileTextures[tileID];
+            if (texture instanceof Sprite) {
+                console.log(`tileID : ${tileID}, texture : ${texture.name}`);
+                texture.update(dt);
+            }
+        }
+    }
+
     Draw(pCtx) {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
-
-                // positions
                 let x = (col * this.map.cellSize) + myGrid.getGridOffset();
                 let y = (line * this.map.cellSize);
 
@@ -233,18 +271,30 @@ class Map {
                 if (this.backgroundTexture !== null) pCtx.drawImage(backgroundTexture, x, y);
 
                 let id = this.map.level[line][col];
-                // Montre le TARDIS quand toutes les clés sont ramassées
+                // Masque le TARDIS tant que les clés ne sont pas ramassées
                 if (this.map.level.keys != 0) {
-                    if (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT || id === CONST.TARDIS_LB || id === CONST.TARDIS_RB) {
+                    if (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT ||
+                        id === CONST.TARDIS_LB || id === CONST.TARDIS_RB) {
                         id = CONST.VOID;
-                    }
-                    else {
-                        id = this.map.level[line][col];
                     }
                 }
                 let texture = this.tileTextures[id];
                 if (texture != null) {
-                    pCtx.drawImage(texture, x, y);
+                    if (texture instanceof Sprite) {
+                        texture.x = x;
+                        texture.y = y;
+                        texture.draw(pCtx);
+                    } else {
+                        pCtx.drawImage(texture, x, y);
+                    }
+                }
+                // Dessine les sprites TARDIS quand ils apparaissent
+                if (this.tardisVisible && (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT ||
+                    id === CONST.TARDIS_LB || id === CONST.TARDIS_RB)) {
+                    let tardisTexture = this.tileTextures[id];
+                    tardisTexture.x = x;
+                    tardisTexture.y = y;
+                    tardisTexture.draw(pCtx);
                 }
             }
         }

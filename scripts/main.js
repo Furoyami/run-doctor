@@ -1,5 +1,7 @@
-let canvas = document.getElementById("canvas");
+let canvas = document.getElementById("canvas");     // canvas du jeu
 let ctx = canvas.getContext("2d");
+let hudCanvas = document.getElementById("hudCanvas"); // canvas du HUD
+let hudCtx = hudCanvas.getContext("2d");
 let interval;
 
 let lastUpdate = Date.now();

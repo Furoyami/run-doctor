@@ -19,11 +19,12 @@ class Sprite {
         this.animations = [];
     }
 
-    addAnimation(pName, pFrames, pSpeed, pLoop = true) {
+    addAnimation(pName, pFrames, pSpeed, pDelay = 0, pLoop = true) {
         let animation = {
             name: pName,
             frames: pFrames,
             speed: pSpeed,
+            delay: pDelay,
             loop: pLoop,
             end: false
         };
@@ -42,6 +43,9 @@ class Sprite {
                 this.currentFrameInAnimation = 0;
                 this.currentFrame = this.currentAnimation.frames[this.currentFrameInAnimation]; // récupère la première frame de l'animation
                 this.currentAnimation.end = false;
+                this.timeSinceLastFrame = 0; // Gère le timing des frames
+                this.delayTimer = 0; // Gère le timing de la pause
+                this.isInDelay = false; // Décide si l'anim joue ou est en pause
             }
         });
     }
@@ -58,21 +62,38 @@ class Sprite {
     }
 
     update(dt) {
-        if (this.currentAnimation != null) {
-            this.frameTimer += dt;
-            if (this.frameTimer >= this.currentAnimation.speed) {
-                this.frameTimer = 0;
+        if (!this.currentAnimation || this.currentAnimation.end) return;
+
+        if (this.isInDelay) {
+            this.delayTimer += dt;
+            if (this.delayTimer >= this.currentAnimation.delay) {
+                // si on atteint le delai fixé, on sort de la pause et on réinit
+                this.isInDelay = false;
+                this.currentFrameInAnimation = 0;
+                this.timeSinceLastFrame = 0;
+                this.currentFrame = this.currentAnimation.frames[this.currentFrameInAnimation];
+            }
+        } else {
+            this.timeSinceLastFrame += dt;
+            if (this.timeSinceLastFrame >= this.currentAnimation.speed) {
                 this.currentFrameInAnimation++;
-                if (this.currentFrameInAnimation > this.currentAnimation.frames.length - 1) {
+                if (this.currentFrameInAnimation >= this.currentAnimation.frames.length) {
                     if (this.currentAnimation.loop) {
-                        this.currentFrameInAnimation = 0;
-                    }
-                    else {
-                        this.currentFrameInAnimation = this.currentAnimation.frames.length - 1;
+                        if (this.currentAnimation.delay > 0) {
+                            // si on a défini une pause, on l'initialise
+                            this.isInDelay = true;
+                            this.delayTimer = 0;
+                        } else {
+                            this.currentFrameInAnimation = 0;
+                        }
+                    } else {
                         this.currentAnimation.end = true;
                     }
                 }
-                this.currentFrame = this.currentAnimation.frames[this.currentFrameInAnimation];
+                if (!this.currentAnimation.end && !this.isInDelay) {
+                    this.currentFrame = this.currentAnimation.frames[this.currentFrameInAnimation];
+                    this.timeSinceLastFrame = 0;
+                }
             }
         }
     }
