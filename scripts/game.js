@@ -12,17 +12,7 @@ const HEIGHT = canvas.height;
 let lstSprites = [];
 let lstEnemies = [];
 
-let k_right = false;
-let k_left = false;
-let k_up = false;
-let k_down = false;
-
-let activeKeys = {
-    up: false,
-    right: false,
-    down: false,
-    left: false
-};
+let activeKeys = new Set();
 
 let gameReady = false;
 let myGrid = new Grid();
@@ -52,59 +42,29 @@ function rnd(min, max) {
 
 // ------------------------ GESTION DES TOUCHES CLAVIER ------------------------
 
-function enableUpKey() {
-    k_up = true;
-    k_right = false;
-    k_down = false;
-    k_left = false;
-}
-
-function enableRightKey() {
-    k_up = false;
-    k_right = true;
-    k_down = false;
-    k_left = false;
-}
-function enableDownKey() {
-    k_up = false;
-    k_right = false;
-    k_down = true;
-    k_left = false;
-}
-function enableLeftKey() {
-    k_up = false;
-    k_right = false;
-    k_down = false;
-    k_left = true;
-}
-
 function keyDown(e) {
     if (e.code === CONST.KEYF5) return; // ignorer F5
     e.preventDefault();
 
     switch (e.code) {
         case CONST.ARROWUP:
-        case CONST.KEYW:
-            activeKeys.up = true;
-            if (player.canMoveUp()) enableUpKey();
+            // case CONST.KEYW:
+            activeKeys.add(CONST.ARROWUP);
             break;
 
         case CONST.ARROWRIGHT:
-        case CONST.KEYD:
-            activeKeys.right = true;
-            enableRightKey();
+            // case CONST.KEYD:
+            activeKeys.add(CONST.ARROWRIGHT);
             break;
 
         case CONST.ARROWDOWN:
-        case CONST.KEYS:
-            activeKeys.down = true;
-            if (player.canMoveDown()) enableDownKey();
+            // case CONST.KEYS:
+            activeKeys.add(CONST.ARROWDOWN);
             break;
 
         case CONST.ARROWLEFT:
-        case CONST.KEYA:
-            activeKeys.left = true;
-            enableLeftKey();
+            // case CONST.KEYA:
+            activeKeys.add(CONST.ARROWLEFT);
             break;
 
         // animation de creusage
@@ -120,17 +80,7 @@ function keyDown(e) {
         case CONST.KEYR:
             if (e.code === CONST.KEYR) restartGame();
             break;
-
-        default:
-            k_up = false;
-            k_right = false;
-            k_down = false;
-            k_left = false;
-            break;
     }
-
-    // Affiche l'état des touches après une pression
-    if (debug) console.log(`Touches (keyDown) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
 }
 
 function keyUp(e) {
@@ -138,28 +88,26 @@ function keyUp(e) {
 
     switch (e.code) {
         case CONST.ARROWUP:
-        case CONST.KEYW:
-            activeKeys.up = false;
-            k_up = false;
+            // case CONST.KEYW:
+            activeKeys.delete(CONST.ARROWUP);
             break;
 
         case CONST.ARROWRIGHT:
-        case CONST.KEYD:
-            activeKeys.right = false;
-            k_right = false;
+            // case CONST.KEYD:
+            activeKeys.delete(CONST.ARROWRIGHT);
+            // Déclenche le idle
             if (player.isAligned()) spritePlayer.startAnimation("IDLE_RIGHT");
             break;
 
         case CONST.ARROWDOWN:
-        case CONST.KEYS:
-            activeKeys.down = false;
-            k_down = false;
+            // case CONST.KEYS:
+            activeKeys.delete(CONST.ARROWDOWN);
             break;
 
         case CONST.ARROWLEFT:
-        case CONST.KEYA:
-            activeKeys.left = false;
-            k_left = false;
+            // case CONST.KEYA:
+            activeKeys.delete(CONST.ARROWLEFT);
+            // Déclenche le idle
             if (player.isAligned()) spritePlayer.startAnimation("IDLE_LEFT");
             break;
 
@@ -175,21 +123,6 @@ function keyUp(e) {
         default:
             break;
     }
-
-    // Réactive une touche si d'autres sont encore enfoncées
-    if (activeKeys.right) {
-        enableRightKey();
-    } else if (activeKeys.left) {
-        enableLeftKey();
-    } else if (activeKeys.up) {
-        enableUpKey();
-    } else if (activeKeys.down) {
-        enableDownKey();
-    }
-
-    // Affiche l'état des touches après un relâchement
-    if (debug) console.log(`Touches (keyUp) - Up: ${k_up}, Down: ${k_down}, Left: ${k_left}, Right: ${k_right}`);
-
 }
 
 // ------------------------ GAMELOOP ------------------------
@@ -243,12 +176,7 @@ function restartGame() {
     lstSprites = [];
     lstEnemies = [];
 
-    let activeKeys = {
-        up: false,
-        right: false,
-        down: false,
-        left: false
-    };
+    let activeKeys = new Set();
 
     myMap.tardisVisible = false;
 
@@ -261,6 +189,31 @@ function update(dt) {
     if (!gameReady) {
         return;
     }
+
+    // Vérification et application des mouvements avec activeKeys uniquement, 
+    // en ne conservant que canMoveUp et canMoveDown existants
+    if (activeKeys.has("ArrowDown")) {
+        console.log("Tentative moveDown - canMoveDown:", player.canMoveDown());
+        if (player.canMoveDown()) player.moveDown(dt);
+    }
+    if (activeKeys.has("ArrowUp")) {
+        console.log("Tentative moveUp - canMoveUp:", player.canMoveUp());
+        if (player.canMoveUp()) player.moveUp(dt);
+    }
+    // Modification : Supprime les appels à canMoveRight et canMoveLeft, car ils n’existent pas dans Player.js
+    if (activeKeys.has("ArrowRight")) {
+        console.log("Tentative moveRight - vX:", spritePlayer.vX, "directionX:", spritePlayer.x < 480 ? "négatif" : "positif");
+        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - myGrid.cellSize) {
+            player.moveRight(dt); // Appel direct à moveRight si aucune vitesse horizontale
+        }
+    }
+    if (activeKeys.has("ArrowLeft")) {
+        console.log("Tentative moveLeft - vX:", spritePlayer.vX, "directionX:", spritePlayer.x < 480 ? "négatif" : "positif");
+        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
+            player.moveLeft(dt); // Appel direct à moveLeft si aucune vitesse horizontale
+        }
+    }
+
     // si le jeu est prêt
     myMap.Update(dt);
 

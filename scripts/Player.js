@@ -20,7 +20,7 @@ class Player {
         spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
         spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
         spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
-        spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1);
+        spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1, 0);
         spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.075);
         spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.075);
         spritePlayer.addAnimation("DIG_RIGHT", [22, 23], 0.05);
@@ -28,11 +28,12 @@ class Player {
 
         spritePlayer.startAnimation("IDLE_RIGHT");
 
-
         return spritePlayer;
     }
 
     Update(dt) {
+
+
         // Vérifie les cases sous le joueur
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
@@ -43,10 +44,12 @@ class Player {
         const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
         const isLadderNext = myMap.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
 
+        if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
+
         // Ignorer les touches haut et bas si le joueur n'est pas sur ou proche d'une échelle
         if (!isLadderBelow && !isLadderCurrent && !isLadderNext) {
-            k_up = false;
-            k_down = false;
+            if (activeKeys.has(CONST.UP)) activeKeys.delete(CONST.UP);
+            if (activeKeys.has(CONST.DOWN)) activeKeys.delete(CONST.DOWN);
         }
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
@@ -59,38 +62,18 @@ class Player {
             }
         }
 
-        // Déplacements horizontaux (droite et gauche)
-        if (k_right
-            && spritePlayer.vX === 0
-            && spritePlayer.vY === 0
-            && spritePlayer.x < WIDTH - myGrid.cellSize
-            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
-
-            spritePlayer.startAnimation("RUN_RIGHT");
-            spritePlayer.vX = spritePlayer.speed;
-            spritePlayer.dist = 0;
+        // Déplacements
+        if (activeKeys.has("ArrowRight")) {
+            this.moveRight();
         }
-
-        if (k_left
-            && spritePlayer.vX === 0
-            && spritePlayer.vY === 0
-            && spritePlayer.x > 0
-            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
-
-            spritePlayer.startAnimation("RUN_LEFT");
-            spritePlayer.vX = -spritePlayer.speed;
-            spritePlayer.dist = 0;
+        if (activeKeys.has("ArrowLeft")) {
+            this.moveLeft();
         }
-
-        // Grimpe les échelles
-        if ((isLadderCurrent || isLadderNext) && k_up && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.startAnimation("CLIMB");
-            spritePlayer.vY = -spritePlayer.speed;
+        if ((isLadderCurrent || isLadderNext) && activeKeys.has("ArrowUp")) {
+            this.moveUp();
         }
-
-        if (isLadderBelow && k_down && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.startAnimation("CLIMB");
-            spritePlayer.vY = spritePlayer.speed;
+        if (isLadderBelow && activeKeys.has("ArrowDown")) {
+            this.moveDown();
         }
 
         // Mise à jour des coordonnées du joueur 
@@ -126,10 +109,10 @@ class Player {
 
 
             // Déclenche le "IDLE" si aucune touche active
-            if (!k_right &&
-                !k_left &&
-                !k_up &&
-                !k_down &&
+            if (!activeKeys.has("ArrowRight") &&
+                !activeKeys.has("ArrowLeft") &&
+                !activeKeys.has("ArrowUp") &&
+                !activeKeys.has("ArrowDown") &&
                 // empêche les activations du idle pendant la chute
                 spritePlayer.currentAnimation.name !== "FALL_RIGHT" &&
                 spritePlayer.currentAnimation.name !== "FALL_LEFT"
@@ -161,6 +144,49 @@ class Player {
         }
     }
 
+    // Déplacement à droite
+    moveRight() {
+        if (spritePlayer.vX === 0
+            && spritePlayer.vY === 0
+            && spritePlayer.x < WIDTH - myGrid.cellSize
+            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
+
+            spritePlayer.startAnimation("RUN_RIGHT");
+            spritePlayer.vX = spritePlayer.speed;
+            spritePlayer.dist = 0;
+        }
+    }
+
+    // Déplacement à gauche
+    moveLeft() {
+        if (spritePlayer.vX === 0
+            && spritePlayer.vY === 0
+            && spritePlayer.x > 0
+            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
+
+            spritePlayer.startAnimation("RUN_LEFT");
+            spritePlayer.vX = -spritePlayer.speed;
+            spritePlayer.dist = 0;
+        }
+    }
+
+    // Descente d'une échelle
+    moveDown() {
+        if (spritePlayer.vX === 0 && spritePlayer.vY === 0) {
+            spritePlayer.startAnimation("CLIMB");
+            spritePlayer.vY = spritePlayer.speed;
+            spritePlayer.vX = 0;
+        }
+    }
+
+    // Montée d'une échelle
+    moveUp() {
+        if (spritePlayer.vX === 0 && spritePlayer.vY === 0) {
+            spritePlayer.startAnimation("CLIMB");
+            spritePlayer.vY = -spritePlayer.speed;
+        }
+    }
+
     // selectionne la direction du idle en fonction de la dernière direction connue
     selectIdleDirection() {
         if (spritePlayer.lastVx > 0) {
@@ -183,12 +209,15 @@ class Player {
     // Retourne true si le joueur peut monter (case actuelle est une échelle)
     canMoveUp() {
         this.setOffsetX();
+        console.log(spritePlayer.offsetX);
+
         return myMap.isLadder(spritePlayer.offsetX, 0);
     }
 
     // Retourne true si le joueur peut descendre (échelle sous le joueur)
     canMoveDown() {
-        return myMap.isLadder(0, 1);
+        this.setOffsetX();
+        return myMap.isLadder(spritePlayer.offsetX, 1);
     }
 
     // retourne la case et ligne actuelles du joueur
