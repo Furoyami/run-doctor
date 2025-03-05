@@ -32,25 +32,11 @@ class Player {
     }
 
     Update(dt) {
-
-
         // Vérifie les cases sous le joueur
         const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
         this.setOffsetX();
-
-        const isLadderCurrent = myMap.isLadder(spritePlayer.offsetX, 0);
-        const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
-        const isLadderNext = myMap.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
-
-        if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
-
-        // Ignorer les touches haut et bas si le joueur n'est pas sur ou proche d'une échelle
-        if (!isLadderBelow && !isLadderCurrent && !isLadderNext) {
-            if (activeKeys.has(CONST.UP)) activeKeys.delete(CONST.UP);
-            if (activeKeys.has(CONST.DOWN)) activeKeys.delete(CONST.DOWN);
-        }
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
@@ -61,6 +47,12 @@ class Player {
                 spritePlayer.startAnimation("FALL_LEFT");
             }
         }
+
+        const isLadderCurrent = myMap.isLadder(spritePlayer.offsetX, 0);
+        const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
+        const isLadderNext = myMap.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
+
+        if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
 
         // Déplacements
         if (activeKeys.has("ArrowRight")) {
@@ -94,8 +86,6 @@ class Player {
             spritePlayer.x = Math.round(spritePlayer.x / myGrid.cellSize) * myGrid.cellSize;
             spritePlayer.y = Math.round(spritePlayer.y / myGrid.cellSize) * myGrid.cellSize;
 
-
-
             // Stoppe l'animation "CLIMB" 
             if ((spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
                 (spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) === CONST.LADDER && myMap.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
@@ -106,7 +96,6 @@ class Player {
             if (spritePlayer.currentAnimation.name.startsWith("FALL") && myMap.getUnderPlayerID(0, 1) !== CONST.VOID) {
                 this.selectIdleDirection();
             }
-
 
             // Déclenche le "IDLE" si aucune touche active
             if (!activeKeys.has("ArrowRight") &&
