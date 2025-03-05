@@ -97,14 +97,14 @@ class Player {
                 this.selectIdleDirection();
             }
 
-            // Déclenche le "IDLE" si aucune touche active
+            // Déclenche le "IDLE" si droite/auche inactif
             if (!activeKeys.has("ArrowRight") &&
                 !activeKeys.has("ArrowLeft") &&
-                !activeKeys.has("ArrowUp") &&
-                !activeKeys.has("ArrowDown") &&
                 // empêche les activations du idle pendant la chute
                 spritePlayer.currentAnimation.name !== "FALL_RIGHT" &&
-                spritePlayer.currentAnimation.name !== "FALL_LEFT"
+                spritePlayer.currentAnimation.name !== "FALL_LEFT" &&
+                // empêche le idle de s'activer pendant une montée/ descente
+                spritePlayer.currentAnimation.name !== "CLIMB"
             ) {
                 this.selectIdleDirection();
             }
