@@ -48,22 +48,22 @@ function keyDown(e) {
 
     switch (e.code) {
         case CONST.ARROWUP:
-            // case CONST.KEYW:
+        case CONST.KEYW:
             activeKeys.add(CONST.ARROWUP);
             break;
 
         case CONST.ARROWRIGHT:
-            // case CONST.KEYD:
+        case CONST.KEYD:
             activeKeys.add(CONST.ARROWRIGHT);
             break;
 
         case CONST.ARROWDOWN:
-            // case CONST.KEYS:
+        case CONST.KEYS:
             activeKeys.add(CONST.ARROWDOWN);
             break;
 
         case CONST.ARROWLEFT:
-            // case CONST.KEYA:
+        case CONST.KEYA:
             activeKeys.add(CONST.ARROWLEFT);
             break;
 
@@ -88,24 +88,24 @@ function keyUp(e) {
 
     switch (e.code) {
         case CONST.ARROWUP:
-            // case CONST.KEYW:
+        case CONST.KEYW:
             activeKeys.delete(CONST.ARROWUP);
             break;
 
         case CONST.ARROWRIGHT:
-            // case CONST.KEYD:
+        case CONST.KEYD:
             activeKeys.delete(CONST.ARROWRIGHT);
             // Déclenche le idle
             if (player.isAligned()) spritePlayer.startAnimation("IDLE_RIGHT");
             break;
 
         case CONST.ARROWDOWN:
-            // case CONST.KEYS:
+        case CONST.KEYS:
             activeKeys.delete(CONST.ARROWDOWN);
             break;
 
         case CONST.ARROWLEFT:
-            // case CONST.KEYA:
+        case CONST.KEYA:
             activeKeys.delete(CONST.ARROWLEFT);
             // Déclenche le idle
             if (player.isAligned()) spritePlayer.startAnimation("IDLE_LEFT");
