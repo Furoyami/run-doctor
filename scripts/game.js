@@ -193,22 +193,18 @@ function update(dt) {
     // Vérification et application des mouvements avec activeKeys uniquement, 
     // en ne conservant que canMoveUp et canMoveDown existants
     if (activeKeys.has("ArrowDown")) {
-        console.log("Tentative moveDown - canMoveDown:", player.canMoveDown());
         if (player.canMoveDown()) player.moveDown(dt);
     }
     if (activeKeys.has("ArrowUp")) {
-        console.log("Tentative moveUp - canMoveUp:", player.canMoveUp());
         if (player.canMoveUp()) player.moveUp(dt);
     }
     // Modification : Supprime les appels à canMoveRight et canMoveLeft, car ils n’existent pas dans Player.js
     if (activeKeys.has("ArrowRight")) {
-        console.log("Tentative moveRight - vX:", spritePlayer.vX, "directionX:", spritePlayer.x < 480 ? "négatif" : "positif");
         if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - myGrid.cellSize) {
             player.moveRight(dt); // Appel direct à moveRight si aucune vitesse horizontale
         }
     }
     if (activeKeys.has("ArrowLeft")) {
-        console.log("Tentative moveLeft - vX:", spritePlayer.vX, "directionX:", spritePlayer.x < 480 ? "négatif" : "positif");
         if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
             player.moveLeft(dt); // Appel direct à moveLeft si aucune vitesse horizontale
         }

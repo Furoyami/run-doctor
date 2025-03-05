@@ -198,8 +198,6 @@ class Player {
     // Retourne true si le joueur peut monter (case actuelle est une échelle)
     canMoveUp() {
         this.setOffsetX();
-        console.log(spritePlayer.offsetX);
-
         return myMap.isLadder(spritePlayer.offsetX, 0);
     }
 

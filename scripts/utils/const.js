@@ -1,9 +1,4 @@
 const CONST = {
-    UP: "up",
-    RIGHT: "right",
-    DOWN: "down",
-    LEFT: "left",
-
     ARROWUP: "ArrowUp",
     ARROWRIGHT: "ArrowRight",
     ARROWDOWN: "ArrowDown",
@@ -18,6 +13,8 @@ const CONST = {
     KEYE: "KeyE",
 
     KEYF5: "F5",
+
+    // ---------- TILES ----------
 
     // franchissable
     VOID: 0,
