@@ -45,7 +45,6 @@ function keyDown(e) {
     if (e.repeat) return; // Ignore les événements répétés si la touche est maintenue
     e.preventDefault();
 
-
     switch (e.code) {
         case CONST.ARROWUP:
         case CONST.KEYW:
@@ -70,18 +69,12 @@ function keyDown(e) {
         // animation de creusage
         case CONST.KEYQ:
             spritePlayer.startAnimation("DIG_LEFT");
-            hole = new Hole();
             hole.setLeftHoleOffset();
-            lstHoles.push(hole);
-            lstSprites.push(hole.spriteHole);
             break;
 
         case CONST.KEYE:
             spritePlayer.startAnimation("DIG_RIGHT");
-            hole = new Hole();
             hole.setRightHoleOffset();
-            lstHoles.push(hole);
-            lstSprites.push(hole.spriteHole);
             break;
 
         // !!! a modifier pour répondre aux conditions de win / lose
