@@ -13,14 +13,14 @@ class Map {
     }
 
     InitMap() {
-        let myGrid = new Grid();
+        let grid = new Grid();
 
         if (debug) console.log("-------------------------------------------------- Map Init --------------------------------------------------");
 
         //attribution des valeurs de la grille
-        this.map.nbLines = myGrid.getGridNbLines();
-        this.map.nbColumns = myGrid.getGridNbColumns();
-        this.map.cellSize = myGrid.getGridCellSize();
+        this.map.nbLines = grid.getGridNbLines();
+        this.map.nbColumns = grid.getGridNbColumns();
+        this.map.cellSize = grid.getGridCellSize();
         // calcul de la taille totale de la map
         this.map.x = this.map.nbColumns * this.map.cellSize;
         this.map.y = this.map.nbLines * this.map.cellSize;
@@ -207,8 +207,8 @@ class Map {
     }
 
     CollectKey(pX, pY) {
-        let line = pY / myGrid.cellSize;
-        let col = pX / myGrid.cellSize;
+        let line = pY / grid.cellSize;
+        let col = pX / grid.cellSize;
         if (this.map.level[line][col] == CONST.KEY) {
             this.map.level[line][col] = CONST.VOID; // remplace les clés par du vide
         }
@@ -263,7 +263,7 @@ class Map {
     Draw(pCtx) {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
-                let x = (col * this.map.cellSize) + myGrid.getGridOffset();
+                let x = (col * this.map.cellSize) + grid.getGridOffset();
                 let y = (line * this.map.cellSize);
 
                 let backgroundTexture = this.tileTextures[0];

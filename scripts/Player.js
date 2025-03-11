@@ -7,8 +7,8 @@ class Player {
         let imgPlayer = imageLoader.getImage("images/doctor_tile.png");
         spritePlayer = new Sprite(imgPlayer);
         spritePlayer.setTileSheet(40, 40);
-        spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize);// <-- nombre de case retirées du placement original
-        spritePlayer.y = HEIGHT - (2 * myGrid.cellSize);//  2* pour ne pas le placer dans le sol
+        spritePlayer.x = (WIDTH / 2) - (3 * grid.cellSize);// <-- nombre de case retirées du placement original
+        spritePlayer.y = HEIGHT - (2 * grid.cellSize);//  2* pour ne pas le placer dans le sol
         spritePlayer.vX = 0;
         spritePlayer.vY = 0;
         spritePlayer.dist = 0;
@@ -33,7 +33,7 @@ class Player {
 
     Update(dt) {
         // Vérifie les cases sous le joueur
-        const tileUnderPlayer = myMap.getUnderPlayerID(0, 1);
+        const tileUnderPlayer = map.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
         this.setOffsetX();
@@ -48,9 +48,9 @@ class Player {
             }
         }
 
-        const isLadderCurrent = myMap.isLadder(spritePlayer.offsetX, 0);
-        const isLadderBelow = myMap.isLadder(0, 1); // Échelle sous le joueur
-        const isLadderNext = myMap.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
+        const isLadderCurrent = map.isLadder(spritePlayer.offsetX, 0);
+        const isLadderBelow = map.isLadder(0, 1); // Échelle sous le joueur
+        const isLadderNext = map.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
 
         if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
 
@@ -77,23 +77,23 @@ class Player {
         spritePlayer.y += spritePlayer.vY * dt * 30;
 
         // Limite les mouvements à une case
-        if (spritePlayer.dist >= myGrid.cellSize) {
+        if (spritePlayer.dist >= grid.cellSize) {
             spritePlayer.vX = 0;
             spritePlayer.vY = 0;
             spritePlayer.dist = 0;
 
             // Réaligne le joueur sur une case
-            spritePlayer.x = Math.round(spritePlayer.x / myGrid.cellSize) * myGrid.cellSize;
-            spritePlayer.y = Math.round(spritePlayer.y / myGrid.cellSize) * myGrid.cellSize;
+            spritePlayer.x = Math.round(spritePlayer.x / grid.cellSize) * grid.cellSize;
+            spritePlayer.y = Math.round(spritePlayer.y / grid.cellSize) * grid.cellSize;
 
             // Stoppe l'animation "CLIMB" 
-            if ((spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
-                (spritePlayer.currentAnimation.name === "CLIMB" && myMap.getUnderPlayerID(0, 0) === CONST.LADDER && myMap.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
+            if ((spritePlayer.currentAnimation.name === "CLIMB" && map.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
+                (spritePlayer.currentAnimation.name === "CLIMB" && map.getUnderPlayerID(0, 0) === CONST.LADDER && map.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
                 this.selectIdleDirection();
             }
 
             // Stoppe les animations "FALL" une fois au sol
-            if (spritePlayer.currentAnimation.name.startsWith("FALL") && myMap.getUnderPlayerID(0, 1) !== CONST.VOID) {
+            if (spritePlayer.currentAnimation.name.startsWith("FALL") && map.getUnderPlayerID(0, 1) !== CONST.VOID) {
                 this.selectIdleDirection();
             }
 
@@ -111,25 +111,25 @@ class Player {
         }
 
         // Ramasse les clés
-        if (myMap.getUnderPlayerID(0, 0) === CONST.KEY && spritePlayer.vX === 0) {
-            myMap.CollectKey(spritePlayer.x, spritePlayer.y);
+        if (map.getUnderPlayerID(0, 0) === CONST.KEY && spritePlayer.vX === 0) {
+            map.CollectKey(spritePlayer.x, spritePlayer.y);
             sndKey.play();
         }
 
         // Charge le niveau suivant si le joueur atteint le TARDIS
-        if ((myMap.getUnderPlayerID(0, 0) === 4 || myMap.getUnderPlayerID(0, 0) === 5 ||
-            myMap.getUnderPlayerID(0, 0) === 6 || myMap.getUnderPlayerID(0, 0) === 7)
-            && spritePlayer.vX === 0 && myMap.getNbKeysInLevel() === 0) {
+        if ((map.getUnderPlayerID(0, 0) === 4 || map.getUnderPlayerID(0, 0) === 5 ||
+            map.getUnderPlayerID(0, 0) === 6 || map.getUnderPlayerID(0, 0) === 7)
+            && spritePlayer.vX === 0 && map.getNbKeysInLevel() === 0) {
 
             // Reinit le jeu
             restartGame();
         }
 
         // Réinitialise le niveau si le joueur tombe hors écran
-        if ((spritePlayer.y / myGrid.cellSize) >= (HEIGHT - myGrid.cellSize) / myGrid.cellSize) {
-            myMap.InitMap(1);
-            spritePlayer.x = (WIDTH / 2) - (3 * myGrid.cellSize);
-            spritePlayer.y = HEIGHT - (2 * myGrid.cellSize);
+        if ((spritePlayer.y / grid.cellSize) >= (HEIGHT - grid.cellSize) / grid.cellSize) {
+            map.InitMap(1);
+            spritePlayer.x = (WIDTH / 2) - (3 * grid.cellSize);
+            spritePlayer.y = HEIGHT - (2 * grid.cellSize);
         }
     }
 
@@ -137,8 +137,8 @@ class Player {
     moveRight() {
         if (spritePlayer.vX === 0
             && spritePlayer.vY === 0
-            && spritePlayer.x < WIDTH - myGrid.cellSize
-            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(1, 0) !== CONST.WALL) {
+            && spritePlayer.x < WIDTH - grid.cellSize
+            && map.getUnderPlayerID(0, 1) !== CONST.VOID && map.getUnderPlayerID(1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_RIGHT");
             spritePlayer.vX = spritePlayer.speed;
@@ -151,7 +151,7 @@ class Player {
         if (spritePlayer.vX === 0
             && spritePlayer.vY === 0
             && spritePlayer.x > 0
-            && myMap.getUnderPlayerID(0, 1) !== CONST.VOID && myMap.getUnderPlayerID(-1, 0) !== CONST.WALL) {
+            && map.getUnderPlayerID(0, 1) !== CONST.VOID && map.getUnderPlayerID(-1, 0) !== CONST.WALL) {
 
             spritePlayer.startAnimation("RUN_LEFT");
             spritePlayer.vX = -spritePlayer.speed;
@@ -198,27 +198,27 @@ class Player {
     // Retourne true si le joueur peut monter (case actuelle est une échelle)
     canMoveUp() {
         this.setOffsetX();
-        return myMap.isLadder(spritePlayer.offsetX, 0);
+        return map.isLadder(spritePlayer.offsetX, 0);
     }
 
     // Retourne true si le joueur peut descendre (échelle sous le joueur)
     canMoveDown() {
         this.setOffsetX();
-        return myMap.isLadder(spritePlayer.offsetX, 1);
+        return map.isLadder(spritePlayer.offsetX, 1);
     }
 
     // retourne la case et ligne actuelles du joueur
     getPlayerPos() {
-        let playerCol = Math.floor(spritePlayer.x / myGrid.cellSize);
-        let playerLine = Math.floor(spritePlayer.y / myGrid.cellSize);
+        let playerCol = Math.floor(spritePlayer.x / grid.cellSize);
+        let playerLine = Math.floor(spritePlayer.y / grid.cellSize);
         return [playerLine, playerCol];
     }
 
     // renvoie si le joueur a fini son mouvement (après réalignement éventuel)
     isAligned() {
         return (
-            spritePlayer.x % myGrid.cellSize === 0 &&
-            spritePlayer.y % myGrid.cellSize === 0
+            spritePlayer.x % grid.cellSize === 0 &&
+            spritePlayer.y % grid.cellSize === 0
         );
     }
 }

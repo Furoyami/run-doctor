@@ -11,12 +11,13 @@ const HEIGHT = canvas.height;
 
 let lstSprites = [];
 let lstEnemies = [];
+let lstHoles = [];
 
 let activeKeys = new Set();
 
 let gameReady = false;
-let myGrid = new Grid();
-let myMap = new Map();
+let grid = new Grid();
+let map = new Map();
 let player = new Player();
 
 // ------------------------ Gestion des images ------------------------
@@ -25,6 +26,9 @@ let imageLoader = new ImageLoader();
 
 let spritePlayer;
 let spriteEnemy;
+let spriteHole;
+let hole;
+
 
 // debug
 
@@ -34,17 +38,13 @@ let debug = false;
 
 let sndKey = new Sound("sounds/key.wav", 0.35);
 
-// ------------------------ FONCTIONS UTILITAIRES ------------------------
-
-function rnd(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
 // ------------------------ GESTION DES TOUCHES CLAVIER ------------------------
 
 function keyDown(e) {
     if (e.code === CONST.KEYF5) return; // ignorer F5
+    if (e.repeat) return; // Ignore les événements répétés si la touche est maintenue
     e.preventDefault();
+
 
     switch (e.code) {
         case CONST.ARROWUP:
@@ -70,10 +70,18 @@ function keyDown(e) {
         // animation de creusage
         case CONST.KEYQ:
             spritePlayer.startAnimation("DIG_LEFT");
+            hole = new Hole();
+            hole.setLeftHoleOffset();
+            lstHoles.push(hole);
+            lstSprites.push(hole.spriteHole);
             break;
 
         case CONST.KEYE:
             spritePlayer.startAnimation("DIG_RIGHT");
+            hole = new Hole();
+            hole.setRightHoleOffset();
+            lstHoles.push(hole);
+            lstSprites.push(hole.spriteHole);
             break;
 
         // !!! a modifier pour répondre aux conditions de win / lose
@@ -148,8 +156,8 @@ function load() {
 function startGame() {
     if (debug) console.log("StartGame");
 
-    myGrid.InitGrid();
-    myMap.InitMap();
+    grid.InitGrid();
+    map.InitMap();
 
     // ----- creation joueur -----
     player.CreatePlayer();
@@ -158,14 +166,19 @@ function startGame() {
 
     // ----- creation ennemis -----
     // boucle de création des ennemis
-    let nbEnemies = myMap.getNbEnemiesInLevel();
+    let nbEnemies = map.getNbEnemiesInLevel();
     for (let i = 0; i < nbEnemies; i++) {
-        let enemyPos = myMap.getEnemiesStartPos()[i];
-        let enemy = new Enemy(enemyPos.line, enemyPos.col, player.getPlayerPos()[1], player.getPlayerPos()[0], myMap);
+        let enemyPos = map.getEnemiesStartPos()[i];
+        let enemy = new Enemy(enemyPos.line, enemyPos.col, player.getPlayerPos()[1], player.getPlayerPos()[0], map);
         lstEnemies.push(enemy);
         lstSprites.push(enemy.spriteEnemy);
         if (debug) console.log("----- Ennemi ajouté à la liste des ennemis -----");
     }
+
+    // ----- création trous -----
+    hole = new Hole();
+    lstSprites.push(hole.spriteHole);
+
 
     gameReady = true;
 }
@@ -175,10 +188,11 @@ function restartGame() {
     // réinit listes
     lstSprites = [];
     lstEnemies = [];
+    lstHoles = [];
 
-    let activeKeys = new Set();
+    activeKeys = new Set();
 
-    myMap.tardisVisible = false;
+    map.tardisVisible = false;
 
     startGame();
 
@@ -190,37 +204,41 @@ function update(dt) {
         return;
     }
 
-    // Vérification et application des mouvements avec activeKeys uniquement, 
-    // en ne conservant que canMoveUp et canMoveDown existants
+    // Vérification et application des mouvements
     if (activeKeys.has("ArrowDown")) {
         if (player.canMoveDown()) player.moveDown(dt);
     }
     if (activeKeys.has("ArrowUp")) {
         if (player.canMoveUp()) player.moveUp(dt);
     }
-    // Modification : Supprime les appels à canMoveRight et canMoveLeft, car ils n’existent pas dans Player.js
     if (activeKeys.has("ArrowRight")) {
-        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - myGrid.cellSize) {
-            player.moveRight(dt); // Appel direct à moveRight si aucune vitesse horizontale
+        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - grid.cellSize) {
+            player.moveRight(dt);
         }
     }
     if (activeKeys.has("ArrowLeft")) {
         if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
-            player.moveLeft(dt); // Appel direct à moveLeft si aucune vitesse horizontale
+            player.moveLeft(dt);
         }
     }
 
     // si le jeu est prêt
-    myMap.Update(dt);
+    map.Update(dt);
 
+    // Joueur
     lstSprites.forEach(sprite => {
         sprite.update(dt);
     });
     player.Update(dt);
 
+    // Ennemis
     lstEnemies.forEach(enemy => {
-        enemy.Update(dt, player.getPlayerPos()[1], player.getPlayerPos()[0],);
+        enemy.Update(dt, player.getPlayerPos()[1], player.getPlayerPos()[0]);
     });
+
+    if (hole.isDigging) hole.Update(dt);
+    hole.UpdateTimer(dt);
+
 }
 
 function draw(pCtx) {
@@ -234,8 +252,8 @@ function draw(pCtx) {
         return;
     }
     // si le jeu est prêt
-    if (debug) myGrid.DrawGrid(pCtx);
-    myMap.Draw(pCtx);
+    if (debug) grid.DrawGrid(pCtx);
+    map.Draw(pCtx);
 
     lstSprites.forEach(sprite => {
         sprite.draw(pCtx);

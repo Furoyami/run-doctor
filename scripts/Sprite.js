@@ -5,6 +5,7 @@ class Sprite {
         this.y = pY;
         this.scaleX = 1;
         this.scaleY = 1;
+        this.visible = true;
 
         this.currentFrame = 0;
         this.currentFrameInAnimation = 0;
@@ -99,6 +100,7 @@ class Sprite {
     }
 
     draw(pCtx) {
+        if (!this.visible) return; // Ne dessine rien si invisible
         if (!this.tileSheet) {
             pCtx.drawImage(this.img, this.x, this.y, this.img.naturalWidth * this.scaleX, this.img.naturalHeight * this.scaleY);
         }
