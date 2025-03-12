@@ -62,32 +62,27 @@ class Hole {
     }
 
     // positionne l'emplacement du trou demandé en fonction de la touche enfoncée
-    startDiggingLeft() {
-        if (!this.checkPosition(-1, 1)) {
+    startDigging(pOffsetX, pOffsetY) {
+        // Vérifie si la position est déjà occupée
+        if (!this.checkPosition(pOffsetX, pOffsetY)) {
             console.log("Position déjà occupée par un trou actif, ignoré");
             return;
         }
-        this.reset();// reset total pour garantir un état "propre" du trou
-        this.spriteHole.offsetX = -1;
-        this.spriteHole.offsetY = 1;
-        this.updatePosition();
-        let [playerLine, playerCol] = player.getPlayerPos(); // Stocke la position absolue
-        this.line = playerLine + this.spriteHole.offsetY;
-        this.col = playerCol + this.spriteHole.offsetX;
-        this.spriteHole.visible = true;
-        this.isDigging = true;
-    }
 
-    startDiggingRight() {
-        if (!this.checkPosition(1, 1)) {
-            console.log("Position déjà occupée par un trou actif, ignoré");
+        // Nouvelle vérification : la tile doit être un WALL
+        let [playerLine, playerCol] = player.getPlayerPos();
+        let targetCol = playerCol + pOffsetX;
+        let targetLine = playerLine + pOffsetY;
+        if (!map.isWall(targetCol - playerCol, targetLine - playerLine)) {
+            console.log("Impossible de creuser : la case n’est pas un mur");
             return;
         }
-        this.reset();// reset total pour garantir un état "propre" du trou
-        this.spriteHole.offsetX = 1;
-        this.spriteHole.offsetY = 1;
+
+        // Si tout est OK, on continue
+        this.reset();
+        this.spriteHole.offsetX = pOffsetX;
+        this.spriteHole.offsetY = pOffsetY;
         this.updatePosition();
-        let [playerLine, playerCol] = player.getPlayerPos(); // Stocke la position absolue
         this.line = playerLine + this.spriteHole.offsetY;
         this.col = playerCol + this.spriteHole.offsetX;
         this.spriteHole.visible = true;

@@ -69,9 +69,11 @@ function keyDown(e) {
             spritePlayer.startAnimation("DIG_LEFT");
             if (lstHoles.length === 0) { // 1 seul trou pour l'instant
                 let hole = new Hole();
-                hole.startDiggingLeft();
-                lstHoles.push(hole);
-                lstSprites.push(hole.spriteHole);
+                hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
+                if (hole.isDigging) {
+                    lstHoles.push(hole);
+                    lstSprites.push(hole.spriteHole);
+                }
             }
             break;
 
@@ -79,9 +81,11 @@ function keyDown(e) {
             spritePlayer.startAnimation("DIG_RIGHT");
             if (lstHoles.length === 0) {
                 let hole = new Hole();
-                hole.startDiggingRight();
-                lstHoles.push(hole);
-                lstSprites.push(hole.spriteHole);
+                hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
+                if (hole.isDigging) {
+                    lstHoles.push(hole);
+                    lstSprites.push(hole.spriteHole);
+                }
             }
             break;
 

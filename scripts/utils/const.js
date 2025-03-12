@@ -1,9 +1,18 @@
 const CONST = {
+
+    // Valeurs possibles pour les offset X et Y
+    OFFSET_LEFT: -1,
+    OFFSET_RIGHT: 1,
+    OFFSET_DOWN: 1,
+    OFFSET_UP: -1,
+
+    // Valeurs pour le activeKeys
     ARROWUP: "ArrowUp",
     ARROWRIGHT: "ArrowRight",
     ARROWDOWN: "ArrowDown",
     ARROWLEFT: "ArrowLeft",
 
+    // Clés d'interactions' clavier
     KEYW: "KeyW",
     KEYD: "KeyD",
     KEYS: "KeyS",
@@ -21,6 +30,7 @@ const CONST = {
 
     // infranchissable
     WALL: 1,
+    UNWALKABLE_VOID: 9,
 
     // interactions
     LADDER: 2,
@@ -29,8 +39,5 @@ const CONST = {
     TARDIS_LT: 4,
     TARDIS_RT: 5,
     TARDIS_LB: 6,
-    TARDIS_RB: 7,
-
-    UNWALKABLE_VOID: 9
-
+    TARDIS_RB: 7
 };
