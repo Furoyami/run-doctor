@@ -1,7 +1,5 @@
 class Game {
-    constructor() {
-
-    }
+    constructor() { }
 }
 
 const WIDTH = canvas.width;
@@ -27,7 +25,6 @@ let imageLoader = new ImageLoader();
 let spritePlayer;
 let spriteEnemy;
 let spriteHole;
-let hole;
 
 
 // debug
@@ -70,12 +67,22 @@ function keyDown(e) {
         // animation de creusage
         case CONST.KEYQ:
             spritePlayer.startAnimation("DIG_LEFT");
-            hole.startDiggingLeft();
+            if (lstHoles.length === 0) { // 1 seul trou pour l'instant
+                let hole = new Hole();
+                hole.startDiggingLeft();
+                lstHoles.push(hole);
+                lstSprites.push(hole.spriteHole);
+            }
             break;
 
         case CONST.KEYE:
             spritePlayer.startAnimation("DIG_RIGHT");
-            hole.startDiggingRight();
+            if (lstHoles.length === 0) {
+                let hole = new Hole();
+                hole.startDiggingRight();
+                lstHoles.push(hole);
+                lstSprites.push(hole.spriteHole);
+            }
             break;
 
         // !!! a modifier pour répondre aux conditions de win / lose
@@ -169,11 +176,6 @@ function startGame() {
         if (debug) console.log("----- Ennemi ajouté à la liste des ennemis -----");
     }
 
-    // ----- création trous -----
-    hole = new Hole();
-    lstSprites.push(hole.spriteHole);
-
-
     gameReady = true;
 }
 
@@ -230,10 +232,16 @@ function update(dt) {
         enemy.Update(dt, player.getPlayerPos()[1], player.getPlayerPos()[0]);
     });
 
-    if (hole.isDigging) hole.Update(dt);
-    hole.UpdateTimer(dt);
-    if (hole.isDone) {
-        hole.reset();
+    // Trous 
+    lstHoles.forEach(hole => {
+        if (hole.isDigging) hole.Update(dt);
+        hole.UpdateTimer(dt);
+    });
+    if (lstHoles.length > 0 && lstHoles[0].isDone) {
+        let finishedHole = lstHoles.shift(); //supprime le 1er trou créé
+        let spriteIndex = lstSprites.indexOf(finishedHole.spriteHole);
+
+        if (spriteIndex !== -1) lstSprites.splice(spriteIndex, 1); // Supprime le sprite associé 
     }
 
 }

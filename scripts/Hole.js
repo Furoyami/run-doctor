@@ -22,7 +22,7 @@ class Hole {
         // vérifie si le trou demandé est un mur
         if (this.isDigging && map.isWall(this.spriteHole.offsetX, this.spriteHole.offsetY)) {
             // remplacer le mur par du vide
-            map.EmptyBrick(this.spriteHole.offsetX, this.spriteHole.offsetY);
+            map.EmptyBrick(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0]); // Utilise la position absolue
             this.spriteHole.startAnimation("DIG");
             this.isDigging = false;
             this.timerStart = true;
@@ -47,8 +47,8 @@ class Hole {
             this.spriteHole.currentAnimation.name === "FILL" &&
             this.spriteHole.currentFrameInAnimation >= 6 &&
             !this.isFilled &&
-            !map.isWall(this.spriteHole.offsetX, this.spriteHole.offsetY)) {
-            map.FillBrick(this.spriteHole.offsetX, this.spriteHole.offsetY);
+            !map.isWall(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0])) {
+            map.FillBrick(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0]); // Utilise la position absolue
             this.isFilled = true; // Marque la brique remplie
         }
 
@@ -71,6 +71,9 @@ class Hole {
         this.spriteHole.offsetX = -1;
         this.spriteHole.offsetY = 1;
         this.updatePosition();
+        let [playerLine, playerCol] = player.getPlayerPos(); // Stocke la position absolue
+        this.line = playerLine + this.spriteHole.offsetY;
+        this.col = playerCol + this.spriteHole.offsetX;
         this.spriteHole.visible = true;
         this.isDigging = true;
     }
@@ -84,6 +87,9 @@ class Hole {
         this.spriteHole.offsetX = 1;
         this.spriteHole.offsetY = 1;
         this.updatePosition();
+        let [playerLine, playerCol] = player.getPlayerPos(); // Stocke la position absolue
+        this.line = playerLine + this.spriteHole.offsetY;
+        this.col = playerCol + this.spriteHole.offsetX;
         this.spriteHole.visible = true;
         this.isDigging = true;
     }
