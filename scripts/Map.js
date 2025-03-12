@@ -144,6 +144,11 @@ class Map {
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
 
+        // Vérification des limites
+        if (playerLine < 0 || playerLine >= this.height || playerCol < 0 || playerCol >= this.width) {
+            return null;
+        }
+
         let id = this.map.level[playerLine][playerCol];
 
         return id;
@@ -151,21 +156,17 @@ class Map {
 
     getUnderEnemyID(enemy, pOffsetX, pOffsetY) {
         let enemyPos = enemy.getEnemyPos();
-
         let enemyLine = Math.round(enemyPos[0] + pOffsetY);
         let enemyCol = Math.round(enemyPos[1] + pOffsetX);
+
+        // Vérification des limites
+        if (enemyLine < 0 || enemyLine >= this.height || enemyCol < 0 || enemyCol >= this.width) {
+            return null; // Ou une constante comme CONST.OUT_OF_BOUNDS
+        }
 
         let id = this.map.level[enemyLine][enemyCol];
 
         return id;
-    }
-
-    isSolid(pId) {
-        let tileType = this.tileTextures[pId].name;
-        if (tileType === "BRICK") {
-            return true;
-        }
-        return false;
     }
 
     isLadder(pOffsetX, pOffsetY) {

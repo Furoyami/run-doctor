@@ -30,9 +30,9 @@ class Hole {
     }
 
     UpdateTimer(dt) {
+        // gestion du timer
         if (this.timerStart) {
             this.timer += dt;
-            console.log("Timer pos :", this.spriteHole.x, this.spriteHole.y, "timer :", this.timer, "anim :", this.spriteHole.currentAnimation?.name);
         }
         if (this.timer >= 3) {
             this.spriteHole.startAnimation("FILL");
@@ -42,6 +42,7 @@ class Hole {
             this.timerStart = false;
             this.isFilled = false;
         }
+        // cycle de remplissage du WALL
         if (this.spriteHole.currentAnimation &&
             this.spriteHole.currentAnimation.name === "FILL" &&
             this.spriteHole.currentFrameInAnimation >= 6 &&
@@ -61,7 +62,12 @@ class Hole {
     }
 
     // positionne l'emplacement du trou demandé en fonction de la touche enfoncée
-    setLeftHoleOffset() {
+    startDiggingLeft() {
+        if (!this.checkPosition(-1, 1)) {
+            console.log("Position déjà occupée par un trou actif, ignoré");
+            return;
+        }
+        this.reset();// reset total pour garantir un état "propre" du trou
         this.spriteHole.offsetX = -1;
         this.spriteHole.offsetY = 1;
         this.updatePosition();
@@ -69,12 +75,28 @@ class Hole {
         this.isDigging = true;
     }
 
-    setRightHoleOffset() {
+    startDiggingRight() {
+        if (!this.checkPosition(1, 1)) {
+            console.log("Position déjà occupée par un trou actif, ignoré");
+            return;
+        }
+        this.reset();// reset total pour garantir un état "propre" du trou
         this.spriteHole.offsetX = 1;
         this.spriteHole.offsetY = 1;
         this.updatePosition();
         this.spriteHole.visible = true;
         this.isDigging = true;
+    }
+
+    // Vérifie si un trou actif existe déjà à la position cible
+    checkPosition(newOffsetX, newOffsetY) {
+        if (this.isDone || !this.spriteHole.visible) {
+            return true; // Aucun trou actif, la position est libre
+        }
+        let [playerLine, playerCol] = player.getPlayerPos();
+        let targetX = (playerCol + newOffsetX) * grid.cellSize;
+        let targetY = (playerLine + newOffsetY) * grid.cellSize;
+        return !(this.spriteHole.x === targetX && this.spriteHole.y === targetY);
     }
 
     // place le trou à la bonne position
@@ -84,5 +106,17 @@ class Hole {
         // positions en px pour l'affichage
         this.spriteHole.x = (playerCol + this.spriteHole.offsetX) * grid.cellSize;
         this.spriteHole.y = (playerLine + this.spriteHole.offsetY) * grid.cellSize;
+    }
+
+    reset() {
+        this.spriteHole.visible = false;
+        this.isDigging = false;
+        this.timerStart = false;
+        this.timer = 0;
+        this.isFilled = false;
+        this.isDone = false;
+        this.spriteHole.x = 0;
+        this.spriteHole.y = 0;
+        this.spriteHole.currentAnimation = null;
     }
 }
