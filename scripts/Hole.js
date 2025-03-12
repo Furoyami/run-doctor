@@ -91,13 +91,20 @@ class Hole {
 
     // Vérifie si un trou actif existe déjà à la position cible
     checkPosition(newOffsetX, newOffsetY) {
-        if (this.isDone || !this.spriteHole.visible) {
-            return true; // Aucun trou actif, la position est libre
-        }
         let [playerLine, playerCol] = player.getPlayerPos();
         let targetX = (playerCol + newOffsetX) * grid.cellSize;
         let targetY = (playerLine + newOffsetY) * grid.cellSize;
-        return !(this.spriteHole.x === targetX && this.spriteHole.y === targetY);
+
+        for (let hole of lstHoles) {
+            if (!hole.isDone &&
+                hole.spriteHole.visible &&
+                hole.spriteHole.x === targetX &&
+                hole.spriteHole.y === targetY) {
+                return false; // position occupée par un trou actif
+            }
+        }
+
+        return true;
     }
 
     // place le trou à la bonne position

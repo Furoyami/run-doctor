@@ -42,6 +42,7 @@ function keyDown(e) {
     if (e.repeat) return; // Ignore les événements répétés si la touche est maintenue
     e.preventDefault();
 
+    let hole;
 
     switch (e.code) {
         case CONST.ARROWUP:
@@ -67,25 +68,21 @@ function keyDown(e) {
         // animation de creusage
         case CONST.KEYQ:
             spritePlayer.startAnimation("DIG_LEFT");
-            if (lstHoles.length === 0) { // 1 seul trou pour l'instant
-                let hole = new Hole();
-                hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
-                if (hole.isDigging) {
-                    lstHoles.push(hole);
-                    lstSprites.push(hole.spriteHole);
-                }
+            hole = new Hole();
+            hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
+            if (hole.isDigging) {
+                lstHoles.push(hole);
+                lstSprites.push(hole.spriteHole);
             }
             break;
 
         case CONST.KEYE:
             spritePlayer.startAnimation("DIG_RIGHT");
-            if (lstHoles.length === 0) {
-                let hole = new Hole();
-                hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
-                if (hole.isDigging) {
-                    lstHoles.push(hole);
-                    lstSprites.push(hole.spriteHole);
-                }
+            hole = new Hole();
+            hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
+            if (hole.isDigging) {
+                lstHoles.push(hole);
+                lstSprites.push(hole.spriteHole);
             }
             break;
 
@@ -241,13 +238,11 @@ function update(dt) {
         if (hole.isDigging) hole.Update(dt);
         hole.UpdateTimer(dt);
     });
-    if (lstHoles.length > 0 && lstHoles[0].isDone) {
+    while (lstHoles.length > 0 && lstHoles[0].isDone) {
         let finishedHole = lstHoles.shift(); //supprime le 1er trou créé
         let spriteIndex = lstSprites.indexOf(finishedHole.spriteHole);
-
         if (spriteIndex !== -1) lstSprites.splice(spriteIndex, 1); // Supprime le sprite associé 
     }
-
 }
 
 function draw(pCtx) {
