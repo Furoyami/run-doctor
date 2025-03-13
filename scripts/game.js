@@ -25,6 +25,7 @@ let imageLoader = new ImageLoader();
 let spritePlayer;
 let spriteEnemy;
 let spriteHole;
+let isDiggingDirection = null;
 
 
 // debug
@@ -43,7 +44,6 @@ function keyDown(e) {
     e.preventDefault();
 
     let hole;
-
     switch (e.code) {
         case CONST.ARROWUP:
         case CONST.KEYW:
@@ -67,22 +67,28 @@ function keyDown(e) {
 
         // animation de creusage
         case CONST.KEYQ:
-            spritePlayer.startAnimation("DIG_LEFT");
-            hole = new Hole();
-            hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
-            if (hole.isDigging) {
-                lstHoles.push(hole);
-                lstSprites.push(hole.spriteHole);
+            if (isDiggingDirection === null) {
+                spritePlayer.startAnimation("DIG_LEFT");
+                hole = new Hole();
+                hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
+                if (hole.isDigging) {
+                    lstHoles.push(hole);
+                    lstSprites.push(hole.spriteHole);
+                    isDiggingDirection = "left";
+                }
             }
             break;
 
         case CONST.KEYE:
-            spritePlayer.startAnimation("DIG_RIGHT");
-            hole = new Hole();
-            hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
-            if (hole.isDigging) {
-                lstHoles.push(hole);
-                lstSprites.push(hole.spriteHole);
+            if (isDiggingDirection === null) {
+                spritePlayer.startAnimation("DIG_RIGHT");
+                hole = new Hole();
+                hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
+                if (hole.isDigging) {
+                    lstHoles.push(hole);
+                    lstSprites.push(hole.spriteHole);
+                    isDiggingDirection = "right";
+                }
             }
             break;
 
@@ -123,11 +129,17 @@ function keyUp(e) {
 
         // arret animation de creusage
         case CONST.KEYQ:
-            spritePlayer.startAnimation("IDLE_LEFT");
+            if (isDiggingDirection === "left") {
+                spritePlayer.startAnimation("IDLE_LEFT");
+                isDiggingDirection = null;
+            }
             break;
 
         case CONST.KEYE:
-            spritePlayer.startAnimation("IDLE_RIGHT");
+            if (isDiggingDirection === "right") {
+                spritePlayer.startAnimation("IDLE_RIGHT");
+                isDiggingDirection = null;
+            }
             break;
 
         default:
@@ -278,5 +290,8 @@ function drawHUD() {
     hudCtx.fillRect(0, 0, hudCanvas.width, hudCanvas.height);
     hudCtx.fillStyle = "#FFF"; // couleur Texte 
     hudCtx.font = "35px Pixel";
-    hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30); // Texte
+
+    // Texte
+    hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
+    hudCtx.fillText("A / E : Creuser", 400, 30);
 }
