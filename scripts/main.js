@@ -3,6 +3,7 @@ let ctx = canvas.getContext("2d");
 let hudCanvas = document.getElementById("hudCanvas"); // canvas du HUD
 let hudCtx = hudCanvas.getContext("2d");
 let interval;
+let debug = false;
 
 let lastUpdate = Date.now();
 

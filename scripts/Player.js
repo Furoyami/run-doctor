@@ -1,231 +1,268 @@
 class Player {
     constructor() {
+        this.sprite = null;
     }
 
     CreatePlayer() {
         // création du joueur
-        let imgPlayer = imageLoader.getImage("images/doctor_tile.png");
-        spritePlayer = new Sprite(imgPlayer);
-        spritePlayer.setTileSheet(40, 40);
-        spritePlayer.x = (WIDTH / 2) - (3 * grid.cellSize);// <-- nombre de case retirées du placement original
-        spritePlayer.y = HEIGHT - (2 * grid.cellSize);//  2* pour ne pas le placer dans le sol
-        spritePlayer.vX = 0;
-        spritePlayer.vY = 0;
-        spritePlayer.dist = 0;
-        spritePlayer.speed = 2.5;
-        spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
-        spritePlayer.offsetX = null;
+        let imgPlayer = game.imageLoader.getImage("images/doctor_tile.png");
+        this.spritePlayer = new Sprite(imgPlayer);
+        this.spritePlayer.setTileSheet(40, 40);
+        this.spritePlayer.x = (game.width / 2) - (3 * game.grid.cellSize);// <-- nombre de case retirées du placement original
+        this.spritePlayer.y = game.height - (2 * game.grid.cellSize);//  2* pour ne pas le placer dans le sol
+        this.spritePlayer.vX = 0;
+        this.spritePlayer.vY = 0;
+        this.spritePlayer.dist = 0;
+        this.spritePlayer.speed = 2.5;
+        this.spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
+        this.spritePlayer.offsetX = null;
         // ---------------------------- ANIMATIONS -------------------------------
-        spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
-        spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
-        spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
-        spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
-        spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1, 0);
-        spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.075);
-        spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.075);
-        spritePlayer.addAnimation("DIG_RIGHT", [22, 23], 0.05);
-        spritePlayer.addAnimation("DIG_LEFT", [24, 25], 0.05);
+        this.spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
+        this.spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
+        this.spritePlayer.addAnimation("RUN_RIGHT", [2, 3, 4], 0.1);
+        this.spritePlayer.addAnimation("RUN_LEFT", [5, 6, 7], 0.1);
+        this.spritePlayer.addAnimation("CLIMB", [10, 11, 12, 13], 0.1, 0);
+        this.spritePlayer.addAnimation("FALL_RIGHT", [14, 15, 16, 17], 0.075);
+        this.spritePlayer.addAnimation("FALL_LEFT", [18, 19, 20, 21], 0.075);
+        this.spritePlayer.addAnimation("DIG_RIGHT", [22, 23], 0.05);
+        this.spritePlayer.addAnimation("DIG_LEFT", [24, 25], 0.05);
 
-        spritePlayer.startAnimation("IDLE_RIGHT");
+        this.spritePlayer.startAnimation("IDLE_RIGHT");
 
-        return spritePlayer;
+        return this.spritePlayer;
     }
 
     Update(dt) {
         // Vérifie les cases sous le joueur
-        const tileUnderPlayer = map.getUnderPlayerID(0, 1);
+        const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
 
         this.setOffsetX();
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
-        if (FALLVOID && spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.vY = spritePlayer.speed; // Déclenche la chute
-            if (spritePlayer.currentAnimation.name === "IDLE_RIGHT" || spritePlayer.currentAnimation.name === "RUN_RIGHT") {
-                spritePlayer.startAnimation("FALL_RIGHT");
-            } else if (spritePlayer.currentAnimation.name === "IDLE_LEFT" || spritePlayer.currentAnimation.name === "RUN_LEFT") {
-                spritePlayer.startAnimation("FALL_LEFT");
+        if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
+            this.spritePlayer.vY = this.spritePlayer.speed; // Déclenche la chute
+            if (this.spritePlayer.currentAnimation.name === "IDLE_RIGHT" || this.spritePlayer.currentAnimation.name === "RUN_RIGHT") {
+                this.spritePlayer.startAnimation("FALL_RIGHT");
+            } else if (this.spritePlayer.currentAnimation.name === "IDLE_LEFT" || this.spritePlayer.currentAnimation.name === "RUN_LEFT") {
+                this.spritePlayer.startAnimation("FALL_LEFT");
             }
         }
 
-        const isLadderCurrent = map.isLadder(spritePlayer.offsetX, 0);
-        const isLadderBelow = map.isLadder(0, 1); // Échelle sous le joueur
-        const isLadderNext = map.isLadder(spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
+        const isLadderCurrent = game.map.isLadder(this.spritePlayer.offsetX, 0);
+        const isLadderBelow = game.map.isLadder(0, 1); // Échelle sous le joueur
+        const isLadderNext = game.map.isLadder(this.spritePlayer.offsetX, 0); // echelle dans la direction de déplacement
 
-        if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
+        if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", this.spritePlayer.offsetX, "x:", this.spritePlayer.x, "y:", this.spritePlayer.y);
 
-        // Vérification et application des mouvements
-        if (isDiggingDirection === null) {
-            if (activeKeys.has("ArrowDown")) {
-                if (player.canMoveDown()) player.moveDown(dt);
+        if (game.isDiggingDirection === null && game.keyOrder.length > 0) {
+            let moved = false;
+            const topKey = game.keyOrder[0];
+
+            // Tester la touche prioritaire 
+            switch (topKey) {
+                case "ArrowDown":
+                    if (this.canMoveDown()) {
+                        this.moveDown();
+                        moved = true;
+                    }
+                    break;
+                case "ArrowUp":
+                    if (this.canMoveUp()) {
+                        this.moveUp();
+                        moved = true;
+                    }
+                    break;
+                case "ArrowRight":
+                    if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && this.spritePlayer.x < game.width - game.grid.cellSize) {
+                        this.moveRight();
+                        moved = true;
+                    }
+                    break;
+                case "ArrowLeft":
+                    if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && this.spritePlayer.x > 0) {
+                        this.moveLeft();
+                        moved = true;
+                    }
+                    break;
             }
-            if (activeKeys.has("ArrowUp")) {
-                if (player.canMoveUp()) player.moveUp(dt);
-            }
-            if (activeKeys.has("ArrowRight")) {
-                if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - grid.cellSize) {
-                    player.moveRight(dt);
-                }
-            }
-            if (activeKeys.has("ArrowLeft")) {
-                if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
-                    player.moveLeft(dt);
+
+            // Si topKey échoue, tester la touche suivante de keyOrder
+            if (!moved && game.keyOrder.length > 1) {
+                const nextKey = game.keyOrder[1];
+                switch (nextKey) {
+                    case "ArrowDown":
+                        if (this.canMoveDown()) this.moveDown();
+                        break;
+                    case "ArrowUp":
+                        if (this.canMoveUp()) this.moveUp();
+                        break;
+                    case "ArrowRight":
+                        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && this.spritePlayer.x < game.width - game.grid.cellSize) {
+                            this.moveRight();
+                        }
+                        break;
+                    case "ArrowLeft":
+                        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && this.spritePlayer.x > 0) {
+                            this.moveLeft();
+                        }
+                        break;
                 }
             }
         }
 
         // Mise à jour des coordonnées du joueur 
-        spritePlayer.dist += (Math.abs(spritePlayer.vX) + Math.abs(spritePlayer.vY)) * dt * 30;
-        if (spritePlayer.vX !== 0) {
-            spritePlayer.lastVx = spritePlayer.vX;
-            spritePlayer.x += spritePlayer.vX * dt * 30;
+        this.spritePlayer.dist += (Math.abs(this.spritePlayer.vX) + Math.abs(this.spritePlayer.vY)) * dt * 30;
+        if (this.spritePlayer.vX !== 0) {
+            this.spritePlayer.lastVx = this.spritePlayer.vX;
+            this.spritePlayer.x += this.spritePlayer.vX * dt * 30;
         }
-        spritePlayer.y += spritePlayer.vY * dt * 30;
+        this.spritePlayer.y += this.spritePlayer.vY * dt * 30;
 
         // Limite les mouvements à une case
-        if (spritePlayer.dist >= grid.cellSize) {
-            spritePlayer.vX = 0;
-            spritePlayer.vY = 0;
-            spritePlayer.dist = 0;
+        if (this.spritePlayer.dist >= game.grid.cellSize) {
+            this.spritePlayer.vX = 0;
+            this.spritePlayer.vY = 0;
+            this.spritePlayer.dist = 0;
 
             // Réaligne le joueur sur une case
-            spritePlayer.x = Math.round(spritePlayer.x / grid.cellSize) * grid.cellSize;
-            spritePlayer.y = Math.round(spritePlayer.y / grid.cellSize) * grid.cellSize;
+            this.spritePlayer.x = Math.round(this.spritePlayer.x / game.grid.cellSize) * game.grid.cellSize;
+            this.spritePlayer.y = Math.round(this.spritePlayer.y / game.grid.cellSize) * game.grid.cellSize;
 
             // Stoppe l'animation "CLIMB" 
-            if ((spritePlayer.currentAnimation.name === "CLIMB" && map.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
-                (spritePlayer.currentAnimation.name === "CLIMB" && map.getUnderPlayerID(0, 0) === CONST.LADDER && map.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
+            if ((this.spritePlayer.currentAnimation.name === "CLIMB" && game.map.getUnderPlayerID(0, 0) !== CONST.LADDER) || // si le joueur est au dessus d'une échelle
+                (this.spritePlayer.currentAnimation.name === "CLIMB" && game.map.getUnderPlayerID(0, 0) === CONST.LADDER && game.map.getUnderPlayerID(0, 1) === CONST.WALL)) { //si le joueur est en bas d'une échelle
                 this.selectIdleDirection();
             }
 
             // Stoppe les animations "FALL" une fois au sol
-            if (spritePlayer.currentAnimation.name.startsWith("FALL") && map.getUnderPlayerID(0, 1) !== CONST.VOID) {
+            if (this.spritePlayer.currentAnimation.name.startsWith("FALL") && game.map.getUnderPlayerID(0, 1) !== CONST.VOID) {
                 this.selectIdleDirection();
             }
 
             // Déclenche le "IDLE" si droite/auche inactif
-            if (!activeKeys.has("ArrowRight") &&
-                !activeKeys.has("ArrowLeft") &&
+            if (!game.activeKeys.has("ArrowRight") &&
+                !game.activeKeys.has("ArrowLeft") &&
                 // empêche les activations du idle pendant la chute
-                spritePlayer.currentAnimation.name !== "FALL_RIGHT" &&
-                spritePlayer.currentAnimation.name !== "FALL_LEFT" &&
+                this.spritePlayer.currentAnimation.name !== "FALL_RIGHT" &&
+                this.spritePlayer.currentAnimation.name !== "FALL_LEFT" &&
                 // empêche le idle de s'activer pendant une montée/ descente
-                spritePlayer.currentAnimation.name !== "CLIMB"
+                this.spritePlayer.currentAnimation.name !== "CLIMB"
             ) {
                 this.selectIdleDirection();
             }
         }
 
         // Ramasse les clés
-        if (map.getUnderPlayerID(0, 0) === CONST.KEY && spritePlayer.vX === 0) {
-            map.CollectKey(spritePlayer.x, spritePlayer.y);
-            sndKey.play();
+        if (game.map.getUnderPlayerID(0, 0) === CONST.KEY && this.spritePlayer.vX === 0) {
+            game.map.CollectKey(this.spritePlayer.x, this.spritePlayer.y);
+            game.sndKey.play();
         }
 
         // Charge le niveau suivant si le joueur atteint le TARDIS
-        if ((map.getUnderPlayerID(0, 0) === 4 || map.getUnderPlayerID(0, 0) === 5 ||
-            map.getUnderPlayerID(0, 0) === 6 || map.getUnderPlayerID(0, 0) === 7)
-            && spritePlayer.vX === 0 && map.getNbKeysInLevel() === 0) {
+        if ((game.map.getUnderPlayerID(0, 0) === 4 || game.map.getUnderPlayerID(0, 0) === 5 ||
+            game.map.getUnderPlayerID(0, 0) === 6 || game.map.getUnderPlayerID(0, 0) === 7)
+            && this.spritePlayer.vX === 0 && game.map.getNbKeysInLevel() === 0) {
 
             // Reinit le jeu
-            restartGame();
+            game.restartGame();
         }
 
         // Réinitialise le niveau si le joueur tombe hors écran
-        if ((spritePlayer.y / grid.cellSize) >= (HEIGHT - grid.cellSize) / grid.cellSize) {
-            map.InitMap(1);
-            spritePlayer.x = (WIDTH / 2) - (3 * grid.cellSize);
-            spritePlayer.y = HEIGHT - (2 * grid.cellSize);
+        if ((this.spritePlayer.y / game.grid.cellSize) >= (game.height - game.grid.cellSize) / game.grid.cellSize) {
+            game.map.InitMap(1);
+            this.spritePlayer.x = (game.width / 2) - (3 * game.grid.cellSize);
+            this.spritePlayer.y = game.height - (2 * game.grid.cellSize);
         }
 
     }
 
     // Déplacement à droite
     moveRight() {
-        if (spritePlayer.vX === 0
-            && spritePlayer.vY === 0
-            && spritePlayer.x < WIDTH - grid.cellSize
-            && map.getUnderPlayerID(0, 1) !== CONST.VOID && map.getUnderPlayerID(1, 0) !== CONST.WALL) {
+        if (this.spritePlayer.vX === 0
+            && this.spritePlayer.vY === 0
+            && this.spritePlayer.x < game.width - game.grid.cellSize
+            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(1, 0) !== CONST.WALL) {
 
-            spritePlayer.startAnimation("RUN_RIGHT");
-            spritePlayer.vX = spritePlayer.speed;
-            spritePlayer.dist = 0;
+            this.spritePlayer.startAnimation("RUN_RIGHT");
+            this.spritePlayer.vX = this.spritePlayer.speed;
+            this.spritePlayer.dist = 0;
         }
     }
 
     // Déplacement à gauche
     moveLeft() {
-        if (spritePlayer.vX === 0
-            && spritePlayer.vY === 0
-            && spritePlayer.x > 0
-            && map.getUnderPlayerID(0, 1) !== CONST.VOID && map.getUnderPlayerID(-1, 0) !== CONST.WALL) {
+        if (this.spritePlayer.vX === 0
+            && this.spritePlayer.vY === 0
+            && this.spritePlayer.x > 0
+            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL) {
 
-            spritePlayer.startAnimation("RUN_LEFT");
-            spritePlayer.vX = -spritePlayer.speed;
-            spritePlayer.dist = 0;
+            this.spritePlayer.startAnimation("RUN_LEFT");
+            this.spritePlayer.vX = -this.spritePlayer.speed;
+            this.spritePlayer.dist = 0;
         }
     }
 
     // Descente d'une échelle
     moveDown() {
-        if (spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.startAnimation("CLIMB");
-            spritePlayer.vY = spritePlayer.speed;
-            spritePlayer.vX = 0;
+        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
+            this.spritePlayer.startAnimation("CLIMB");
+            this.spritePlayer.vY = this.spritePlayer.speed;
+            this.spritePlayer.vX = 0;
         }
     }
 
     // Montée d'une échelle
     moveUp() {
-        if (spritePlayer.vX === 0 && spritePlayer.vY === 0) {
-            spritePlayer.startAnimation("CLIMB");
-            spritePlayer.vY = -spritePlayer.speed;
+        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
+            this.spritePlayer.startAnimation("CLIMB");
+            this.spritePlayer.vY = -this.spritePlayer.speed;
         }
     }
 
     // selectionne la direction du idle en fonction de la dernière direction connue
     selectIdleDirection() {
-        if (spritePlayer.lastVx > 0) {
-            spritePlayer.startAnimation("IDLE_RIGHT");
+        if (this.spritePlayer.lastVx > 0) {
+            this.spritePlayer.startAnimation("IDLE_RIGHT");
         } else {
-            spritePlayer.startAnimation("IDLE_LEFT");
+            this.spritePlayer.startAnimation("IDLE_LEFT");
         }
     }
 
     // Ajuste l'offsetX pour compenser la différence de détection des tiles dûe à l'emplacement de l'origine du sprite (en haut a gauche)
     setOffsetX() {
-        spritePlayer.offsetX;
-        if (spritePlayer.vX > 0) {
-            spritePlayer.offsetX = 1;
+        this.spritePlayer.offsetX;
+        if (this.spritePlayer.vX > 0) {
+            this.spritePlayer.offsetX = 1;
         } else {
-            spritePlayer.offsetX = 0;
+            this.spritePlayer.offsetX = 0;
         }
     }
 
     // Retourne true si le joueur peut monter (case actuelle est une échelle)
     canMoveUp() {
         this.setOffsetX();
-        return map.isLadder(spritePlayer.offsetX, 0);
+        return game.map.isLadder(this.spritePlayer.offsetX, 0);
     }
 
     // Retourne true si le joueur peut descendre (échelle sous le joueur)
     canMoveDown() {
         this.setOffsetX();
-        return map.isLadder(spritePlayer.offsetX, 1);
+        return game.map.isLadder(this.spritePlayer.offsetX, 1);
     }
 
     // retourne la case et ligne actuelles du joueur
     getPlayerPos() {
-        let playerCol = Math.floor(spritePlayer.x / grid.cellSize);
-        let playerLine = Math.floor(spritePlayer.y / grid.cellSize);
+        let playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
+        let playerLine = Math.floor(this.spritePlayer.y / game.grid.cellSize);
         return [playerLine, playerCol];
     }
 
     // renvoie si le joueur a fini son mouvement (après réalignement éventuel)
     isAligned() {
         return (
-            spritePlayer.x % grid.cellSize === 0 &&
-            spritePlayer.y % grid.cellSize === 0
+            this.spritePlayer.x % game.grid.cellSize === 0 &&
+            this.spritePlayer.y % game.grid.cellSize === 0
         );
     }
 }

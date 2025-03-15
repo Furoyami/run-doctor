@@ -106,7 +106,7 @@ class Map {
         this.tileTextures[2].src = "images/ladder.png";
 
         // Tiles animées
-        let imgKey = imageLoader.getImage("images/key_tile.png");
+        let imgKey = game.imageLoader.getImage("images/key_tile.png");
         this.tileTextures[3] = new Sprite(imgKey);
         this.tileTextures[3].name = "KEY";
         this.tileTextures[3].setTileSheet(40, 40);
@@ -114,22 +114,22 @@ class Map {
         this.tileTextures[3].startAnimation("KEY_ANIM");
 
         // LT
-        this.tileTextures[4] = new Sprite(imageLoader.getImage("images/tardis_lt_tile.png"));
+        this.tileTextures[4] = new Sprite(game.imageLoader.getImage("images/tardis_lt_tile.png"));
         this.tileTextures[4].name = "TARDIS_LT";
         this.tileTextures[4].setTileSheet(40, 40);
         this.tileTextures[4].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false); // Sans boucle
         // RT
-        this.tileTextures[5] = new Sprite(imageLoader.getImage("images/tardis_rt_tile.png"));
+        this.tileTextures[5] = new Sprite(game.imageLoader.getImage("images/tardis_rt_tile.png"));
         this.tileTextures[5].name = "TARDIS_RT";
         this.tileTextures[5].setTileSheet(40, 40);
         this.tileTextures[5].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
         //LB
-        this.tileTextures[6] = new Sprite(imageLoader.getImage("images/tardis_lb_tile.png"));
+        this.tileTextures[6] = new Sprite(game.imageLoader.getImage("images/tardis_lb_tile.png"));
         this.tileTextures[6].name = "TARDIS_LB";
         this.tileTextures[6].setTileSheet(40, 40);
         this.tileTextures[6].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
         //RB
-        this.tileTextures[7] = new Sprite(imageLoader.getImage("images/tardis_rb_tile.png"));
+        this.tileTextures[7] = new Sprite(game.imageLoader.getImage("images/tardis_rb_tile.png"));
         this.tileTextures[7].name = "TARDIS_RB";
         this.tileTextures[7].setTileSheet(40, 40);
         this.tileTextures[7].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
@@ -140,7 +140,7 @@ class Map {
     }
 
     getUnderPlayerID(pOffsetX, pOffsetY) {
-        let playerPos = player.getPlayerPos();
+        let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
 
@@ -194,22 +194,22 @@ class Map {
     }
 
     EmptyBrick(pOffsetX, pOffsetY) {
-        let playerPos = player.getPlayerPos();
+        let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
         this.map.level[playerLine][playerCol] = CONST.VOID;
     }
 
     FillBrick(pOffsetX, pOffsetY) {
-        let playerPos = player.getPlayerPos();
+        let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
         this.map.level[playerLine][playerCol] = CONST.WALL;
     }
 
     CollectKey(pX, pY) {
-        let line = pY / grid.cellSize;
-        let col = pX / grid.cellSize;
+        let line = pY / game.grid.cellSize;
+        let col = pX / game.grid.cellSize;
         if (this.map.level[line][col] == CONST.KEY) {
             this.map.level[line][col] = CONST.VOID; // remplace les clés par du vide
         }
@@ -264,7 +264,7 @@ class Map {
     Draw(pCtx) {
         for (let line = 0; line < this.map.nbLines; line++) {
             for (let col = 0; col < this.map.nbColumns; col++) {
-                let x = (col * this.map.cellSize) + grid.getGridOffset();
+                let x = (col * this.map.cellSize) + game.grid.getGridOffset();
                 let y = (line * this.map.cellSize);
 
                 let backgroundTexture = this.tileTextures[0];

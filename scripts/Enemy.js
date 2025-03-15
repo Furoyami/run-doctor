@@ -1,14 +1,14 @@
 class Enemy {
     constructor(pLine = 0, pCol = 0, pTargetCol, pTargetLine, pMap) {
         this.map = pMap.getCurrentMapLevel();
-        let imgEnemy = imageLoader.getImage("images/dalek_tile.png");
+        let imgEnemy = game.imageLoader.getImage("images/dalek_tile.png");
         this.spriteEnemy = new Sprite(imgEnemy);
         this.spriteEnemy.setTileSheet(40, 45);
         this.spriteEnemy.col = pCol;
         this.spriteEnemy.line = pLine;
-        this.spriteEnemy.x = this.spriteEnemy.col * grid.cellSize;
-        this.spriteEnemy.y = this.spriteEnemy.line * grid.cellSize;
-        this.spriteEnemy.speed = grid.cellSize;
+        this.spriteEnemy.x = this.spriteEnemy.col * game.grid.cellSize;
+        this.spriteEnemy.y = this.spriteEnemy.line * game.grid.cellSize;
+        this.spriteEnemy.speed = game.grid.cellSize;
 
         // ----- ANIMATIONS -----
         this.spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
@@ -57,10 +57,10 @@ class Enemy {
         }
 
         // Gestion des chutes et vérifications des VOID
-        let belowTile = map.getUnderEnemyID(this, 0, 1);
+        let belowTile = game.map.getUnderEnemyID(this, 0, 1);
 
         //Vérifie si l'ennemi est bien centré sur la colonne actuelle
-        const centerX = this.spriteEnemy.col * grid.cellSize;
+        const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
         if (belowTile === CONST.VOID && isAlignedToColumn && !this.isFalling) {
@@ -94,8 +94,8 @@ class Enemy {
         this.spriteEnemy.x = this.lockedX;
 
         // Réalignement précis sur la grille
-        this.spriteEnemy.x = Math.round(this.spriteEnemy.x / grid.cellSize) * grid.cellSize;
-        this.spriteEnemy.y = Math.round(this.spriteEnemy.y / grid.cellSize) * grid.cellSize;
+        this.spriteEnemy.x = Math.round(this.spriteEnemy.x / game.grid.cellSize) * game.grid.cellSize;
+        this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
 
         if (debug) console.log("Enemy starts falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
@@ -113,19 +113,19 @@ class Enemy {
      * gère l'état de chute 
      */
     handleFall(dt) {
-        const belowTile = map.getUnderEnemyID(this, 0, 1);
+        const belowTile = game.map.getUnderEnemyID(this, 0, 1);
 
         if (belowTile === CONST.VOID) {
             // Continuer à tomber
             this.spriteEnemy.x = this.lockedX;
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;
-            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / grid.cellSize);
+            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
         } else {
             // Arrêter la chute si une case solide est atteinte
             this.isFalling = false;
-            this.spriteEnemy.y = Math.round(this.spriteEnemy.y / grid.cellSize) * grid.cellSize;
-            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / grid.cellSize);
-            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / grid.cellSize);
+            this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
+            this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
+            this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
 
             if (debug) console.log("Enemy stops falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
@@ -146,8 +146,8 @@ class Enemy {
             let nextStep = this.path[0];
 
             // Coordonnées cibles en pixels
-            let targetX = nextStep.x * grid.cellSize;
-            let targetY = nextStep.y * grid.cellSize;
+            let targetX = nextStep.x * game.grid.cellSize;
+            let targetY = nextStep.y * game.grid.cellSize;
 
             let dx = targetX - this.spriteEnemy.x;
             let dy = targetY - this.spriteEnemy.y;
@@ -173,12 +173,12 @@ class Enemy {
                 this.path.shift();
 
                 // Mise à jour des coordonnées de la grille
-                this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / grid.cellSize);
-                this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / grid.cellSize);
+                this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
+                this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
 
-                let currentTile = map.getUnderEnemyID(this, 0, 0);
-                let belowTile = map.getUnderEnemyID(this, 0, 1);
-                let aboveTile = map.getUnderEnemyID(this, 0, -1);
+                let currentTile = game.map.getUnderEnemyID(this, 0, 0);
+                let belowTile = game.map.getUnderEnemyID(this, 0, 1);
+                let aboveTile = game.map.getUnderEnemyID(this, 0, -1);
                 if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
                     if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
                         this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
@@ -238,9 +238,9 @@ class Enemy {
         const dx = nextStep.x - currentStep.x;
 
         // Vérifier si l'ennemi est sur une échelle
-        let currentTile = map.getUnderEnemyID(this, 0, 0);
-        let belowTile = map.getUnderEnemyID(this, 0, 1);
-        let aboveTile = map.getUnderEnemyID(this, 0, -1);
+        let currentTile = game.map.getUnderEnemyID(this, 0, 0);
+        let belowTile = game.map.getUnderEnemyID(this, 0, 1);
+        let aboveTile = game.map.getUnderEnemyID(this, 0, -1);
         if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
             if (dx > 0) {
                 this.spriteEnemy.startAnimation("LEVITATE_RIGHT");

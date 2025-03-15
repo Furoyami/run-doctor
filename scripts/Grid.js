@@ -17,12 +17,12 @@ class Grid {
     InitGrid() {
         if (debug) console.log("Init Grid");
 
-        let cellHeight = HEIGHT / this.height;
+        let cellHeight = game.height / this.height;
         if (debug) console.log("cellHeight =", cellHeight);
 
         this.cellSize = cellHeight; // pour avoir une cellule carré
 
-        this.offsetX = (WIDTH / 2) - ((this.cellSize * this.width) / 2); // centre la grille
+        this.offsetX = (game.width / 2) - ((this.cellSize * this.width) / 2); // centre la grille
         // remplissage de la grille
         for (let l = 0; l < this.height; l++) {
             this.cells[l] = [];
@@ -64,11 +64,11 @@ class Grid {
 
 
     getGridOffset() {
-        return this.offsetX = (WIDTH / 2) - ((this.cellSize * this.width) / 2);
+        return this.offsetX = (game.width / 2) - ((this.cellSize * this.width) / 2);
     }
 
     getGridCellSize() {
-        return this.cellSize = HEIGHT / this.height;
+        return this.cellSize = game.height / this.height;
     }
 
     getGridWidth() {

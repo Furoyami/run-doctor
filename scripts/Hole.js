@@ -1,6 +1,6 @@
 class Hole {
     constructor() {
-        let imgHole = imageLoader.getImage("images/hole_tile.png");
+        let imgHole = game.imageLoader.getImage("images/hole_tile.png");
         this.spriteHole = new Sprite(imgHole);
         this.spriteHole.setTileSheet(40, 40);
         this.spriteHole.offsetX = 0;
@@ -20,9 +20,9 @@ class Hole {
 
     Update(dt) {
         // vérifie si le trou demandé est un mur
-        if (this.isDigging && map.isWall(this.spriteHole.offsetX, this.spriteHole.offsetY)) {
+        if (this.isDigging && game.map.isWall(this.spriteHole.offsetX, this.spriteHole.offsetY)) {
             // remplacer le mur par du vide
-            map.EmptyBrick(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0]); // Utilise la position absolue
+            game.map.EmptyBrick(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]); // Utilise la position absolue
             this.spriteHole.startAnimation("DIG");
             this.isDigging = false;
             this.timerStart = true;
@@ -47,8 +47,8 @@ class Hole {
             this.spriteHole.currentAnimation.name === "FILL" &&
             this.spriteHole.currentFrameInAnimation >= 6 &&
             !this.isFilled &&
-            !map.isWall(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0])) {
-            map.FillBrick(this.col - player.getPlayerPos()[1], this.line - player.getPlayerPos()[0]); // Utilise la position absolue
+            !game.map.isWall(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0])) {
+            game.map.FillBrick(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]); // Utilise la position absolue
             this.isFilled = true; // Marque la brique remplie
         }
 
@@ -70,12 +70,12 @@ class Hole {
         }
 
         // Utilise la position visuelle arrondie
-        let playerCol = Math.round(spritePlayer.x / grid.cellSize);
-        let playerLine = Math.round(spritePlayer.y / grid.cellSize);
+        let playerCol = Math.round(game.spritePlayer.x / game.grid.cellSize);
+        let playerLine = Math.round(game.spritePlayer.y / game.grid.cellSize);
         let targetCol = playerCol + pOffsetX;
         let targetLine = playerLine + pOffsetY;
 
-        if (!map.isWall(targetCol - playerCol, targetLine - playerLine)) {
+        if (!game.map.isWall(targetCol - playerCol, targetLine - playerLine)) {
             console.log("Impossible de creuser : la case n’est pas un mur");
             return;
         }
@@ -87,19 +87,19 @@ class Hole {
         this.spriteHole.offsetY = pOffsetY;
         this.line = targetLine;
         this.col = targetCol;
-        this.spriteHole.x = targetCol * grid.cellSize;
-        this.spriteHole.y = targetLine * grid.cellSize;
+        this.spriteHole.x = targetCol * game.grid.cellSize;
+        this.spriteHole.y = targetLine * game.grid.cellSize;
         this.spriteHole.visible = true;
         this.isDigging = true;
     }
 
     // Vérifie si un trou actif existe déjà à la position cible
     checkPosition(newOffsetX, newOffsetY) {
-        let [playerLine, playerCol] = player.getPlayerPos();
-        let targetX = (playerCol + newOffsetX) * grid.cellSize;
-        let targetY = (playerLine + newOffsetY) * grid.cellSize;
+        let [playerLine, playerCol] = game.player.getPlayerPos();
+        let targetX = (playerCol + newOffsetX) * game.grid.cellSize;
+        let targetY = (playerLine + newOffsetY) * game.grid.cellSize;
 
-        for (let hole of lstHoles) {
+        for (let hole of game.lstHoles) {
             if (!hole.isDone &&
                 hole.spriteHole.visible &&
                 hole.spriteHole.x === targetX &&

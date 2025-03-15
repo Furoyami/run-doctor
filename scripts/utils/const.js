@@ -1,5 +1,9 @@
 const CONST = {
 
+    // Taille canvas
+    WIDTH: canvas.width,
+    HEIGHT: canvas.height,
+
     // Valeurs possibles pour les offset X et Y
     OFFSET_LEFT: -1,
     OFFSET_RIGHT: 1,
