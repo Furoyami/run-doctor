@@ -67,39 +67,11 @@ function keyDown(e) {
 
         // animation de creusage
         case CONST.KEYQ:
-            if (isDiggingDirection === null) {
-                spritePlayer.startAnimation("DIG_LEFT");
-                hole = new Hole();
-                hole.startDigging(CONST.OFFSET_LEFT, CONST.OFFSET_DOWN);
-                if (hole.isDigging) {
-                    lstHoles.push(hole);
-                    lstSprites.push(hole.spriteHole);
-                    isDiggingDirection = "left";
-                    if (spritePlayer.lastVx < 0 && hole.col === Math.round(spritePlayer.x / grid.cellSize) - 1) {
-                        spritePlayer.vX = 0;
-                        spritePlayer.vY = 0;
-                        spritePlayer.dist = 0;
-                    }
-                }
-            }
+            handleDigging("left", CONST.OFFSET_LEFT, "DIG_LEFT");
             break;
 
         case CONST.KEYE:
-            if (isDiggingDirection === null) {
-                spritePlayer.startAnimation("DIG_RIGHT");
-                hole = new Hole();
-                hole.startDigging(CONST.OFFSET_RIGHT, CONST.OFFSET_DOWN);
-                if (hole.isDigging) {
-                    lstHoles.push(hole);
-                    lstSprites.push(hole.spriteHole);
-                    isDiggingDirection = "right";
-                    if (spritePlayer.lastVx > 0 && hole.col === Math.round(spritePlayer.x / grid.cellSize) + 1) {
-                        spritePlayer.vX = 0;
-                        spritePlayer.vY = 0;
-                        spritePlayer.dist = 0; // Stoppe si le trou est juste devant
-                    }
-                }
-            }
+            handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
             break;
 
         // !!! a modifier pour répondre aux conditions de win / lose
@@ -155,6 +127,27 @@ function keyUp(e) {
 
         default:
             break;
+    }
+}
+// ------------------------ FONCTION LIEE AU KEYDOWN / KEYUP ------------------------
+
+function handleDigging(direction, offsetX, animation) {
+    if (isDiggingDirection === null) {
+        spritePlayer.startAnimation(animation);
+        let hole = new Hole();
+        hole.startDigging(offsetX, CONST.OFFSET_DOWN);
+        if (hole.isDigging) {
+            lstHoles.push(hole);
+            lstSprites.push(hole.spriteHole);
+            isDiggingDirection = direction;
+            let playerCol = Math.round(spritePlayer.x / grid.cellSize);
+            if ((spritePlayer.lastVx < 0 && offsetX < 0 && hole.col === playerCol - 1) ||
+                (spritePlayer.lastVx > 0 && offsetX > 0 && hole.col === playerCol + 1)) {
+                spritePlayer.vX = 0;
+                spritePlayer.vY = 0;
+                spritePlayer.dist = 0;
+            }
+        }
     }
 }
 
@@ -220,8 +213,6 @@ function restartGame() {
 
 
 function update(dt) {
-    console.log(isDiggingDirection);
-
     if (!gameReady) {
         return;
     }
