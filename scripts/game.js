@@ -25,8 +25,8 @@ let imageLoader = new ImageLoader();
 let spritePlayer;
 let spriteEnemy;
 let spriteHole;
-let isDiggingDirection = null;
 
+let isDiggingDirection = null; //permet de bloquer deux creusage simultanés si on appuie sur A/E en même temps
 
 // debug
 
@@ -75,6 +75,11 @@ function keyDown(e) {
                     lstHoles.push(hole);
                     lstSprites.push(hole.spriteHole);
                     isDiggingDirection = "left";
+                    if (spritePlayer.lastVx < 0 && hole.col === Math.round(spritePlayer.x / grid.cellSize) - 1) {
+                        spritePlayer.vX = 0;
+                        spritePlayer.vY = 0;
+                        spritePlayer.dist = 0;
+                    }
                 }
             }
             break;
@@ -88,6 +93,11 @@ function keyDown(e) {
                     lstHoles.push(hole);
                     lstSprites.push(hole.spriteHole);
                     isDiggingDirection = "right";
+                    if (spritePlayer.lastVx > 0 && hole.col === Math.round(spritePlayer.x / grid.cellSize) + 1) {
+                        spritePlayer.vX = 0;
+                        spritePlayer.vY = 0;
+                        spritePlayer.dist = 0; // Stoppe si le trou est juste devant
+                    }
                 }
             }
             break;
@@ -139,6 +149,7 @@ function keyUp(e) {
             if (isDiggingDirection === "right") {
                 spritePlayer.startAnimation("IDLE_RIGHT");
                 isDiggingDirection = null;
+
             }
             break;
 
@@ -209,26 +220,10 @@ function restartGame() {
 
 
 function update(dt) {
+    console.log(isDiggingDirection);
+
     if (!gameReady) {
         return;
-    }
-
-    // Vérification et application des mouvements
-    if (activeKeys.has("ArrowDown")) {
-        if (player.canMoveDown()) player.moveDown(dt);
-    }
-    if (activeKeys.has("ArrowUp")) {
-        if (player.canMoveUp()) player.moveUp(dt);
-    }
-    if (activeKeys.has("ArrowRight")) {
-        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - grid.cellSize) {
-            player.moveRight(dt);
-        }
-    }
-    if (activeKeys.has("ArrowLeft")) {
-        if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
-            player.moveLeft(dt);
-        }
     }
 
     // si le jeu est prêt

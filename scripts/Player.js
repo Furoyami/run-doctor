@@ -54,18 +54,24 @@ class Player {
 
         if (debug) console.log("Détection échelles - isLadderCurrent:", isLadderCurrent, "isLadderBelow:", isLadderBelow, "isLadderNext:", isLadderNext, "offsetX:", spritePlayer.offsetX, "x:", spritePlayer.x, "y:", spritePlayer.y);
 
-        // Déplacements
-        if (activeKeys.has("ArrowRight")) {
-            this.moveRight();
-        }
-        if (activeKeys.has("ArrowLeft")) {
-            this.moveLeft();
-        }
-        if ((isLadderCurrent || isLadderNext) && activeKeys.has("ArrowUp")) {
-            this.moveUp();
-        }
-        if (isLadderBelow && activeKeys.has("ArrowDown")) {
-            this.moveDown();
+        // Vérification et application des mouvements
+        if (isDiggingDirection === null) {
+            if (activeKeys.has("ArrowDown")) {
+                if (player.canMoveDown()) player.moveDown(dt);
+            }
+            if (activeKeys.has("ArrowUp")) {
+                if (player.canMoveUp()) player.moveUp(dt);
+            }
+            if (activeKeys.has("ArrowRight")) {
+                if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x < WIDTH - grid.cellSize) {
+                    player.moveRight(dt);
+                }
+            }
+            if (activeKeys.has("ArrowLeft")) {
+                if (spritePlayer.vX === 0 && spritePlayer.vY === 0 && spritePlayer.x > 0) {
+                    player.moveLeft(dt);
+                }
+            }
         }
 
         // Mise à jour des coordonnées du joueur 
@@ -131,6 +137,7 @@ class Player {
             spritePlayer.x = (WIDTH / 2) - (3 * grid.cellSize);
             spritePlayer.y = HEIGHT - (2 * grid.cellSize);
         }
+
     }
 
     // Déplacement à droite

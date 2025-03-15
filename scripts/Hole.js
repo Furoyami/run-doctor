@@ -69,22 +69,26 @@ class Hole {
             return;
         }
 
-        // Nouvelle vérification : la tile doit être un WALL
-        let [playerLine, playerCol] = player.getPlayerPos();
+        // Utilise la position visuelle arrondie
+        let playerCol = Math.round(spritePlayer.x / grid.cellSize);
+        let playerLine = Math.round(spritePlayer.y / grid.cellSize);
         let targetCol = playerCol + pOffsetX;
         let targetLine = playerLine + pOffsetY;
+
         if (!map.isWall(targetCol - playerCol, targetLine - playerLine)) {
             console.log("Impossible de creuser : la case n’est pas un mur");
             return;
         }
 
         // Si tout est OK, on continue
+        // reset pour être sûr d'avoir un trou initialisé de 0
         this.reset();
         this.spriteHole.offsetX = pOffsetX;
         this.spriteHole.offsetY = pOffsetY;
-        this.updatePosition();
-        this.line = playerLine + this.spriteHole.offsetY;
-        this.col = playerCol + this.spriteHole.offsetX;
+        this.line = targetLine;
+        this.col = targetCol;
+        this.spriteHole.x = targetCol * grid.cellSize;
+        this.spriteHole.y = targetLine * grid.cellSize;
         this.spriteHole.visible = true;
         this.isDigging = true;
     }
@@ -105,15 +109,6 @@ class Hole {
         }
 
         return true;
-    }
-
-    // place le trou à la bonne position
-    updatePosition() {
-        // Récupère la position actuelle du joueur
-        let [playerLine, playerCol] = player.getPlayerPos();
-        // positions en px pour l'affichage
-        this.spriteHole.x = (playerCol + this.spriteHole.offsetX) * grid.cellSize;
-        this.spriteHole.y = (playerLine + this.spriteHole.offsetY) * grid.cellSize;
     }
 
     reset() {
