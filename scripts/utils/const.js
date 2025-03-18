@@ -29,6 +29,8 @@ const CONST = {
 
     // ---------- TILES ----------
 
+    OUT_OF_BOUNDS: -1,
+
     // franchissable
     VOID: 0,
 

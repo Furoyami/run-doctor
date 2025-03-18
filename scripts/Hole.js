@@ -34,7 +34,7 @@ class Hole {
         if (this.timerStart) {
             this.timer += dt;
         }
-        if (this.timer >= 3) {
+        if (this.timer >= 10) {
             this.spriteHole.startAnimation("FILL");
             console.log("FILL démarré, pos :", this.spriteHole.x, this.spriteHole.y);
             // reinitialisations pour le prochain cycle

@@ -10,6 +10,8 @@ class Player {
         this.spritePlayer.setTileSheet(40, 40);
         this.spritePlayer.x = (game.width / 2) - (3 * game.grid.cellSize);// <-- nombre de case retirées du placement original
         this.spritePlayer.y = game.height - (2 * game.grid.cellSize);//  2* pour ne pas le placer dans le sol
+        this.spritePlayer.startX = this.spritePlayer.x; // pour le resetPosition
+        this.spritePlayer.startY = this.spritePlayer.y; // pour le resetPosition
         this.spritePlayer.vX = 0;
         this.spritePlayer.vY = 0;
         this.spritePlayer.dist = 0;
@@ -36,6 +38,7 @@ class Player {
         // Vérifie les cases sous le joueur
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
         const FALLVOID = tileUnderPlayer === CONST.VOID;
+        const OUTOFBOUNDS = tileUnderPlayer === CONST.OUT_OF_BOUNDS;
 
         this.setOffsetX();
 
@@ -48,6 +51,11 @@ class Player {
                 this.spritePlayer.startAnimation("FALL_LEFT");
             }
         }
+
+        // Si hors limites reset à la position de départ
+        if (OUTOFBOUNDS || this.spritePlayer.y >= game.map.y) this.resetPosition();
+
+
 
         const isLadderCurrent = game.map.isLadder(this.spritePlayer.offsetX, 0);
         const isLadderBelow = game.map.isLadder(0, 1); // Échelle sous le joueur
@@ -168,13 +176,6 @@ class Player {
             game.restartGame();
         }
 
-        // Réinitialise le niveau si le joueur tombe hors écran
-        if ((this.spritePlayer.y / game.grid.cellSize) >= (game.height - game.grid.cellSize) / game.grid.cellSize) {
-            game.map.InitMap(1);
-            this.spritePlayer.x = (game.width / 2) - (3 * game.grid.cellSize);
-            this.spritePlayer.y = game.height - (2 * game.grid.cellSize);
-        }
-
     }
 
     // Déplacement à droite
@@ -264,5 +265,13 @@ class Player {
             this.spritePlayer.x % game.grid.cellSize === 0 &&
             this.spritePlayer.y % game.grid.cellSize === 0
         );
+    }
+
+    resetPosition() {
+        this.spritePlayer.x = this.spritePlayer.startX;
+        this.spritePlayer.y = this.spritePlayer.startY;
+        this.spritePlayer.vX = 0;
+        this.spritePlayer.vY = 0;
+        this.selectIdleDirection();
     }
 }

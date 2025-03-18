@@ -145,8 +145,8 @@ class Map {
         let playerCol = playerPos[1] + pOffsetX;
 
         // Vérification des limites
-        if (playerLine < 0 || playerLine >= this.height || playerCol < 0 || playerCol >= this.width) {
-            return null;
+        if (playerLine < 0 || playerLine >= this.map.nbLines || playerCol < 0 || playerCol >= this.map.nbColumns) {
+            return CONST.OUT_OF_BOUNDS;
         }
 
         let id = this.map.level[playerLine][playerCol];
@@ -160,8 +160,8 @@ class Map {
         let enemyCol = Math.round(enemyPos[1] + pOffsetX);
 
         // Vérification des limites
-        if (enemyLine < 0 || enemyLine >= this.height || enemyCol < 0 || enemyCol >= this.width) {
-            return null; // Ou une constante comme CONST.OUT_OF_BOUNDS
+        if (enemyLine < 0 || enemyLine >= this.map.nbLines || enemyCol < 0 || enemyCol >= this.map.nbColumns) {
+            return CONST.OUT_OF_BOUNDS;
         }
 
         let id = this.map.level[enemyLine][enemyCol];
@@ -180,14 +180,6 @@ class Map {
     isWall(pOffsetX, pOffsetY) {
         let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
         if (id === CONST.WALL) {
-            return true;
-        }
-        return false;
-    }
-
-    isEmpty(pOffsetX, pOffsetY) {
-        let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
-        if (id === CONST.VOID) {
             return true;
         }
         return false;
@@ -312,7 +304,7 @@ class Map {
     }
 
     /**
-    * retourne la liste des positions de dpart des ennemis pour pouvoir l'utiliser ailleurs
+    * retourne la liste des positions de départ des ennemis pour pouvoir l'utiliser ailleurs
     */
     getEnemiesStartPos() {
         return this.lstEnemiesCoords;
