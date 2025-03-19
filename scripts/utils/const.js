@@ -42,6 +42,7 @@ const CONST = Object.freeze({
 
     // infranchissable
     WALL: 1,
+    // unwalkable pour le calcul de PF uniquement. Les ennemis peuvent le traverser en retombant après respawn
     UNWALKABLE_VOID: 9,
 
     // interactions

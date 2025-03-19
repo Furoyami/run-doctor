@@ -244,7 +244,13 @@ class Game {
         hudCtx.font = "35px Pixel";
         hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
         hudCtx.fillText("A / E : Creuser", 400, 30);
-        hudCtx.fillText("Vies: " + this.player.spritePlayer.lives, game.width - 100, 30);
+        hudCtx.fillText("Vies: " + this.player.spritePlayer.lives, game.width - 80, 30);
+    }
+
+
+    //utilitaire
+    rnd(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
     }
 }
 
