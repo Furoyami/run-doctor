@@ -1,4 +1,4 @@
-const CONST = {
+const CONST = Object.freeze({
 
     // Taille canvas
     WIDTH: canvas.width,
@@ -16,7 +16,7 @@ const CONST = {
     ARROWDOWN: "ArrowDown",
     ARROWLEFT: "ArrowLeft",
 
-    // Clés d'interactions' clavier
+    // Clés d'interactions clavier
     KEYW: "KeyW",
     KEYD: "KeyD",
     KEYS: "KeyS",
@@ -26,6 +26,12 @@ const CONST = {
     KEYE: "KeyE",
 
     KEYF5: "F5",
+
+    // States
+    LOADING: "loading",
+    PLAYING: "playing",
+    PAUSE: "pause",
+    GAMEOVER: "gameover",
 
     // ---------- TILES ----------
 
@@ -46,4 +52,4 @@ const CONST = {
     TARDIS_RT: 5,
     TARDIS_LB: 6,
     TARDIS_RB: 7
-};
+});

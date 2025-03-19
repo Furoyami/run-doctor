@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         // Machine à états
-        this.state = "loading";
+        this.state = CONST.LOADING;
 
         // Initialisations
         this.width = CONST.WIDTH;
@@ -20,6 +20,8 @@ class Game {
         this.map = new Map();
         this.player = new Player();
         this.imageLoader = new ImageLoader();
+
+        // Sons
         this.sndKey = new Sound("sounds/key.wav", 0.35);
 
         // Sprites
@@ -46,7 +48,7 @@ class Game {
 
     startGame() {
         if (this.debug) console.log("StartGame");
-        this.state = "playing";
+        this.state = CONST.PLAYING;
 
         this.grid.InitGrid();
         this.map.InitMap();
@@ -73,7 +75,7 @@ class Game {
         e.preventDefault();
 
         switch (this.state) {
-            case "playing":
+            case CONST.PLAYING:
                 switch (e.code) {
                     case CONST.ARROWUP:
                     case CONST.KEYW:
@@ -123,7 +125,7 @@ class Game {
 
     keyUp(e) {
         e.preventDefault();
-        if (this.state !== "playing") return;
+        if (this.state !== CONST.PLAYING) return;
 
         switch (e.code) {
             case CONST.ARROWUP:
@@ -190,10 +192,12 @@ class Game {
     }
 
     update(dt) {
+        console.log(this.state);
+
         switch (this.state) {
-            case "loading":
+            case CONST.LOADING:
                 break;
-            case "playing":
+            case CONST.PLAYING:
                 if (!this.gameReady) return;
                 this.map.Update(dt);
                 this.lstSprites.forEach(sprite => sprite.update(dt));
@@ -215,14 +219,14 @@ class Game {
     draw(pCtx) {
         pCtx.clearRect(0, 0, this.width, this.height);
         switch (this.state) {
-            case "loading":
+            case CONST.LOADING:
                 let ratio = this.imageLoader.getLoadedRatio();
                 pCtx.fillStyle = "rgb(255,255,255)";
                 pCtx.fillRect(this.width / 2 - 200, this.height / 2 - 25, 400, 50);
                 pCtx.fillStyle = "rgb(0,255,255)";
                 pCtx.fillRect(this.width / 2 - 200, this.height / 2 - 25, 400 * ratio, 50);
                 break;
-            case "playing":
+            case CONST.PLAYING:
                 if (!this.gameReady) return;
                 if (this.debug) this.grid.DrawGrid(pCtx);
                 this.map.Draw(pCtx);
@@ -240,6 +244,7 @@ class Game {
         hudCtx.font = "35px Pixel";
         hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
         hudCtx.fillText("A / E : Creuser", 400, 30);
+        hudCtx.fillText("Vies: " + this.player.spritePlayer.lives, game.width - 100, 30);
     }
 }
 

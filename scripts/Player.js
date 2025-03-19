@@ -17,6 +17,7 @@ class Player {
         this.spritePlayer.dist = 0;
         this.spritePlayer.speed = 2.5;
         this.spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
+        this.spritePlayer.lives = 3;
         this.spritePlayer.offsetX = null;
         // ---------------------------- ANIMATIONS -------------------------------
         this.spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
@@ -53,7 +54,7 @@ class Player {
 
         // Si hors limites reset à la position de départ
         if (this.spritePlayer.y >= game.map.y) {
-            this.resetPosition();
+            this.playerDies();
         }
 
         const isLadderCurrent = game.map.isLadder(this.spritePlayer.offsetX, 0);
@@ -267,12 +268,22 @@ class Player {
             this.spritePlayer.y % game.grid.cellSize === 0
         );
     }
-
+    // remet le joueur à la position de départ en cas de mort
     resetPosition() {
         this.spritePlayer.x = this.spritePlayer.startX;
         this.spritePlayer.y = this.spritePlayer.startY;
         this.spritePlayer.vX = 0;
         this.spritePlayer.vY = 0;
         this.selectIdleDirection();
+    }
+
+    playerDies() {
+        this.spritePlayer.lives--;
+
+        if (this.spritePlayer.lives >= 0) {
+            this.resetPosition();
+        } else {
+            game.state = CONST.GAMEOVER;
+        }
     }
 }
