@@ -10,6 +10,8 @@ class Enemy {
         this.spriteEnemy.y = this.spriteEnemy.line * game.grid.cellSize;
         this.spriteEnemy.speed = game.grid.cellSize;
 
+        this.imgHeight = imgEnemy.height;
+
         // ----- ANIMATIONS -----
         this.spriteEnemy.addAnimation("RIGHT", [0, 1], 0.5);
         this.spriteEnemy.addAnimation("LEFT", [2, 3], 0.5);
@@ -63,7 +65,7 @@ class Enemy {
         const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
-        if (belowTile === CONST.VOID && isAlignedToColumn && !this.isFalling) {
+        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS) && isAlignedToColumn && !this.isFalling) {
             this.startFalling();
         }
 
@@ -78,6 +80,12 @@ class Enemy {
      * Met à jour le chemin
      */
     updatePath() {
+        // si hors du haut de l'écran ne rien faire
+        if (this.spriteEnemy.y < 0) {
+            this.path = []; // le chemin reste vide
+            return;
+        }
+
         this.path = this.pathfinding.findPath(
             { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
             { x: this.targetCol, y: this.targetLine }
@@ -115,11 +123,16 @@ class Enemy {
     handleFall(dt) {
         const belowTile = game.map.getUnderEnemyID(this, 0, 1);
 
-        if (belowTile === CONST.VOID) {
+        if (belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || this.spriteEnemy.y < 0) {
             // Continuer à tomber
             this.spriteEnemy.x = this.lockedX;
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
+
+            // Respawn si hors écran
+            if (this.spriteEnemy.y >= game.map.y) {
+                this.respawnAtTop();
+            }
         } else {
             // Arrêter la chute si une case solide est atteinte
             this.isFalling = false;
@@ -203,27 +216,6 @@ class Enemy {
      * 
      * gère le changemen de l'animation en fonction de la direction prise par l'ennemi
      */
-    // facePathDirection() {
-    //     if (!this.path || this.path.length === 0) {
-    //         // si aucun chemin on sort de la fonction
-    //         return;
-    //     }
-
-    //     // Vérification directionnelle
-    //     const currentStep = this.path[0];
-    //     const nextStep = this.path[1];
-
-    //     if (!nextStep) return; // Pas d'étape suivante, pas besoin de changer la direction
-
-    //     const dx = nextStep.x - currentStep.x;
-
-    //     if (dx > 0) {
-    //         this.spriteEnemy.startAnimation("RIGHT");
-    //     } else if (dx < 0) {
-    //         this.spriteEnemy.startAnimation("LEFT");
-    //     }
-
-    // }
 
     facePathDirection() {
         if (!this.path || this.path.length <= 1) {
@@ -255,6 +247,20 @@ class Enemy {
                 this.spriteEnemy.startAnimation("LEFT");
             }
         }
+    }
+
+    /**
+     * gère la réaffectation des propriétés pour la réapparition de l'ennemi en haut de l'écran
+     */
+    respawnAtTop() {
+        this.spriteEnemy.x = (game.map.getMapNbColumns() / 2) * game.grid.cellSize;
+        this.spriteEnemy.y = -this.imgHeight;
+
+        this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
+        this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
+        this.lockedX = this.spriteEnemy.x;
+        this.isFalling = true;
+        this.path = [];
     }
 
     /**
