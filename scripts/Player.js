@@ -37,8 +37,7 @@ class Player {
     Update(dt) {
         // Vérifie les cases sous le joueur
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
-        const FALLVOID = tileUnderPlayer === CONST.VOID;
-        const OUTOFBOUNDS = tileUnderPlayer === CONST.OUT_OF_BOUNDS;
+        const FALLVOID = tileUnderPlayer === CONST.VOID || tileUnderPlayer === CONST.OUT_OF_BOUNDS;
 
         this.setOffsetX();
 
@@ -53,9 +52,9 @@ class Player {
         }
 
         // Si hors limites reset à la position de départ
-        if (OUTOFBOUNDS || this.spritePlayer.y >= game.map.y) this.resetPosition();
-
-
+        if (this.spritePlayer.y >= game.map.y) {
+            this.resetPosition();
+        }
 
         const isLadderCurrent = game.map.isLadder(this.spritePlayer.offsetX, 0);
         const isLadderBelow = game.map.isLadder(0, 1); // Échelle sous le joueur
@@ -144,11 +143,13 @@ class Player {
             }
 
             // Stoppe les animations "FALL" une fois au sol
-            if (this.spritePlayer.currentAnimation.name.startsWith("FALL") && game.map.getUnderPlayerID(0, 1) !== CONST.VOID) {
+            if (this.spritePlayer.currentAnimation.name.startsWith("FALL") &&
+                game.map.getUnderPlayerID(0, 1) !== CONST.VOID &&
+                game.map.getUnderPlayerID(0, 1) !== CONST.OUT_OF_BOUNDS) {
                 this.selectIdleDirection();
             }
 
-            // Déclenche le "IDLE" si droite/auche inactif
+            // Déclenche le "IDLE" si droite/gauche inactif
             if (!game.activeKeys.has("ArrowRight") &&
                 !game.activeKeys.has("ArrowLeft") &&
                 // empêche les activations du idle pendant la chute

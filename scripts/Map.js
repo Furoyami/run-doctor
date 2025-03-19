@@ -1,12 +1,12 @@
 class Map {
     constructor() {
-        this.map = [];
-        this.map.level;
-        this.map.nbLines = 0;
-        this.map.nbColumns = 0;
-        this.map.cellSize = 0;
-        this.map.x = 0;
-        this.map.y = 0;
+        this.matrix = [];
+        this.level;
+        this.nbLines = 0;
+        this.nbColumns = 0;
+        this.cellSize = 0;
+        this.x = 0;
+        this.y = 0;
         this.tileTextures = [];
         this.lstEnemiesCoords = [];
         this.tardisVisible = false;
@@ -18,12 +18,12 @@ class Map {
         if (debug) console.log("-------------------------------------------------- Map Init --------------------------------------------------");
 
         //attribution des valeurs de la grille
-        this.map.nbLines = grid.getGridNbLines();
-        this.map.nbColumns = grid.getGridNbColumns();
-        this.map.cellSize = grid.getGridCellSize();
+        this.nbLines = grid.getGridNbLines();
+        this.nbColumns = grid.getGridNbColumns();
+        this.cellSize = grid.getGridCellSize();
         // calcul de la taille totale de la map
-        this.map.x = this.map.nbColumns * this.map.cellSize;
-        this.map.y = this.map.nbLines * this.map.cellSize;
+        this.x = this.nbColumns * this.cellSize;
+        this.y = this.nbLines * this.cellSize;
 
         this.LoadTextures();
         this.LoadLevel(1);
@@ -34,7 +34,7 @@ class Map {
         // l'id 8 dans les grille représente la position des ennemis, nécessaire pour pouvoir récuperer leur position de départ
         switch (pLevel) {
             case 1:
-                this.map.level =
+                this.level =
                     [
                         [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
                         [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
@@ -55,12 +55,12 @@ class Map {
                         [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                     ];
-                this.map.level.keys = 0;
-                this.map.level.enemies = 3;
+                this.level.items = 0;
+                this.level.enemies = 3;
                 if (debug) console.log("Map lvl 1 chargée");
                 break;
             case 2:
-                this.map.level =
+                this.level =
                     [
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -81,8 +81,8 @@ class Map {
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     ];
-                this.map.level.keys = 0;
-                this.map.level.enemies = null;
+                this.level.items = 0;
+                this.level.enemies = null;
                 if (debug) console.log("Map lvl 2 chargée");
                 break;
 
@@ -145,11 +145,11 @@ class Map {
         let playerCol = playerPos[1] + pOffsetX;
 
         // Vérification des limites
-        if (playerLine < 0 || playerLine >= this.map.nbLines || playerCol < 0 || playerCol >= this.map.nbColumns) {
+        if (playerLine < 0 || playerLine >= this.nbLines || playerCol < 0 || playerCol >= this.nbColumns) {
             return CONST.OUT_OF_BOUNDS;
         }
 
-        let id = this.map.level[playerLine][playerCol];
+        let id = this.level[playerLine][playerCol];
 
         return id;
     }
@@ -160,11 +160,11 @@ class Map {
         let enemyCol = Math.round(enemyPos[1] + pOffsetX);
 
         // Vérification des limites
-        if (enemyLine < 0 || enemyLine >= this.map.nbLines || enemyCol < 0 || enemyCol >= this.map.nbColumns) {
+        if (enemyLine < 0 || enemyLine >= this.nbLines || enemyCol < 0 || enemyCol >= this.nbColumns) {
             return CONST.OUT_OF_BOUNDS;
         }
 
-        let id = this.map.level[enemyLine][enemyCol];
+        let id = this.level[enemyLine][enemyCol];
 
         return id;
     }
@@ -189,23 +189,23 @@ class Map {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.map.level[playerLine][playerCol] = CONST.VOID;
+        this.level[playerLine][playerCol] = CONST.VOID;
     }
 
     FillBrick(pOffsetX, pOffsetY) {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.map.level[playerLine][playerCol] = CONST.WALL;
+        this.level[playerLine][playerCol] = CONST.WALL;
     }
 
     CollectKey(pX, pY) {
         let line = pY / game.grid.cellSize;
         let col = pX / game.grid.cellSize;
-        if (this.map.level[line][col] == CONST.KEY) {
-            this.map.level[line][col] = CONST.VOID; // remplace les clés par du vide
+        if (this.level[line][col] == CONST.KEY) {
+            this.level[line][col] = CONST.VOID; // remplace les clés par du vide
         }
-        this.map.level.keys -= 1;
+        this.level.items -= 1;
     }
 
 
@@ -213,13 +213,13 @@ class Map {
      *  Lis la map du niveau et compte le nombre de clés
      */
     Read() {
-        for (let line = 0; line < this.map.nbLines; line++) {
-            for (let col = 0; col < this.map.nbColumns; col++) {
-                let id = this.map.level[line][col];
+        for (let line = 0; line < this.nbLines; line++) {
+            for (let col = 0; col < this.nbColumns; col++) {
+                let id = this.level[line][col];
                 if (id === CONST.KEY) {
-                    this.map.level.keys += 1;
+                    this.level.items += 1;
                 }
-                else if (id === 8 && this.lstEnemiesCoords.length != this.map.level.enemies) {
+                else if (id === 8 && this.lstEnemiesCoords.length != this.level.enemies) {
                     //position de départ d'un ennemi
                     //quand on trouve l'id 8, on stocke les coordonnées de l'id dans la liste
                     let enemyStartCoords = {
@@ -233,7 +233,7 @@ class Map {
     }
 
     Update(dt) {
-        if (this.map.level.keys === 0 && !this.tardisVisible) {
+        if (this.level.items === 0 && !this.tardisVisible) {
             for (let tileID in this.tileTextures) {
                 let texture = this.tileTextures[tileID];
                 if (texture instanceof Sprite &&
@@ -254,17 +254,17 @@ class Map {
     }
 
     Draw(pCtx) {
-        for (let line = 0; line < this.map.nbLines; line++) {
-            for (let col = 0; col < this.map.nbColumns; col++) {
-                let x = (col * this.map.cellSize) + game.grid.getGridOffset();
-                let y = (line * this.map.cellSize);
+        for (let line = 0; line < this.nbLines; line++) {
+            for (let col = 0; col < this.nbColumns; col++) {
+                let x = (col * this.cellSize) + game.grid.getGridOffset();
+                let y = (line * this.cellSize);
 
                 let backgroundTexture = this.tileTextures[0];
                 if (this.backgroundTexture !== null) pCtx.drawImage(backgroundTexture, x, y);
 
-                let id = this.map.level[line][col];
+                let id = this.level[line][col];
                 // Masque le TARDIS tant que les clés ne sont pas ramassées
-                if (this.map.level.keys != 0) {
+                if (this.level.items != 0) {
                     if (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT ||
                         id === CONST.TARDIS_LB || id === CONST.TARDIS_RB) {
                         id = CONST.VOID;
@@ -295,12 +295,12 @@ class Map {
 
     // ----- GETTERS -----
 
-    getNbKeysInLevel() {
-        return this.map.level.keys;
+    getNbitemsInLevel() {
+        return this.level.items;
     }
 
     getNbEnemiesInLevel() {
-        return this.map.level.enemies;
+        return this.level.enemies;
     }
 
     /**
@@ -311,14 +311,14 @@ class Map {
     }
 
     getCurrentMapLevel() {
-        return this.map.level;
+        return this.level;
     }
 
     getMapNbLines() {
-        return this.map.nbLines;
+        return this.nbLines;
     }
 
     getMapNbColumns() {
-        return this.map.nbColumns;
+        return this.nbColumns;
     }
 }
