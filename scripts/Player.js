@@ -1,6 +1,11 @@
 class Player {
     constructor() {
         this.sprite = null;
+        this.lives = 3;
+        this.invincibilityTimer = 0; // Timer en secondes pour l’invincibilité
+        this.isInvincible = false;   // État d’invincibilité
+        this.blinkTimer = 0;
+        this.blinkInterval = 0.2;   // clignotement
     }
 
     CreatePlayer() {
@@ -17,8 +22,8 @@ class Player {
         this.spritePlayer.dist = 0;
         this.spritePlayer.speed = 2.5;
         this.spritePlayer.lastVx = 0; // enregistre la dernière direction horizontale du perso
-        this.spritePlayer.lives = 3;
         this.spritePlayer.offsetX = null;
+
         // ---------------------------- ANIMATIONS -------------------------------
         this.spritePlayer.addAnimation("IDLE_RIGHT", [0, 1], 0.75);
         this.spritePlayer.addAnimation("IDLE_LEFT", [8, 9], 0.75);
@@ -56,6 +61,7 @@ class Player {
         if (this.spritePlayer.y >= game.map.y) {
             this.playerDies();
         }
+        this.setInvicibility(dt);
 
         const isLadderCurrent = game.map.isLadder(this.spritePlayer.offsetX, 0);
         const isLadderBelow = game.map.isLadder(0, 1); // Échelle sous le joueur
@@ -161,6 +167,7 @@ class Player {
             ) {
                 this.selectIdleDirection();
             }
+
         }
 
         // Ramasse les clés
@@ -177,8 +184,9 @@ class Player {
             // Reinit le jeu
             game.restartGame();
         }
-
     }
+
+
 
     // Déplacement à droite
     moveRight() {
@@ -256,9 +264,11 @@ class Player {
 
     // retourne la case et ligne actuelles du joueur
     getPlayerPos() {
-        let playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
-        let playerLine = Math.floor(this.spritePlayer.y / game.grid.cellSize);
-        return [playerLine, playerCol];
+        if (this.spritePlayer !== undefined) {
+            let playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
+            let playerLine = Math.floor(this.spritePlayer.y / game.grid.cellSize);
+            return [playerLine, playerCol];
+        }
     }
 
     // renvoie si le joueur a fini son mouvement (après réalignement éventuel)
@@ -278,12 +288,40 @@ class Player {
     }
 
     playerDies() {
-        this.spritePlayer.lives--;
-
-        if (this.spritePlayer.lives >= 0) {
+        this.lives -= 1;
+        if (this.lives >= 0) {
+            this.isInvincible = true;
+            this.blinkTimer = 0;
             this.resetPosition();
         } else {
             game.state = CONST.GAMEOVER;
         }
+    }
+
+    // gère l'état et le temps d'invicibilité
+    setInvicibility(dt) {
+        if (this.isInvincible) {
+            this.invincibilityTimer += dt;      //timer invu
+            this.blinkTimer += dt;              //timer de clignotement
+
+            this.invincibilityBlink();
+
+            if (this.invincibilityTimer >= 2) {
+                this.isInvincible = false;
+                this.invincibilityTimer = 0;
+                this.blinkTimer = 0;
+                this.spritePlayer.visible = true;
+            }
+        }
+
+    }
+
+    // gère l'anim de clignotement
+    invincibilityBlink() {
+        if (this.blinkTimer >= this.blinkInterval) {
+            this.spritePlayer.visible = !this.spritePlayer.visible;
+            this.blinkTimer = 0; // reset du timer
+        }
+
     }
 }

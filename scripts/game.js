@@ -192,8 +192,6 @@ class Game {
     }
 
     update(dt) {
-        console.log(this.state);
-
         switch (this.state) {
             case CONST.LOADING:
                 break;
@@ -201,8 +199,18 @@ class Game {
                 if (!this.gameReady) return;
                 this.map.Update(dt);
                 this.lstSprites.forEach(sprite => sprite.update(dt));
+
                 this.player.Update(dt);
-                this.lstEnemies.forEach(enemy => enemy.Update(dt, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0]));
+
+                this.lstEnemies.forEach(enemy => {
+                    enemy.Update(dt, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0]);
+                    if (!this.player.isInvincible &&
+                        this.player.getPlayerPos()[1] === enemy.getEnemyPos()[1] &&
+                        this.player.getPlayerPos()[0] === enemy.getEnemyPos()[0]) {
+                        this.player.playerDies();
+                    }
+                });
+
                 this.lstHoles.forEach(hole => {
                     if (hole.isDigging) hole.Update(dt);
                     hole.UpdateTimer(dt);
@@ -244,7 +252,7 @@ class Game {
         hudCtx.font = "35px Pixel";
         hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
         hudCtx.fillText("A / E : Creuser", 400, 30);
-        hudCtx.fillText("Vies: " + this.player.spritePlayer.lives, game.width - 80, 30);
+        hudCtx.fillText("Vies: " + this.player.lives, game.width - 80, 30);
     }
 
 
