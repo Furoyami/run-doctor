@@ -295,6 +295,4 @@ class Enemy {
             pCtx.restore();
         }
     }
-
-
 }

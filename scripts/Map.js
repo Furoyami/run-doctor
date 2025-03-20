@@ -295,7 +295,7 @@ class Map {
 
     // ----- GETTERS -----
 
-    getNbitemsInLevel() {
+    getNbItemsInLevel() {
         return this.level.items;
     }
 
