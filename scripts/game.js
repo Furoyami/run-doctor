@@ -221,6 +221,8 @@ class Game {
                 }
                 break;
         }
+        console.log(this.state);
+
     }
 
     draw(pCtx) {
@@ -241,6 +243,12 @@ class Game {
                 if (this.debug) this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx));
                 this.drawHUD();
                 break;
+            case CONST.GAMEOVER:
+                pCtx.fillStyle = "#FFF";
+                pCtx.font = "75px Pixel";
+                this.centerText(pCtx, "Perdu !", game.width / 2, game.height / 2 - 50);
+                this.centerText(pCtx, "R pour rejouer !", game.width / 2, game.height / 2 + 25);
+                break;
         }
     }
 
@@ -258,6 +266,13 @@ class Game {
     //utilitaire
     rnd(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    centerText(pCtx, text, x, y) {
+        pCtx.textAlign = "left"; // Reset pour éviter des conflits
+        const textWidth = pCtx.measureText(text).width; // Largeur du texte
+        const centeredX = x - (textWidth / 2); // Décalage pour centrer
+        pCtx.fillText(text, centeredX, y); // Dessiner
     }
 }
 
