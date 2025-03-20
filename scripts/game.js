@@ -113,12 +113,10 @@ class Game {
                     case CONST.KEYE:
                         this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
                         break;
-
-                    // !!! a modifier pour répondre aux conditions de win / lose
-                    case CONST.KEYR:
-                        if (e.code === CONST.KEYR) this.restartGame();
-                        break;
                 }
+            // !!! a modifier pour répondre aux conditions de win / lose
+            case CONST.GAMEOVER:
+                if (e.code === CONST.KEYR) this.restartGame();
                 break;
         }
     }
@@ -188,6 +186,7 @@ class Game {
         this.lstHoles = [];
         this.activeKeys = new Set();
         this.map.tardisVisible = false;
+        this.player.resetPlayer();
         this.startGame();
     }
 

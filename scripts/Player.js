@@ -287,6 +287,14 @@ class Player {
         this.selectIdleDirection();
     }
 
+    resetPlayer() {
+        this.lives = 3;
+        this.invincibilityTimer = 0; // Timer en secondes pour l’invincibilité
+        this.isInvincible = false;   // État d’invincibilité
+        this.blinkTimer = 0;
+        this.blinkInterval = 0.2;   // clignotement
+    }
+
     playerDies() {
         this.lives -= 1;
         if (this.lives >= 0) {
