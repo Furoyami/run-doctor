@@ -33,14 +33,29 @@ class Enemy {
         this.previousTargetCol = pTargetCol;
         this.previousTargetLine = pTargetLine;
 
+        // Gestion de piège
+        this.isTrapped = false;
+        this.trappedTimer = 0;
+        this.trappedAt = null;
+        this.justFreed = false; // Flag pour protéger la sortie
+
         if (debug) console.log("----- Enemy créé -----");
     }
 
     Update(dt, pTargetCol, pTargetLine) {
+
+        if (this.isTrapped) {
+            this.trappedTimer -= dt;
+            if (this.trappedTimer <= 0) {
+                this.trappedTimer = 0;
+            }
+            return;
+        }
+
         if (this.hasReachedTarget) return;
 
         if (!this.isFalling) {
-            // Recalculer le chemin si la cible a changé de position et n'est pas en chute
+            // Recalculer le chemin si la cible a changé de position et que l'ennemi n'est pas en chute
             if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
                 this.targetCol = pTargetCol;
                 this.targetLine = pTargetLine;
@@ -65,14 +80,18 @@ class Enemy {
         const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
-        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || belowTile === CONST.UNWALKABLE_VOID) && isAlignedToColumn && !this.isFalling) {
+        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || belowTile === CONST.UNWALKABLE_VOID)
+            && isAlignedToColumn && !this.isFalling && !this.justFreed) {
             this.startFalling();
+            if (this.debug) console.log("Chute déclenchée à", this.spriteEnemy.col, this.spriteEnemy.line);
         }
 
         if (this.isFalling) {
             this.handleFall(dt);
         } else {
             this.followPath(dt);
+            this.justFreed = false;
+            // console.log("Following path:", this.path);
         }
     }
 
@@ -90,6 +109,8 @@ class Enemy {
             { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
             { x: this.targetCol, y: this.targetLine }
         );
+
+        console.log("Path recalculé:", this.path.length);
     }
 
     /**
@@ -113,7 +134,6 @@ class Enemy {
         else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
             this.spriteEnemy.startAnimation("LEVITATE_LEFT");
         }
-
     }
 
     /**
@@ -281,8 +301,8 @@ class Enemy {
 
             for (let i = 0; i < this.path.length; i++) {
                 let step = this.path[i];
-                let targetX = step.x * grid.cellSize;
-                let targetY = step.y * grid.cellSize;
+                let targetX = step.x * game.grid.cellSize;
+                let targetY = step.y * game.grid.cellSize;
 
                 if (i === 0) {
                     pCtx.moveTo(this.spriteEnemy.x, this.spriteEnemy.y);

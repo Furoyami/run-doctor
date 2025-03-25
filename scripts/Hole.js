@@ -11,6 +11,7 @@ class Hole {
         this.spriteHole.addAnimation("DIG", [0, 1, 2, 3, 4, 5, 6, 7], 0.1, 0, false);
         this.spriteHole.addAnimation("FILL", [7, 6, 5, 4, 3, 2, 1, 0], 0.1, 0, false);
 
+        this.isTrap = false;
         this.isDigging = false;
         this.timerStart = false;
         this.timer = 0;
@@ -24,6 +25,7 @@ class Hole {
             // remplacer le mur par du vide
             game.map.EmptyBrick(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]); // Utilise la position absolue
             this.spriteHole.startAnimation("DIG");
+            this.isTrap = true;
             this.isDigging = false;
             this.timerStart = true;
         }
@@ -36,7 +38,7 @@ class Hole {
         }
         if (this.timer >= 10) {
             this.spriteHole.startAnimation("FILL");
-            console.log("FILL démarré, pos :", this.spriteHole.x, this.spriteHole.y);
+            if (debug) console.log("FILL démarré, pos :", this.spriteHole.x, this.spriteHole.y);
             // reinitialisations pour le prochain cycle
             this.timer = 0;
             this.timerStart = false;
@@ -50,6 +52,7 @@ class Hole {
             !game.map.isWall(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0])) {
             game.map.FillBrick(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]); // Utilise la position absolue
             this.isFilled = true; // Marque la brique remplie
+            this.isTrap = false;
         }
 
         // Vérifie la fin de l’animation FILL
@@ -57,7 +60,7 @@ class Hole {
             this.spriteHole.currentAnimation.name === "FILL" &&
             this.spriteHole.currentFrameInAnimation >= 7) {
             this.isDone = true; // Le trou est terminé
-            console.log("Trou terminé, pos :", this.spriteHole.x, this.spriteHole.y);
+            if (debug) console.log("Trou terminé, pos :", this.spriteHole.x, this.spriteHole.y);
         }
     }
 
@@ -65,7 +68,7 @@ class Hole {
     startDigging(pOffsetX, pOffsetY) {
         // Vérifie si la position est déjà occupée
         if (!this.checkPosition(pOffsetX, pOffsetY)) {
-            console.log("Position déjà occupée par un trou actif, ignoré");
+            if (debug) console.log("Position déjà occupée par un trou actif, ignoré");
             return;
         }
 
@@ -76,7 +79,7 @@ class Hole {
         let targetLine = playerLine + pOffsetY;
 
         if (!game.map.isWall(targetCol - playerCol, targetLine - playerLine)) {
-            console.log("Impossible de creuser : la case n’est pas un mur");
+            if (debug) console.log("Impossible de creuser : la case n’est pas un mur");
             return;
         }
 

@@ -57,7 +57,7 @@ class Game {
         this.spritePlayer = this.player.CreatePlayer(); // Assume que Player initialise sprite
         this.lstSprites.push(this.spritePlayer);
 
-        let nbEnemies = this.map.getNbEnemiesInLevel();
+        let nbEnemies = 1; //this.map.getNbEnemiesInLevel();
         for (let i = 0; i < nbEnemies; i++) {
             let enemyPos = this.map.getEnemiesStartPos()[i];
             let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map);
@@ -202,12 +202,69 @@ class Game {
                 this.player.Update(dt);
 
                 this.lstEnemies.forEach(enemy => {
-                    enemy.Update(dt, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0]);
+
+                    let enemyPos = enemy.getEnemyPos();
+                    let enemyLine = enemyPos[0];
+                    let enemyCol = enemyPos[1];
+
+                    let playerPos = this.player.getPlayerPos();
+                    let playerLine = playerPos[0];
+                    let playerCol = playerPos[1];
+
+                    enemy.Update(dt, playerCol, playerLine);
+
                     if (!this.player.isInvincible &&
-                        this.player.getPlayerPos()[1] === enemy.getEnemyPos()[1] &&
-                        this.player.getPlayerPos()[0] === enemy.getEnemyPos()[0]) {
+                        playerCol === enemyCol &&
+                        playerLine === enemyLine) {
                         this.player.playerDies();
                     }
+                    // Verification du piegeage
+                    let trapHole = this.lstHoles.find(hole =>
+                        hole.isTrap &&
+                        hole.col === enemyCol &&
+                        hole.line === enemyLine
+                    );
+                    if (!enemy.isTrapped && trapHole) {
+                        // on passe en état de piège
+                        enemy.spriteEnemy.startAnimation("LEFT");
+                        enemy.isTrapped = true;
+                        enemy.trappedTimer = this.rnd(3, 8);
+                        enemy.trappedAt = { col: enemyCol, line: enemyLine };
+                        console.log("piégé !");
+                    } else if (enemy.isTrapped && enemy.trappedTimer <= 0) {
+                        let targetLine = enemy.trappedAt.line - 1;
+                        let targetY = targetLine * this.grid.cellSize;
+
+                        if (enemy.spriteEnemy.y > targetY) {
+                            enemy.spriteEnemy.y -= enemy.spriteEnemy.speed * dt;
+                            if (enemy.spriteEnemy.y <= targetY) {
+                                enemy.spriteEnemy.y = targetY;
+                                enemy.spriteEnemy.line = targetLine;
+                            }
+                        } else {
+                            enemy.isTrapped = false;
+                            enemy.justFreed = true;
+                            enemy.path = [];
+                            enemy.updatePath();
+
+                            console.log("libéré");
+                        }
+                        // console.log("targetY:", targetY);
+                        // console.log("enemy.spriteEnemy.y:", enemy.spriteEnemy.y);
+                        // console.log(enemy.path);
+
+                    } else if (enemy.isTrapped && !this.lstHoles.some(hole =>
+                        hole.isTrap &&
+                        hole.col === enemy.trappedAt.col &&
+                        hole.line === enemy.trappedAt.line)) {
+                        enemy.respawnAtTop();
+                        enemy.isTrapped = false;
+                        enemy.trappedTimer = 0;
+                        enemy.trappedAt = null;
+                        if (this.debug) console.log("enterré vivant !");
+                    }
+                    // console.log(trapHole);
+
                 });
 
                 this.lstHoles.forEach(hole => {
@@ -221,8 +278,6 @@ class Game {
                 }
                 break;
         }
-        console.log(this.state);
-
     }
 
     draw(pCtx) {
@@ -240,7 +295,7 @@ class Game {
                 if (this.debug) this.grid.DrawGrid(pCtx);
                 this.map.Draw(pCtx);
                 this.lstSprites.forEach(sprite => sprite.draw(pCtx));
-                if (this.debug) this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx));
+                this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
                 this.drawHUD();
                 break;
             case CONST.GAMEOVER:
