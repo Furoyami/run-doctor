@@ -1,13 +1,13 @@
 class Pathfinding {
-    constructor(map) {
-        this.map = map;
+    constructor() {//map) {
+        // this.map = map;
     }
 
     heuristic(a, b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
-    findPath(start, goal) {
+    findPath(start, goal, map) {
         const openSet = [start];
         const closedSet = [];
 
@@ -27,7 +27,7 @@ class Pathfinding {
             openSet.splice(openSet.indexOf(current), 1);
             closedSet.push(current);
 
-            const neighbors = this.getValidNeighbors(current);
+            const neighbors = this.getValidNeighbors(current, map);
 
             for (let neighbor of neighbors) {
                 if (closedSet.some(n => n.x === neighbor.x && n.y === neighbor.y)) {
@@ -58,7 +58,7 @@ class Pathfinding {
      * @param {object} current entité courante
      * @returns un tableau filtré des voisins poteniels valides
      */
-    getValidNeighbors(current) {
+    getValidNeighbors(current, map) {
         const potentialNeighbors = [
             { x: current.x - 1, y: current.y },
             { x: current.x + 1, y: current.y },
@@ -68,17 +68,17 @@ class Pathfinding {
 
         return potentialNeighbors.filter(neighbor => {
             // Vérifier si le voisin est dans les limites de la carte
-            if (neighbor.x < 0 || neighbor.x >= this.map[0].length || neighbor.y < 0 || neighbor.y >= this.map.length) {
+            if (neighbor.x < 0 || neighbor.x >= map[0].length || neighbor.y < 0 || neighbor.y >= map.length) {
                 return false;
             }
 
             // Récupérer le type de tuile de la carte
-            const targetTile = this.map[neighbor.y][neighbor.x];
+            const targetTile = map[neighbor.y][neighbor.x];
 
             //Empecher les montées par le VOID si aucune case solide dessous
             let tileBelow;
-            if (neighbor.y + 1 < this.map.length) {
-                tileBelow = this.map[neighbor.y + 1][neighbor.x];
+            if (neighbor.y + 1 < map.length) {
+                tileBelow = map[neighbor.y + 1][neighbor.x];
             } else {
                 tileBelow = CONST.WALL;
             }

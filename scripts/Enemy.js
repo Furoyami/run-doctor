@@ -1,5 +1,5 @@
 class Enemy {
-    constructor(pLine = 0, pCol = 0, pTargetCol, pTargetLine, pMap) {
+    constructor(pLine = 0, pCol = 0, pTargetCol, pTargetLine, pMap, pPathfinding) {
         this.map = pMap.getCurrentMapLevel();
         let imgEnemy = game.imageLoader.getImage("images/dalek_tile.png");
         this.spriteEnemy = new Sprite(imgEnemy);
@@ -23,7 +23,7 @@ class Enemy {
         this.targetLine = pTargetLine;
 
         this.path;
-        this.pathfinding = new Pathfinding(this.map);
+        this.pathfinding = pPathfinding;
 
         this.hasReachedTarget = false;
         this.isFalling = false;
@@ -107,7 +107,8 @@ class Enemy {
 
         this.path = this.pathfinding.findPath(
             { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-            { x: this.targetCol, y: this.targetLine }
+            { x: this.targetCol, y: this.targetLine },
+            this.map
         );
 
         console.log("Path recalculé:", this.path.length);
