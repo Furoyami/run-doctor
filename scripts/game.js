@@ -33,22 +33,6 @@ class Game {
         this.spriteHole = null;
     }
 
-    load() {
-        document.addEventListener("keydown", (e) => this.keyDown(e), false);
-        document.addEventListener("keyup", (e) => this.keyUp(e), false);
-
-        this.imageLoader.add("images/doctor_tile.png");
-        this.imageLoader.add("images/hole_tile.png");
-        this.imageLoader.add("images/dalek_tile.png");
-        this.imageLoader.add("images/key_tile.png");
-        this.imageLoader.add("images/tardis_rt_tile.png");
-        this.imageLoader.add("images/tardis_lt_tile.png");
-        this.imageLoader.add("images/tardis_rb_tile.png");
-        this.imageLoader.add("images/tardis_lb_tile.png");
-
-        this.imageLoader.start(() => this.startGame());
-    }
-
     startGame() {
         if (this.debug) console.log("StartGame");
         this.state = CONST.PLAYING;
@@ -193,6 +177,80 @@ class Game {
         this.startGame();
     }
 
+    // Récupères les trous consommés
+    getConsumedTraps() {
+        return this.lstEnemies
+            .filter(enemy => enemy.trappedAt && enemy.trappedTimer <= 0 && !enemy.isTrapped) // Trou consommé
+            .map(enemy => ({ x: enemy.trappedAt.col, y: enemy.trappedAt.line }));
+    }
+
+    // gère les pieges
+    handleTraps(dt, enemy, enemyCol, enemyLine) {
+        // Verification du piegeage
+        let trapHole = this.lstHoles.find(hole =>
+            hole.isTrap &&
+            hole.col === enemyCol &&
+            hole.line === enemyLine
+        );
+
+        if (!enemy.isTrapped && trapHole) {
+            // on passe en état de piège
+            if (enemy.spriteEnemy.currentAnimation.name.endsWith("_LEFT")) {
+                enemy.spriteEnemy.startAnimation("LEFT");
+            } else if (enemy.spriteEnemy.currentAnimation.name.endsWith("_RIGHT")) {
+                enemy.spriteEnemy.startAnimation("RIGHT");
+            }
+            enemy.isTrapped = true;
+            enemy.trappedTimer = this.rnd(3, 8);
+            enemy.trappedAt = { col: enemyCol, line: enemyLine };
+            enemy.path = [];
+            enemy.isFalling = false;
+            console.log("piégé !");
+            this.map.ChangeToUnwalkable(enemyCol, enemyLine); // change la case en unwalkable pour que le joueur puisse marcher dessus
+        } else if (enemy.isTrapped && enemy.trappedTimer <= 0) {
+            let targetLine = enemy.trappedAt.line - 1;
+            let targetY = targetLine * this.grid.cellSize;
+
+            if (enemy.spriteEnemy.y > targetY) {
+                enemy.spriteEnemy.y -= enemy.spriteEnemy.speed * dt;
+                if (enemy.spriteEnemy.y <= targetY) {
+                    enemy.spriteEnemy.y = targetY;
+                    enemy.spriteEnemy.line = targetLine;
+                    enemy.isTrapped = false;
+                    enemy.justFreed = true;
+                    enemy.updatePath();
+                    console.log("libéré");
+                }
+            }
+        } else if (enemy.isTrapped && !this.lstHoles.some(hole =>
+            hole.isTrap &&
+            hole.col === enemy.trappedAt.col &&
+            hole.line === enemy.trappedAt.line)) {
+            enemy.respawnAtTop();
+            enemy.isTrapped = false;
+            enemy.trappedTimer = 0;
+            enemy.trappedAt = null;
+            if (this.debug) console.log("enterré vivant !");
+        }
+    }
+    // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
+
+    load() {
+        document.addEventListener("keydown", (e) => this.keyDown(e), false);
+        document.addEventListener("keyup", (e) => this.keyUp(e), false);
+
+        this.imageLoader.add("images/doctor_tile.png");
+        this.imageLoader.add("images/hole_tile.png");
+        this.imageLoader.add("images/dalek_tile.png");
+        this.imageLoader.add("images/key_tile.png");
+        this.imageLoader.add("images/tardis_rt_tile.png");
+        this.imageLoader.add("images/tardis_lt_tile.png");
+        this.imageLoader.add("images/tardis_rb_tile.png");
+        this.imageLoader.add("images/tardis_lb_tile.png");
+
+        this.imageLoader.start(() => this.startGame());
+    }
+
     update(dt) {
         switch (this.state) {
             case CONST.LOADING:
@@ -216,64 +274,21 @@ class Game {
 
                     enemy.Update(dt, playerCol, playerLine);
 
+                    // Tue le joueur s'il entre en collision avec un ennemi
                     if (!this.player.isInvincible &&
                         playerCol === enemyCol &&
                         playerLine === enemyLine) {
                         this.player.playerDies();
                     }
-                    // Verification du piegeage
-                    let trapHole = this.lstHoles.find(hole =>
-                        hole.isTrap &&
-                        hole.col === enemyCol &&
-                        hole.line === enemyLine
-                    );
-                    if (!enemy.isTrapped && trapHole) {
-                        // on passe en état de piège
-                        enemy.spriteEnemy.startAnimation("LEFT");
-                        enemy.isTrapped = true;
-                        enemy.trappedTimer = this.rnd(3, 8);
-                        enemy.trappedAt = { col: enemyCol, line: enemyLine };
-                        console.log("piégé !");
-                    } else if (enemy.isTrapped && enemy.trappedTimer <= 0) {
-                        let targetLine = enemy.trappedAt.line - 1;
-                        let targetY = targetLine * this.grid.cellSize;
 
-                        if (enemy.spriteEnemy.y > targetY) {
-                            enemy.spriteEnemy.y -= enemy.spriteEnemy.speed * dt;
-                            if (enemy.spriteEnemy.y <= targetY) {
-                                enemy.spriteEnemy.y = targetY;
-                                enemy.spriteEnemy.line = targetLine;
-                            }
-                        } else {
-                            enemy.isTrapped = false;
-                            enemy.justFreed = true;
-                            enemy.path = [];
-                            enemy.updatePath();
-
-                            console.log("libéré");
-                        }
-                        // console.log("targetY:", targetY);
-                        // console.log("enemy.spriteEnemy.y:", enemy.spriteEnemy.y);
-                        // console.log(enemy.path);
-
-                    } else if (enemy.isTrapped && !this.lstHoles.some(hole =>
-                        hole.isTrap &&
-                        hole.col === enemy.trappedAt.col &&
-                        hole.line === enemy.trappedAt.line)) {
-                        enemy.respawnAtTop();
-                        enemy.isTrapped = false;
-                        enemy.trappedTimer = 0;
-                        enemy.trappedAt = null;
-                        if (this.debug) console.log("enterré vivant !");
-                    }
-                    // console.log(trapHole);
-
+                    this.handleTraps(dt, enemy, enemyCol, enemyLine);
                 });
 
                 this.lstHoles.forEach(hole => {
                     if (hole.isDigging) hole.Update(dt);
                     hole.UpdateTimer(dt);
                 });
+                // permet de retirer le trou de la liste une fois que son timer est terminé
                 while (this.lstHoles.length > 0 && this.lstHoles[0].isDone) {
                     let finishedHole = this.lstHoles.shift();
                     let spriteIndex = this.lstSprites.indexOf(finishedHole.spriteHole);
@@ -295,11 +310,13 @@ class Game {
                 break;
             case CONST.PLAYING:
                 if (!this.gameReady) return;
-                if (this.debug) this.grid.DrawGrid(pCtx);
                 this.map.Draw(pCtx);
                 this.lstSprites.forEach(sprite => sprite.draw(pCtx));
-                this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
                 this.drawHUD();
+                if (debug) {
+                    this.grid.DrawGrid(pCtx);
+                    this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
+                }
                 break;
             case CONST.GAMEOVER:
                 pCtx.fillStyle = "#FFF";

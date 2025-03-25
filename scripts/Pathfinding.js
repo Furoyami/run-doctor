@@ -7,7 +7,7 @@ class Pathfinding {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
-    findPath(start, goal, map) {
+    findPath(start, goal, map, forbiddenTiles = []) {
         const openSet = [start];
         const closedSet = [];
 
@@ -27,7 +27,7 @@ class Pathfinding {
             openSet.splice(openSet.indexOf(current), 1);
             closedSet.push(current);
 
-            const neighbors = this.getValidNeighbors(current, map);
+            const neighbors = this.getValidNeighbors(current, map, forbiddenTiles);
 
             for (let neighbor of neighbors) {
                 if (closedSet.some(n => n.x === neighbor.x && n.y === neighbor.y)) {
@@ -56,9 +56,11 @@ class Pathfinding {
     /**
      * 
      * @param {object} current entité courante
+     * @param {object} map du niveau en cours
+     * @param {*} forbiddenTiles liste des trous ayant servi comme pieges
      * @returns un tableau filtré des voisins poteniels valides
      */
-    getValidNeighbors(current, map) {
+    getValidNeighbors(current, map, forbiddenTiles) {
         const potentialNeighbors = [
             { x: current.x - 1, y: current.y },
             { x: current.x + 1, y: current.y },
@@ -67,6 +69,7 @@ class Pathfinding {
         ];
 
         return potentialNeighbors.filter(neighbor => {
+
             // Vérifier si le voisin est dans les limites de la carte
             if (neighbor.x < 0 || neighbor.x >= map[0].length || neighbor.y < 0 || neighbor.y >= map.length) {
                 return false;
@@ -86,10 +89,12 @@ class Pathfinding {
             if (targetTile === CONST.VOID && neighbor.y < current.y && tileBelow === CONST.VOID) return false;
 
             // Cases infranchissable
-            if (targetTile === CONST.WALL ||
-                targetTile === CONST.UNWALKABLE_VOID) return false;
+            if (targetTile === CONST.WALL || targetTile === CONST.UNWALKABLE_VOID) return false;
 
-            // Ajoutez d'autres contraintes ici si nécessaire
+            // Exclure les trous consommés
+            if (forbiddenTiles.some(tile => tile.x === neighbor.x && tile.y === neighbor.y)) {
+                return false;
+            }
 
             return true; // Si aucune contrainte n'est enfreinte
         });

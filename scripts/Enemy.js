@@ -37,7 +37,7 @@ class Enemy {
         this.isTrapped = false;
         this.trappedTimer = 0;
         this.trappedAt = null;
-        this.justFreed = false; // Flag pour protéger la sortie
+        this.justFreed = false; // Flag pour protéger la sortie. "sécurité" pour garantir une frame entre enemy.Update et game.update
 
         if (debug) console.log("----- Enemy créé -----");
     }
@@ -83,7 +83,6 @@ class Enemy {
         if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || belowTile === CONST.UNWALKABLE_VOID)
             && isAlignedToColumn && !this.isFalling && !this.justFreed) {
             this.startFalling();
-            if (this.debug) console.log("Chute déclenchée à", this.spriteEnemy.col, this.spriteEnemy.line);
         }
 
         if (this.isFalling) {
@@ -91,7 +90,6 @@ class Enemy {
         } else {
             this.followPath(dt);
             this.justFreed = false;
-            // console.log("Following path:", this.path);
         }
     }
 
@@ -108,10 +106,9 @@ class Enemy {
         this.path = this.pathfinding.findPath(
             { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
             { x: this.targetCol, y: this.targetLine },
-            this.map
+            this.map,
+            game.getConsumedTraps() // Passe les trous consommés
         );
-
-        console.log("Path recalculé:", this.path.length);
     }
 
     /**
@@ -127,7 +124,6 @@ class Enemy {
         this.spriteEnemy.x = Math.round(this.spriteEnemy.x / game.grid.cellSize) * game.grid.cellSize;
         this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
 
-        if (debug) console.log("Enemy starts falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
         if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
             this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
@@ -160,8 +156,6 @@ class Enemy {
             this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
-
-            if (debug) console.log("Enemy stops falling at", this.spriteEnemy.col, this.spriteEnemy.line);
 
             // Recalculer le chemin après la chute
             this.updatePath();

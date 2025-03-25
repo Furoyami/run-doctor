@@ -17,6 +17,7 @@ class Hole {
         this.timer = 0;
         this.isFilled = false; // sert à s'assurer que FillBrick n'est appelé qu'une fois par cycle "FILL"
         this.isDone = false; // Permet de savoir si un trou doit être retiré de la liste
+        this.isConsumed = false; // Permet de savoir si un trou a servi comme piege
     }
 
     Update(dt) {

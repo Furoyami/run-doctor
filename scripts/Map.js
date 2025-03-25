@@ -199,6 +199,10 @@ class Map {
         this.level[playerLine][playerCol] = CONST.WALL;
     }
 
+    ChangeToUnwalkable(pLine, pCol) {
+        this.level[pCol][pLine] = CONST.UNWALKABLE_VOID;
+    }
+
     CollectKey(pX, pY) {
         let line = pY / game.grid.cellSize;
         let col = pX / game.grid.cellSize;
