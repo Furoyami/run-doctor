@@ -80,7 +80,7 @@ class Enemy {
         const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
-        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || belowTile === CONST.UNWALKABLE_VOID)
+        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS)
             && isAlignedToColumn && !this.isFalling && !this.justFreed) {
             this.startFalling();
         }
@@ -140,7 +140,7 @@ class Enemy {
     handleFall(dt) {
         const belowTile = game.map.getUnderEnemyID(this, 0, 1);
 
-        if (belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || belowTile === CONST.UNWALKABLE_VOID || this.spriteEnemy.y < 0) {
+        if (belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || this.spriteEnemy.y < 0) {
             // Continuer à tomber
             this.spriteEnemy.x = this.lockedX;
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;

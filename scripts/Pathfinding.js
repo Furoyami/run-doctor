@@ -68,6 +68,9 @@ class Pathfinding {
             { x: current.x, y: current.y + 1 }
         ];
 
+        // Récupérer les cases interdites définies dans le niveau
+        const levelForbiddenTiles = game.map.getForbiddenPathTiles();
+
         return potentialNeighbors.filter(neighbor => {
 
             // Vérifier si le voisin est dans les limites de la carte
@@ -90,6 +93,11 @@ class Pathfinding {
 
             // Cases infranchissable
             if (targetTile === CONST.WALL || targetTile === CONST.UNWALKABLE_VOID) return false;
+
+            // Exclure les cases interdites définies dans le niveau
+            if (levelForbiddenTiles.some(tile => tile.x === neighbor.x && tile.y === neighbor.y)) {
+                return false;
+            }
 
             // Exclure les trous consommés
             if (forbiddenTiles.some(tile => tile.x === neighbor.x && tile.y === neighbor.y)) {
