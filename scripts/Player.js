@@ -188,8 +188,8 @@ class Player {
 
     getItems() {
         // Ramasse les clés
-        if (game.map.getUnderPlayerID(0, 0) === CONST.KEY && this.spritePlayer.vX === 0) {
-            game.map.CollectKey(this.spritePlayer.x, this.spritePlayer.y);
+        if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
+            game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y);
             game.sndKey.play();
         }
     }

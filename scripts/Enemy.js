@@ -39,6 +39,10 @@ class Enemy {
         this.trappedAt = null;
         this.justFreed = false; // Flag pour protéger la sortie. "sécurité" pour garantir une frame entre enemy.Update et game.update
 
+        // propriétés pour le gestion du ramassage des objets
+        this.isCarryingItem = false;
+        this.spriteKey = null;
+
         if (debug) console.log("----- Enemy créé -----");
     }
 
@@ -85,6 +89,12 @@ class Enemy {
             this.startFalling();
         }
 
+        // Mettre à jour spriteKey à chaque frame, avant et pendant tout mouvement
+        if (this.spriteKey) {
+            this.spriteKey.x = this.spriteEnemy.x;
+            this.spriteKey.y = this.spriteEnemy.y;
+        }
+
         if (this.isFalling) {
             this.handleFall(dt);
         } else {
@@ -109,6 +119,8 @@ class Enemy {
             this.map,
             game.getConsumedTraps() // Passe les trous consommés
         );
+
+        this.facePathDirection();
     }
 
     /**
@@ -207,6 +219,12 @@ class Enemy {
                 let currentTile = game.map.getUnderEnemyID(this, 0, 0);
                 let belowTile = game.map.getUnderEnemyID(this, 0, 1);
                 let aboveTile = game.map.getUnderEnemyID(this, 0, -1);
+
+                // ramasser les items s'il y'en a
+                if (currentTile === CONST.ITEM && !this.isCarryingItem) {
+                    this.pickupItem();
+                }
+
                 if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
                     if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
                         this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
@@ -223,6 +241,33 @@ class Enemy {
                     this.hasReachedTarget = true; // Si le chemin est vide, la cible est atteinte
                 }
             }
+        }
+    }
+
+    pickupItem() {
+        if (!this.isCarryingItem) {
+            this.isCarryingItem = true;
+            this.spriteKey = new Sprite(
+                game.imageLoader.getImage("images/key_tile.png"),
+                this.spriteEnemy.x,
+                this.spriteEnemy.y
+            );
+            let naturalWidth = this.spriteKey.img.naturalWidth;
+            let naturalHeight = this.spriteKey.img.naturalHeight;
+            this.spriteKey.setScale(10 / naturalWidth, 10 / naturalHeight);
+            game.lstSprites.push(this.spriteKey);
+            game.map.CollectItem(this.spriteEnemy.x, this.spriteEnemy.y);
+            game.sndKey.play();
+        }
+    }
+
+    dropItem() {
+        if (this.isCarryingItem) {
+            game.map.DropItem(this.spriteEnemy.x, this.spriteEnemy.y);
+            this.isCarryingItem = false;
+            let index = game.lstSprites.indexOf(this.spriteKey);
+            if (index !== -1) game.lstSprites.splice(index, 1);
+            this.spriteKey = null;
         }
     }
 

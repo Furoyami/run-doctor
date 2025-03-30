@@ -44,7 +44,7 @@ class Game {
         this.spritePlayer = this.player.CreatePlayer(); // Assume que Player initialise sprite
         this.lstSprites.push(this.spritePlayer);
 
-        let nbEnemies = this.map.getNbEnemiesInLevel();
+        let nbEnemies = 1;//this.map.getNbEnemiesInLevel();
         for (let i = 0; i < nbEnemies; i++) {
             let enemyPos = this.map.getEnemiesStartPos()[i];
             let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
@@ -146,6 +146,15 @@ class Game {
         }
     }
 
+    restartGame() {
+        this.lstSprites = [];
+        this.lstEnemies = [];
+        this.lstHoles = [];
+        this.activeKeys = new Set();
+        this.map.tardisVisible = false;
+        this.player.resetPlayer();
+        this.startGame();
+    }
     handleDigging(direction, offsetX, animation) {
         if (this.isDiggingDirection === null) {
             this.spritePlayer.startAnimation(animation);
@@ -167,16 +176,6 @@ class Game {
         }
     }
 
-    restartGame() {
-        this.lstSprites = [];
-        this.lstEnemies = [];
-        this.lstHoles = [];
-        this.activeKeys = new Set();
-        this.map.tardisVisible = false;
-        this.player.resetPlayer();
-        this.startGame();
-    }
-
     // Récupères les trous consommés
     getConsumedTraps() {
         return this.lstEnemies
@@ -194,7 +193,7 @@ class Game {
         );
 
         if (!enemy.isTrapped && trapHole) {
-            // on passe en état de piège
+            // devient piégé
             if (enemy.spriteEnemy.currentAnimation.name.endsWith("_LEFT")) {
                 enemy.spriteEnemy.startAnimation("LEFT");
             } else if (enemy.spriteEnemy.currentAnimation.name.endsWith("_RIGHT")) {
@@ -205,24 +204,33 @@ class Game {
             enemy.trappedAt = { col: enemyCol, line: enemyLine };
             enemy.path = [];
             enemy.isFalling = false;
-            console.log("piégé !");
             this.map.ChangeToUnwalkable(enemyCol, enemyLine); // change la case en unwalkable pour que le joueur puisse marcher dessus
+
+            enemy.dropItem();
         } else if (enemy.isTrapped && enemy.trappedTimer <= 0) {
+            // libération
             let targetLine = enemy.trappedAt.line - 1;
             let targetY = targetLine * this.grid.cellSize;
 
             if (enemy.spriteEnemy.y > targetY) {
                 enemy.spriteEnemy.y -= enemy.spriteEnemy.speed * dt;
+
                 if (enemy.spriteEnemy.y <= targetY) {
                     enemy.spriteEnemy.y = targetY;
                     enemy.spriteEnemy.line = targetLine;
                     enemy.isTrapped = false;
                     enemy.justFreed = true;
                     enemy.updatePath();
-                    console.log("libéré");
+
+                    // Vérifier et ramasser la clé au-dessus
+                    let currentTile = game.map.getUnderEnemyID(enemy, 0, 0); // Case où il arrive
+                    if (currentTile === CONST.ITEM) {
+                        enemy.pickupItem();
+                    }
                 }
             }
         } else if (enemy.isTrapped && !this.lstHoles.some(hole =>
+            // enterré → respawn
             hole.isTrap &&
             hole.col === enemy.trappedAt.col &&
             hole.line === enemy.trappedAt.line)) {
@@ -230,7 +238,6 @@ class Game {
             enemy.isTrapped = false;
             enemy.trappedTimer = 0;
             enemy.trappedAt = null;
-            if (this.debug) console.log("enterré vivant !");
         }
     }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------

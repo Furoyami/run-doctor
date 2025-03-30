@@ -208,13 +208,20 @@ class Map {
         this.level[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
-    CollectKey(pX, pY) {
-        let line = pY / game.grid.cellSize;
-        let col = pX / game.grid.cellSize;
-        if (this.level[line][col] == CONST.KEY) {
+    CollectItem(pX, pY) {
+        let line = Math.floor(pY / game.grid.cellSize);
+        let col = Math.floor(pX / game.grid.cellSize);
+        if (this.level[line][col] === CONST.ITEM) {
             this.level[line][col] = CONST.VOID; // remplace les clés par du vide
         }
         this.level.items -= 1;
+    }
+
+    DropItem(pX, pY) {
+        let line = Math.floor(pY / game.grid.cellSize);
+        let col = Math.floor(pX / game.grid.cellSize);
+        this.level[line - 1][col] = CONST.ITEM; // pose la clé au dessus du piège
+        this.level.items += 1;
     }
 
 
@@ -225,7 +232,7 @@ class Map {
         for (let line = 0; line < this.nbLines; line++) {
             for (let col = 0; col < this.nbColumns; col++) {
                 let id = this.level[line][col];
-                if (id === CONST.KEY) {
+                if (id === CONST.ITEM) {
                     this.level.items += 1;
                 }
                 else if (id === 8 && this.lstEnemiesCoords.length != this.level.enemies) {
