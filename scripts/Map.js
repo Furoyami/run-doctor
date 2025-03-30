@@ -10,6 +10,7 @@ class Map {
         this.tileTextures = [];
         this.lstEnemiesCoords = [];
         this.tardisVisible = false;
+        this.originaleTile = null;
     }
 
     InitMap() {
@@ -212,15 +213,21 @@ class Map {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
         if (this.level[line][col] === CONST.ITEM) {
-            this.level[line][col] = CONST.VOID; // remplace les clés par du vide
+            if (this.originaleTile !== null && this.originaleTile.col === col && this.originaleTile.line === line) {
+                this.level[line][col] = this.originaleTile.tileId; // Restaure la tile originale
+                this.originaleTile = null; // Reset
+            } else {
+                this.level[line][col] = CONST.VOID; // Cas des clés initiales
+            }
+            this.level.items -= 1;
         }
-        this.level.items -= 1;
     }
 
-    DropItem(pX, pY) {
+    DropItem(pX, pY, dropTargetTile) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
-        this.level[line - 1][col] = CONST.ITEM; // pose la clé au dessus du piège
+        this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
+        this.level[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
         this.level.items += 1;
     }
 
@@ -286,6 +293,22 @@ class Map {
                         id = CONST.VOID;
                     }
                 }
+
+                // Si c’est la clé droppée
+                if (id === CONST.ITEM && this.originaleTile !== null &&
+                    this.originaleTile.col === col && this.originaleTile.line === line) {
+                    let originalTexture = this.tileTextures[this.originaleTile.tileId];
+                    if (originalTexture) {
+                        if (originalTexture instanceof Sprite) {
+                            originalTexture.x = x;
+                            originalTexture.y = y;
+                            originalTexture.draw(pCtx); // Dessine la tile originale
+                        } else {
+                            pCtx.drawImage(originalTexture, x, y); // Dessine la tile originale
+                        }
+                    }
+                }
+
                 let texture = this.tileTextures[id];
                 if (texture != null) {
                     if (texture instanceof Sprite) {

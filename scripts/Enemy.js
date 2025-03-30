@@ -263,7 +263,8 @@ class Enemy {
 
     dropItem() {
         if (this.isCarryingItem) {
-            game.map.DropItem(this.spriteEnemy.x, this.spriteEnemy.y);
+            let dropTargetTile = game.map.getUnderEnemyID(this, 0, -1);
+            game.map.DropItem(this.spriteEnemy.x, this.spriteEnemy.y, dropTargetTile);
             this.isCarryingItem = false;
             let index = game.lstSprites.indexOf(this.spriteKey);
             if (index !== -1) game.lstSprites.splice(index, 1);
@@ -274,7 +275,7 @@ class Enemy {
 
     /**
      * 
-     * gère le changemen de l'animation en fonction de la direction prise par l'ennemi
+     * gère le changement de l'animation en fonction de la direction prise par l'ennemi
      */
 
     facePathDirection() {
