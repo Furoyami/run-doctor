@@ -286,6 +286,7 @@ class Game {
                     if (!this.player.isInvincible &&
                         playerCol === enemyCol &&
                         playerLine === enemyLine) {
+                        enemy.hasReachedTarget = false;
                         this.player.playerDies();
                     }
 

@@ -56,6 +56,13 @@ class Enemy {
             return;
         }
 
+        // Si cible atteinte mais joueur ailleurs, recalculer
+        if (this.hasReachedTarget &&
+            (this.spriteEnemy.col !== pTargetCol || this.spriteEnemy.line !== pTargetLine)) {
+            this.hasReachedTarget = false;
+            this.updatePath();
+        }
+
         if (this.hasReachedTarget) return;
 
         if (!this.isFalling) {
