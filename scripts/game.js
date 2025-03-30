@@ -44,7 +44,7 @@ class Game {
         this.spritePlayer = this.player.CreatePlayer(); // Assume que Player initialise sprite
         this.lstSprites.push(this.spritePlayer);
 
-        let nbEnemies = 1;//this.map.getNbEnemiesInLevel();
+        let nbEnemies = this.map.getNbEnemiesInLevel();
         for (let i = 0; i < nbEnemies; i++) {
             let enemyPos = this.map.getEnemiesStartPos()[i];
             let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
