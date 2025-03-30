@@ -250,6 +250,7 @@ class Game {
         this.imageLoader.add("images/hole_tile.png");
         this.imageLoader.add("images/dalek_tile.png");
         this.imageLoader.add("images/key_tile.png");
+        this.imageLoader.add("images/key.png");
         this.imageLoader.add("images/tardis_rt_tile.png");
         this.imageLoader.add("images/tardis_lt_tile.png");
         this.imageLoader.add("images/tardis_rb_tile.png");

@@ -248,13 +248,13 @@ class Enemy {
         if (!this.isCarryingItem) {
             this.isCarryingItem = true;
             this.spriteKey = new Sprite(
-                game.imageLoader.getImage("images/key_tile.png"),
+                game.imageLoader.getImage("images/key.png"),
                 this.spriteEnemy.x,
                 this.spriteEnemy.y
             );
             let naturalWidth = this.spriteKey.img.naturalWidth;
             let naturalHeight = this.spriteKey.img.naturalHeight;
-            this.spriteKey.setScale(10 / naturalWidth, 10 / naturalHeight);
+            this.spriteKey.setScale(15 / naturalWidth, 15 / naturalHeight);
             game.lstSprites.push(this.spriteKey);
             game.map.CollectItem(this.spriteEnemy.x, this.spriteEnemy.y);
             game.sndKey.play();
