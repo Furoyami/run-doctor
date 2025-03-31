@@ -25,7 +25,9 @@ class Game {
         this.pathfinding = new Pathfinding();
 
         // Sons
-        this.sndKey = new Sound("sounds/key.wav", 0.35);
+        this.sndKey = new Sound("sounds/key.wav", 1);
+        this.sndDalek = new Sound("sounds/exterminate.wav", 0.5);
+        // this.sndKey = new Sound("sounds/key.wav", 0.35);
 
         // Sprites
         this.spritePlayer = null;
@@ -94,13 +96,20 @@ class Game {
                         break;
                     // animation de creusage
                     case CONST.KEYQ:
-                        this.handleDigging("left", CONST.OFFSET_LEFT, "DIG_LEFT");
+                        if (this.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
+                            (this.map.getUnderPlayerID(0, 0) === CONST.LADDER && this.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
+                            this.handleDigging("left", CONST.OFFSET_LEFT, "DIG_LEFT");
+                        }
                         break;
 
                     case CONST.KEYE:
-                        this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
+                        if (this.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
+                            (this.map.getUnderPlayerID(0, 0) === CONST.LADDER && this.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
+                            this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
+                        }
                         break;
                 }
+                break;
             // !!! a modifier pour répondre aux conditions de win / lose
             case CONST.GAMEOVER:
                 if (e.code === CONST.KEYR) this.restartGame();
@@ -136,12 +145,18 @@ class Game {
                 if (this.player.isAligned()) this.spritePlayer.startAnimation("IDLE_LEFT");
                 break;
             case CONST.KEYQ:
-                this.spritePlayer.startAnimation("IDLE_LEFT");
-                this.isDiggingDirection = null;
+                if (this.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
+                    (this.map.getUnderPlayerID(0, 0) === CONST.LADDER && this.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
+                    this.spritePlayer.startAnimation("IDLE_LEFT");
+                    this.isDiggingDirection = null;
+                }
                 break;
             case CONST.KEYE:
-                this.spritePlayer.startAnimation("IDLE_RIGHT");
-                this.isDiggingDirection = null;
+                if (this.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
+                    (this.map.getUnderPlayerID(0, 0) === CONST.LADDER && this.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
+                    this.spritePlayer.startAnimation("IDLE_RIGHT");
+                    this.isDiggingDirection = null;
+                }
                 break;
         }
     }
@@ -151,6 +166,8 @@ class Game {
         this.lstEnemies = [];
         this.lstHoles = [];
         this.activeKeys = new Set();
+        this.keyOrder = [];
+        this.isDiggingDirection = null; // Réinitialiser l'état de creusage
         this.map.tardisVisible = false;
         this.player.resetPlayer();
         this.startGame();
@@ -288,6 +305,7 @@ class Game {
                         playerCol === enemyCol &&
                         playerLine === enemyLine) {
                         enemy.hasReachedTarget = false;
+                        this.sndDalek.play();
                         this.player.playerDies();
                     }
 
@@ -343,7 +361,7 @@ class Game {
         hudCtx.fillStyle = "#FFF";
         hudCtx.font = "35px Pixel";
         hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
-        hudCtx.fillText("A / E : Creuser", 400, 30);
+        hudCtx.fillText("A : Creuser à gauche / E : Creuser à droite", 400, 30);
         hudCtx.fillText("Vies: " + this.player.lives, game.width - 80, 30);
     }
 

@@ -1,6 +1,5 @@
 class Pathfinding {
-    constructor() {//map) {
-        // this.map = map;
+    constructor() {
     }
 
     heuristic(a, b) {
@@ -70,6 +69,7 @@ class Pathfinding {
 
         // Récupérer les cases interdites définies dans le niveau
         const levelForbiddenTiles = game.map.getForbiddenPathTiles();
+        const tardisTiles = [CONST.TARDIS_LB, CONST.TARDIS_LT, CONST.TARDIS_RB, CONST.TARDIS_RT];
 
         return potentialNeighbors.filter(neighbor => {
 
@@ -87,6 +87,11 @@ class Pathfinding {
                 tileBelow = map[neighbor.y + 1][neighbor.x];
             } else {
                 tileBelow = CONST.WALL;
+            }
+
+            // Bloquer les montées sur les cases TARDIS si visible
+            if (game.map.tardisVisible && tardisTiles.includes(targetTile) && neighbor.y < current.y) {
+                return false;
             }
 
             if (targetTile === CONST.VOID && neighbor.y < current.y && tileBelow === CONST.VOID) return false;

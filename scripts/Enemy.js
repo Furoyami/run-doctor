@@ -49,7 +49,8 @@ class Enemy {
 
     Update(dt, pTargetCol, pTargetLine) {
         // augmente la vitesse en fonction du nombre de clés ramassé
-        this.spriteEnemy.speed = this.spriteEnemy.baseSpeed * (1 + game.map.getItemsCollected() * 0.25);
+        const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
+        this.spriteEnemy.speed = this.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
 
         if (this.isTrapped) {
             this.trappedTimer -= dt;
@@ -94,7 +95,7 @@ class Enemy {
         const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
-        if ((belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS)
+        if ((CONST.WALKABLE.includes(belowTile))
             && isAlignedToColumn && !this.isFalling && !this.justFreed) {
             this.startFalling();
         }
@@ -161,12 +162,27 @@ class Enemy {
      */
     handleFall(dt) {
         const belowTile = game.map.getUnderEnemyID(this, 0, 1);
+        const currentLine = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
+        const currentCol = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
 
-        if (belowTile === CONST.VOID || belowTile === CONST.OUT_OF_BOUNDS || this.spriteEnemy.y < 0) {
+        if (CONST.WALKABLE.includes(belowTile) || this.spriteEnemy.y < 0) {
+
+            // Bloquer si un autre Dalek chute vers ce VOID/piège
+            if (belowTile === CONST.VOID && game.lstEnemies.some(e => e !== this && e.isFalling && Math.floor(e.spriteEnemy.x / game.grid.cellSize) === currentCol && Math.floor(e.spriteEnemy.y / game.grid.cellSize) === currentLine)) {
+                this.isFalling = false;
+                return;
+            }
+
             // Continuer à tomber
             this.spriteEnemy.x = this.lockedX;
             this.spriteEnemy.y += this.spriteEnemy.speed * dt;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
+
+            // Ramasser une clé si l'ennemi passe sur une case ITEM
+            const currentTile = game.map.getUnderEnemyID(this, 0, 0);
+            if (currentTile === CONST.ITEM) {
+                this.pickupItem();
+            }
 
             // Respawn si hors écran
             if (this.spriteEnemy.y >= game.map.y) {
@@ -324,11 +340,21 @@ class Enemy {
      * gère la réaffectation des propriétés pour la réapparition de l'ennemi en haut de l'écran
      */
     respawnAtTop() {
-        this.spriteEnemy.x = game.rnd(0, game.map.getMapNbColumns()) * game.grid.cellSize;
-        this.lockedX = this.spriteEnemy.x;
+        this.spriteEnemy.x = game.rnd(0, game.map.getMapNbColumns()) * game.grid.cellSize; // respawn aleatoire sur le haut
+        this.lockedX = this.spriteEnemy.x;// verrouillage de la colonne
         this.spriteEnemy.y = -this.imgHeight;
+        this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
+        this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
         this.isFalling = true;
         this.path = [];
+        this.isCarryingItem = false; // vide le fait de porter une clé
+
+        // vide la clé éventuelle portée de la liste
+        if (this.spriteKey) {
+            let index = game.lstSprites.indexOf(this.spriteKey);
+            if (index !== -1) game.lstSprites.splice(index, 1);
+            this.spriteKey = null; // Supprimer toute clé portée
+        }
     }
 
     /**

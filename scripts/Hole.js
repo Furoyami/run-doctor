@@ -74,13 +74,20 @@ class Hole {
         }
 
         // Utilise la position visuelle arrondie
-        let playerCol = Math.round(game.spritePlayer.x / game.grid.cellSize);
-        let playerLine = Math.round(game.spritePlayer.y / game.grid.cellSize);
+        let playerCol = Math.floor(game.spritePlayer.x / game.grid.cellSize);
+        let playerLine = Math.floor(game.spritePlayer.y / game.grid.cellSize);
         let targetCol = playerCol + pOffsetX;
         let targetLine = playerLine + pOffsetY;
 
+        // Vérifie si la case ciblée est un mur
         if (!game.map.isWall(targetCol - playerCol, targetLine - playerLine)) {
             if (debug) console.log("Impossible de creuser : la case n’est pas un mur");
+            return;
+        }
+
+        // Vérifie si la case ciblée est une échelle
+        if (game.map.isLadder(targetCol - playerCol, targetLine - playerLine)) {
+            if (debug) console.log("Impossible de creuser : la case est une échelle");
             return;
         }
 

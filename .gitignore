@@ -5,3 +5,6 @@
 images/PSD/
 images/run/
 images/sources/
+
+# Ignorer les projets audacity
+sounds/audacity/

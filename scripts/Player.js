@@ -79,9 +79,7 @@ class Player {
 
     handleFall() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
-        const FALLVOID = tileUnderPlayer === CONST.VOID ||
-            tileUnderPlayer === CONST.OUT_OF_BOUNDS ||
-            tileUnderPlayer === CONST.ITEM;
+        const FALLVOID = CONST.WALKABLE.includes(tileUnderPlayer);
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
@@ -171,6 +169,7 @@ class Player {
         // Stoppe les animations "FALL" une fois au sol
         if (this.spritePlayer.currentAnimation.name.startsWith("FALL") &&
             game.map.getUnderPlayerID(0, 1) !== CONST.VOID &&
+            game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSENEMY &&
             game.map.getUnderPlayerID(0, 1) !== CONST.OUT_OF_BOUNDS) {
             this.selectIdleDirection();
         }
@@ -319,8 +318,14 @@ class Player {
             this.isInvincible = true;
             this.blinkTimer = 0;
             this.resetPosition();
+            // Réinitialiser les touches pour éviter un mouvement résiduel
+            game.activeKeys = new Set();
+            game.keyOrder = [];
         } else {
             game.state = CONST.GAMEOVER;
+            // confirmation
+            game.activeKeys = new Set();
+            game.keyOrder = [];
         }
     }
 

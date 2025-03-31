@@ -221,7 +221,7 @@ class Map {
                 this.level[line][col] = CONST.VOID; // Cas des clés initiales
             }
             this.itemsCollected += 1;
-            if (isPlayer) {
+            if (isPlayer && this.level.items > 0) {
                 this.level.items -= 1;
             }
         }
