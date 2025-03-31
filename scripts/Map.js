@@ -209,7 +209,7 @@ class Map {
         this.level[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
-    CollectItem(pX, pY) {
+    CollectItem(pX, pY, isPlayer = false) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
         if (this.level[line][col] === CONST.ITEM) {
@@ -219,7 +219,7 @@ class Map {
             } else {
                 this.level[line][col] = CONST.VOID; // Cas des clés initiales
             }
-            this.level.items -= 1;
+            if (isPlayer) this.level.items -= 1;
         }
     }
 
@@ -228,7 +228,6 @@ class Map {
         let col = Math.floor(pX / game.grid.cellSize);
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
         this.level[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
-        this.level.items += 1;
     }
 
 

@@ -79,7 +79,9 @@ class Player {
 
     handleFall() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
-        const FALLVOID = tileUnderPlayer === CONST.VOID || tileUnderPlayer === CONST.OUT_OF_BOUNDS;
+        const FALLVOID = tileUnderPlayer === CONST.VOID ||
+            tileUnderPlayer === CONST.OUT_OF_BOUNDS ||
+            tileUnderPlayer === CONST.ITEM;
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
@@ -189,7 +191,7 @@ class Player {
     getItems() {
         // Ramasse les clés
         if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
-            game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y);
+            game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
             game.sndKey.play();
         }
     }
