@@ -8,7 +8,8 @@ class Enemy {
         this.spriteEnemy.line = pLine;
         this.spriteEnemy.x = this.spriteEnemy.col * game.grid.cellSize;
         this.spriteEnemy.y = this.spriteEnemy.line * game.grid.cellSize;
-        this.spriteEnemy.speed = game.grid.cellSize;
+        this.spriteEnemy.baseSpeed = game.grid.cellSize;
+        this.spriteEnemy.speed = this.spriteEnemy.baseSpeed;
 
         this.imgHeight = imgEnemy.height;
 
@@ -47,6 +48,8 @@ class Enemy {
     }
 
     Update(dt, pTargetCol, pTargetLine) {
+        // augmente la vitesse en fonction du nombre de clés ramassé
+        this.spriteEnemy.speed = this.spriteEnemy.baseSpeed * (1 + game.map.getItemsCollected() * 0.25);
 
         if (this.isTrapped) {
             this.trappedTimer -= dt;

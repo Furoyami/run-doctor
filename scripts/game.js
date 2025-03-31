@@ -154,6 +154,7 @@ class Game {
         this.map.tardisVisible = false;
         this.player.resetPlayer();
         this.startGame();
+        this.map.itemsCollected = 0;
     }
     handleDigging(direction, offsetX, animation) {
         if (this.isDiggingDirection === null) {

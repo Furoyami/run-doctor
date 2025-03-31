@@ -11,6 +11,7 @@ class Map {
         this.lstEnemiesCoords = [];
         this.tardisVisible = false;
         this.originaleTile = null;
+        this.itemsCollected = 0;
     }
 
     InitMap() {
@@ -219,7 +220,10 @@ class Map {
             } else {
                 this.level[line][col] = CONST.VOID; // Cas des clés initiales
             }
-            if (isPlayer) this.level.items -= 1;
+            this.itemsCollected += 1;
+            if (isPlayer) {
+                this.level.items -= 1;
+            }
         }
     }
 
@@ -335,6 +339,9 @@ class Map {
 
     getNbItemsInLevel() {
         return this.level.items;
+    }
+    getItemsCollected() {
+        return this.itemsCollected;
     }
 
     getNbEnemiesInLevel() {
