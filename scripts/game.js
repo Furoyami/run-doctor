@@ -101,6 +101,7 @@ class Game {
                         this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
                         break;
                 }
+                break;
             // !!! a modifier pour répondre aux conditions de win / lose
             case CONST.GAMEOVER:
                 if (e.code === CONST.KEYR) this.restartGame();
