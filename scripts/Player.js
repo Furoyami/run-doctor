@@ -319,6 +319,7 @@ class Player {
             this.blinkTimer = 0;
             this.resetPosition();
 
+            // bouche un trou eventuel sous la tile de respawn
             this.fillHoleAtRespawnPos();
 
             // Réinitialiser les touches pour éviter un mouvement résiduel
@@ -335,14 +336,12 @@ class Player {
     fillHoleAtRespawnPos() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
         if (tileUnderPlayer === CONST.VOID) {
-            // Calculer la position dans la grille
-            const playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
-            const playerLine = Math.floor(this.spritePlayer.y / game.grid.cellSize);
-            const holeCol = playerCol;
-            const holeLine = playerLine + 1;
-
             // Remplacer VOID par WALL dans la map
-            game.map.FillBrick(holeCol - playerCol, holeLine - playerLine);
+            game.map.FillBrick(0, 1);
+
+            // Calculer la position absolue du trou
+            const holeCol = Math.floor(this.spritePlayer.x / game.grid.cellSize); // Offset 0
+            const holeLine = Math.floor(this.spritePlayer.y / game.grid.cellSize) + 1; // Offset 1
 
             // Retirer le trou de lstHoles et lstSprites
             const holeIndex = game.lstHoles.findIndex(hole =>
