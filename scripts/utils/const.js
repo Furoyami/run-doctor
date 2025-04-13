@@ -55,5 +55,14 @@ const CONST = Object.freeze({
     STARTPOSENEMY: 8,
 
     // franchissable ou permettant la chute
-    WALKABLE: [0, 3, 4, 5, 6, 7, 8]
+    WALKABLE: Object.freeze([
+        -1, // OUT_OF_BOUNDS
+        0,  // VOID
+        3,  // ITEM
+        4,  // TARDIS_LT
+        5,  // TARDIS_RT
+        6,  // TARDIS_LB
+        7,  // TARDIS_RB
+        8   // STARTPOSENEMY
+    ])
 });

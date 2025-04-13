@@ -79,14 +79,7 @@ class Player {
 
     handleFall() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
-        const FALLVOID = tileUnderPlayer === CONST.VOID ||
-            tileUnderPlayer === CONST.ITEM ||
-            tileUnderPlayer === CONST.OUT_OF_BOUNDS ||
-            tileUnderPlayer === CONST.TARDIS_LB ||
-            tileUnderPlayer === CONST.TARDIS_LT ||
-            tileUnderPlayer === CONST.TARDIS_RB ||
-            tileUnderPlayer === CONST.TARDIS_RT ||
-            tileUnderPlayer === CONST.STARTPOSENEMY;
+        const FALLVOID = CONST.WALKABLE.includes(tileUnderPlayer);
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
@@ -325,6 +318,9 @@ class Player {
             this.isInvincible = true;
             this.blinkTimer = 0;
             this.resetPosition();
+
+            this.fillHoleAtRespawnPos();
+
             // Réinitialiser les touches pour éviter un mouvement résiduel
             game.activeKeys = new Set();
             game.keyOrder = [];
@@ -333,6 +329,34 @@ class Player {
             // confirmation
             game.activeKeys = new Set();
             game.keyOrder = [];
+        }
+    }
+
+    fillHoleAtRespawnPos() {
+        const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
+        if (tileUnderPlayer === CONST.VOID) {
+            // Calculer la position dans la grille
+            const playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
+            const playerLine = Math.floor(this.spritePlayer.y / game.grid.cellSize);
+            const holeCol = playerCol;
+            const holeLine = playerLine + 1;
+
+            // Remplacer VOID par WALL dans la map
+            game.map.FillBrick(holeCol - playerCol, holeLine - playerLine);
+
+            // Retirer le trou de lstHoles et lstSprites
+            const holeIndex = game.lstHoles.findIndex(hole =>
+                hole.col === holeCol && hole.line === holeLine
+            );
+            if (holeIndex !== -1) {
+                const hole = game.lstHoles[holeIndex];
+                hole.isDone = true; // Marquer comme fini pour cohérence
+                game.lstHoles.splice(holeIndex, 1);
+                const spriteIndex = game.lstSprites.indexOf(hole.spriteHole);
+                if (spriteIndex !== -1) {
+                    game.lstSprites.splice(spriteIndex, 1);
+                }
+            }
         }
     }
 
