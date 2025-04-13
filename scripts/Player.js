@@ -79,7 +79,14 @@ class Player {
 
     handleFall() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
-        const FALLVOID = CONST.WALKABLE.includes(tileUnderPlayer);
+        const FALLVOID = tileUnderPlayer === CONST.VOID ||
+            tileUnderPlayer === CONST.ITEM ||
+            tileUnderPlayer === CONST.OUT_OF_BOUNDS ||
+            tileUnderPlayer === CONST.TARDIS_LB ||
+            tileUnderPlayer === CONST.TARDIS_LT ||
+            tileUnderPlayer === CONST.TARDIS_RB ||
+            tileUnderPlayer === CONST.TARDIS_RT ||
+            tileUnderPlayer === CONST.STARTPOSENEMY;
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
