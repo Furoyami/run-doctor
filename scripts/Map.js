@@ -268,6 +268,7 @@ class Map {
                 }
             }
             this.tardisVisible = true;
+            game.sndTardis.play();
         }
 
         // Mise à jour des sprites après

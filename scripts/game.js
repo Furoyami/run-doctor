@@ -25,10 +25,12 @@ class Game {
         this.pathfinding = new Pathfinding();
 
         // Sons
-        this.sndKey = new Sound("sounds/key.wav", 1);
-        this.sndDalek = new Sound("sounds/exterminate.wav", 0.5);
-        // this.sndKey = new Sound("sounds/key.wav", 0.35);
-
+        this.sndKey = new Sound("sounds/key.wav", .75);
+        this.sndDalek = new Sound("sounds/exterminate.wav", .5);
+        this.sndDig = new Sound("sounds/dig.wav", .5);
+        this.sndFill = new Sound("sounds/fill.wav", .5);
+        this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .25);
+        this.sndTardis = new Sound("sounds/tardis.wav", .5);
         // Sprites
         this.spritePlayer = null;
         this.spriteEnemy = null;
@@ -173,9 +175,11 @@ class Game {
         this.startGame();
         this.map.itemsCollected = 0;
     }
+
     handleDigging(direction, offsetX, animation) {
         if (this.isDiggingDirection === null) {
             this.spritePlayer.startAnimation(animation);
+            this.sndScrewdriver.play();
             this.isDiggingDirection = direction;
             let hole = new Hole();
             hole.startDigging(offsetX, CONST.OFFSET_DOWN);
@@ -362,6 +366,7 @@ class Game {
         hudCtx.font = "35px Pixel";
         hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
         hudCtx.fillText("A : Creuser à gauche / E : Creuser à droite", 400, 30);
+        hudCtx.fillText("Clés restantes : " + this.map.getNbItemsInLevel(), game.width - 325, 30);
         hudCtx.fillText("Vies: " + this.player.lives, game.width - 80, 30);
     }
 

@@ -39,6 +39,7 @@ class Hole {
         }
         if (this.timer >= 10) {
             this.spriteHole.startAnimation("FILL");
+            game.sndFill.play();
             if (debug) console.log("FILL démarré, pos :", this.spriteHole.x, this.spriteHole.y);
             // reinitialisations pour le prochain cycle
             this.timer = 0;
@@ -102,6 +103,7 @@ class Hole {
         this.spriteHole.y = targetLine * game.grid.cellSize;
         this.spriteHole.visible = true;
         this.isDigging = true;
+        game.sndDig.play();
     }
 
     // Vérifie si un trou actif existe déjà à la position cible
