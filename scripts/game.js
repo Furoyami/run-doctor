@@ -25,12 +25,15 @@ class Game {
         this.pathfinding = new Pathfinding();
 
         // Sons
-        this.sndKey = new Sound("sounds/key.wav", .75);
+        this.sndKey = new Sound("sounds/key.wav", .45);
         this.sndDalek = new Sound("sounds/exterminate.wav", .5);
-        this.sndDig = new Sound("sounds/dig.wav", .5);
-        this.sndFill = new Sound("sounds/fill.wav", .5);
-        this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .25);
-        this.sndTardis = new Sound("sounds/tardis.wav", .5);
+        this.sndDig = new Sound("sounds/dig.wav", .4);
+        this.sndFill = new Sound("sounds/fill.wav", .35);
+        this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4);
+        this.sndTardis = new Sound("sounds/tardis.wav", .6);
+
+        this.mscTheme = new Sound("sounds/theme.wav", .35, true);
+
         // Sprites
         this.spritePlayer = null;
         this.spriteEnemy = null;
@@ -56,6 +59,8 @@ class Game {
             this.lstSprites.push(enemy.spriteEnemy);
             if (this.debug) console.log("----- Ennemi ajouté -----");
         }
+
+        this.mscTheme.play();
 
         this.gameReady = true;
     }
