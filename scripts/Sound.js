@@ -8,6 +8,7 @@ class Sound {
         this.audio.setAttribute("controls", "none");
         this.audio.style.display = "none";
         document.body.appendChild(this.audio);
+        this.isStarted = false;
     }
 
     play() {
@@ -24,5 +25,21 @@ class Sound {
     mute() {
         //switch l'état muted / unmuted
         this.audio.muted = !this.audio.muted;
+    }
+
+    // permet de lancer la musique de fond à la 1ere interaction, sans avoir besoin de relancer le jeu
+    startOnInteraction() {
+        if (this.isStarted) return;
+
+        this.isStarted = true;
+
+        const handler = () => {
+            this.play();
+            document.removeEventListener("click", handler);
+            document.removeEventListener("keydown", handler);
+        };
+
+        document.addEventListener("click", handler);
+        document.addEventListener("keydown", handler);
     }
 }

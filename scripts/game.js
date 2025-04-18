@@ -21,7 +21,7 @@ class Game {
         this.player = new Player();
         this.imageLoader = new ImageLoader();
 
-        //pathfinding
+        // Pathfinding
         this.pathfinding = new Pathfinding();
 
         // Sons
@@ -272,6 +272,8 @@ class Game {
     load() {
         document.addEventListener("keydown", (e) => this.keyDown(e), false);
         document.addEventListener("keyup", (e) => this.keyUp(e), false);
+
+        this.mscTheme.startOnInteraction();
 
         this.imageLoader.add("images/doctor_tile.png");
         this.imageLoader.add("images/hole_tile.png");
