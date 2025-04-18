@@ -115,6 +115,12 @@ class Game {
                             this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
                         }
                         break;
+                    case "KeyC":
+                        this.mscTheme.upVolume();
+                        break;
+                    case "KeyV":
+                        this.mscTheme.downVolume();
+                        break;
                 }
                 break;
             // !!! a modifier pour répondre aux conditions de win / lose
