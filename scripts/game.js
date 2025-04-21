@@ -25,14 +25,16 @@ class Game {
         this.pathfinding = new Pathfinding();
 
         // Sons
-        this.sndKey = new Sound("sounds/key.wav", .45);
-        this.sndDalek = new Sound("sounds/exterminate.wav", .5);
-        this.sndDig = new Sound("sounds/dig.wav", .4);
-        this.sndFill = new Sound("sounds/fill.wav", .35);
-        this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4);
-        this.sndTardis = new Sound("sounds/tardis.wav", .6);
+        this.sounds = [
+            this.sndKey = new Sound("sounds/key.wav", .45),
+            this.sndDalek = new Sound("sounds/exterminate.wav", .5),
+            this.sndDig = new Sound("sounds/dig.wav", .4),
+            this.sndFill = new Sound("sounds/fill.wav", .35),
+            this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4),
+            this.sndTardis = new Sound("sounds/tardis.wav", .6),
 
-        this.mscTheme = new Sound("sounds/theme.wav", .35, true);
+            this.mscTheme = new Sound("sounds/theme.wav", .35, true)
+        ];
 
         // Sprites
         this.spritePlayer = null;
@@ -115,11 +117,14 @@ class Game {
                             this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
                         }
                         break;
-                    case "KeyC":
-                        this.mscTheme.upVolume();
+                    case CONST.KEYVOLDOWN:
+                        this.adjustAllVolumes("down");
                         break;
-                    case "KeyV":
-                        this.mscTheme.downVolume();
+                    case CONST.KEYVOLUP:
+                        this.adjustAllVolumes("up");
+                        break;
+                    case CONST.KEYVOLMUTE:
+                        this.muteAll();
                         break;
                 }
                 break;
@@ -271,6 +276,22 @@ class Game {
             enemy.isTrapped = false;
             enemy.trappedTimer = 0;
             enemy.trappedAt = null;
+        }
+    }
+
+    adjustAllVolumes(direction) {
+        for (let sound of this.sounds) {
+            if (direction === "up") {
+                sound.upVolume();
+            } else {
+                sound.downVolume();
+            }
+        }
+    }
+
+    muteAll() {
+        for (let sound of this.sounds) {
+            sound.mute();
         }
     }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------

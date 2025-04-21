@@ -27,6 +27,11 @@ const CONST = Object.freeze({
 
     KEYF5: "F5",
 
+    // Clés de gestion du son
+    KEYVOLUP: "KeyV",
+    KEYVOLDOWN: "KeyC",
+    KEYVOLMUTE: "Semicolon",
+
     // States
     LOADING: "loading",
     PLAYING: "playing",
