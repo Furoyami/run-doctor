@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         // Machine à états
-        this.state = CONST.LOADING;
+        this.state = CONST.TITLE;
 
         // Initialisations
         this.width = CONST.WIDTH;
@@ -312,12 +312,21 @@ class Game {
         this.imageLoader.add("images/tardis_rb_tile.png");
         this.imageLoader.add("images/tardis_lb_tile.png");
 
+        this.imageLoader.add("images/icons/move.png");
+        this.imageLoader.add("images/icons/dig.png");
+        this.imageLoader.add("images/icons/heart.png");
+        this.imageLoader.add("images/icons/keyIcon.png");
+        this.imageLoader.add("images/icons/volDown.png");
+        this.imageLoader.add("images/icons/volUp.png");
+        this.imageLoader.add("images/icons/volMute.png");
+
+
         this.imageLoader.start(() => this.startGame());
     }
 
     update(dt) {
         switch (this.state) {
-            case CONST.LOADING:
+            case CONST.TITLE:
                 break;
             case CONST.PLAYING:
                 if (!this.gameReady) return;
@@ -367,7 +376,7 @@ class Game {
     draw(pCtx) {
         pCtx.clearRect(0, 0, this.width, this.height);
         switch (this.state) {
-            case CONST.LOADING:
+            case CONST.TITLE:
                 let ratio = this.imageLoader.getLoadedRatio();
                 pCtx.fillStyle = "rgb(255,255,255)";
                 pCtx.fillRect(this.width / 2 - 200, this.height / 2 - 25, 400, 50);
@@ -394,14 +403,34 @@ class Game {
     }
 
     drawHUD() {
+        // Fond
         hudCtx.fillStyle = "#020509";
         hudCtx.fillRect(0, 0, hudCanvas.width, hudCanvas.height);
-        hudCtx.fillStyle = "#FFF";
+        hudCtx.fillStyle = "#DFDFDF";
         hudCtx.font = "35px Pixel";
-        hudCtx.fillText("ZQSD / ↑←↓→ : Déplacement", 10, 30);
-        hudCtx.fillText("A : Creuser à gauche / E : Creuser à droite", 400, 30);
-        hudCtx.fillText("Clés restantes : " + this.map.getNbItemsInLevel(), game.width - 325, 30);
-        hudCtx.fillText("Vies: " + this.player.lives, game.width - 80, 30);
+        // Blocs
+        CONST.BLOCKS.forEach(block => {
+            // Icone
+            if (block.icon) {
+                const width = block.iconWidth;
+                const height = block.iconHeight;
+                hudCtx.drawImage(this.imageLoader.getImage(block.icon),
+                    block.x + block.iconOffset,
+                    5,
+                    width,
+                    height
+                );
+            }
+            // Texte
+            let textValue;
+            // verifie si le bloc texte est statique ou une fonction dynamique. typeof retourne le type de chaine
+            if (typeof block.text === "function") {
+                textValue = block.text(this);
+            } else {
+                textValue = block.text;
+            }
+            hudCtx.fillText(textValue, block.x + block.textOffset, 30);
+        });
     }
 
 

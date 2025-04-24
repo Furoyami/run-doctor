@@ -33,7 +33,7 @@ const CONST = Object.freeze({
     KEYVOLMUTE: "Semicolon",
 
     // States
-    LOADING: "loading",
+    TITLE: "title",
     PLAYING: "playing",
     PAUSE: "pause",
     GAMEOVER: "gameover",
@@ -69,5 +69,84 @@ const CONST = Object.freeze({
         6,  // TARDIS_LB
         7,  // TARDIS_RB
         8   // STARTPOSENEMY
+    ]),
+
+    // ---------- HUD BLOCKS ----------
+    BLOCKS: Object.freeze([
+
+        // déplacement
+        {
+            icon: "images/icons/move.png",
+            text: " : Déplacement",
+            x: 10,
+            iconOffset: 0,
+            textOffset: 80,
+            iconWidth: 80,
+            iconHeight: 40
+        },
+
+        // creusage
+        {
+            icon: "images/icons/dig.png",
+            text: " : A/E",
+            x: 280,
+            iconOffset: 0,
+            textOffset: 30,
+            iconWidth: 30,
+            iconHeight: 30
+        },
+
+        //clés
+        {
+            icon: "images/icons/keyIcon.png",
+            // syntaxe pour que les changement se répercutent pour le rendu
+            text: (game) => ": " + game.map.getNbItemsInLevel(),
+            x: 550,
+            iconOffset: 0,
+            textOffset: 30,
+            iconWidth: 30,
+            iconHeight: 30
+        },
+
+        // vies
+        {
+            icon: "images/icons/heart.png",
+            text: (game) => ": " + game.player.lives,
+            x: 650,
+            iconOffset: 0,
+            textOffset: 35,
+            iconWidth: 30,
+            iconHeight: 30
+        },
+
+        // son
+        {
+            icon: "images/icons/volMute.png",
+            text: ": M",
+            x: canvas.width - 80,
+            iconOffset: 0,
+            textOffset: 30,
+            iconWidth: 30,
+            iconHeight: 30
+        },
+
+        {
+            icon: "images/icons/volDown.png",
+            text: ": C",
+            x: canvas.width - 160,
+            iconOffset: 0,
+            textOffset: 30,
+            iconWidth: 30,
+            iconHeight: 30
+        },
+        {
+            icon: "images/icons/volUp.png",
+            text: ": V",
+            x: canvas.width - 240,
+            iconOffset: 0,
+            textOffset: 30,
+            iconWidth: 30,
+            iconHeight: 30
+        }
     ])
 });
