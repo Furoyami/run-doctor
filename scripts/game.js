@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         // Machine à états
-        this.state = CONST.TITLE;
+        this.state = CONST.LOADING;
 
         // Initialisations
         this.width = CONST.WIDTH;
@@ -13,7 +13,6 @@ class Game {
         this.keyOrder = [];
         this.isDiggingDirection = null;
         this.gameReady = false;
-        this.debug = false;
 
         // Objets principaux
         this.grid = new Grid();
@@ -40,11 +39,19 @@ class Game {
         this.spritePlayer = null;
         this.spriteEnemy = null;
         this.spriteHole = null;
+
+        // clignotement du titre
+        this.blinkTitle = 0;
+        this.blinkLimit = 0.5;
+        this.blinkVisible = true;
     }
 
     startGame() {
-        if (this.debug) console.log("StartGame");
-        this.state = CONST.PLAYING;
+        if (debug) console.log("StartGame");
+
+        // état différent en fonction du premier lancement ou d'un retry
+        if (this.state === CONST.LOADING) this.state = CONST.TITLE;
+        else if (this.state === CONST.GAMEOVER) this.state = CONST.PLAYING;
 
         this.grid.InitGrid();
         this.map.InitMap();
@@ -59,7 +66,7 @@ class Game {
             let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
             this.lstEnemies.push(enemy);
             this.lstSprites.push(enemy.spriteEnemy);
-            if (this.debug) console.log("----- Ennemi ajouté -----");
+            if (debug) console.log("----- Ennemi ajouté -----");
         }
 
         this.mscTheme.play();
@@ -126,9 +133,21 @@ class Game {
                     case CONST.KEYVOLMUTE:
                         this.muteAll();
                         break;
+                    case CONST.KEYP:
+                        this.state = CONST.PAUSE;
+                        this.mscTheme.stop();
+                        console.log(this.state);
+                        break;
                 }
                 break;
-            // !!! a modifier pour répondre aux conditions de win / lose
+            case CONST.PAUSE:
+                if (e.code === CONST.KEYP) {
+                    this.state = CONST.PLAYING;
+                    this.mscTheme.play();
+                }
+                console.log(this.state);
+
+                break;
             case CONST.GAMEOVER:
                 if (e.code === CONST.KEYR) this.restartGame();
                 break;
@@ -299,6 +318,9 @@ class Game {
     load() {
         document.addEventListener("keydown", (e) => this.keyDown(e), false);
         document.addEventListener("keyup", (e) => this.keyUp(e), false);
+        document.querySelector("#canvas").addEventListener("click", () => {
+            if (this.state === CONST.TITLE) this.state = CONST.PLAYING;
+        });
 
         this.mscTheme.startOnInteraction();
 
@@ -326,7 +348,14 @@ class Game {
 
     update(dt) {
         switch (this.state) {
+            case CONST.LOADING:
+                break;
             case CONST.TITLE:
+                this.blinkTitle += dt;
+                if (this.blinkTitle >= this.blinkLimit) {
+                    this.blinkVisible = !this.blinkVisible;
+                    this.blinkTitle = 0;
+                }
                 break;
             case CONST.PLAYING:
                 if (!this.gameReady) return;
@@ -370,20 +399,36 @@ class Game {
                     if (spriteIndex !== -1) this.lstSprites.splice(spriteIndex, 1);
                 }
                 break;
+            case CONST.PAUSE:
+                break;
+            case CONST.GAMEOVER:
+                this.mscTheme.stop();
+                break;
         }
+        console.log(this.state);
     }
 
     draw(pCtx) {
         pCtx.clearRect(0, 0, this.width, this.height);
         switch (this.state) {
-            case CONST.TITLE:
+            case CONST.LOADING:
                 let ratio = this.imageLoader.getLoadedRatio();
                 pCtx.fillStyle = "rgb(255,255,255)";
                 pCtx.fillRect(this.width / 2 - 200, this.height / 2 - 25, 400, 50);
                 pCtx.fillStyle = "rgb(0,255,255)";
                 pCtx.fillRect(this.width / 2 - 200, this.height / 2 - 25, 400 * ratio, 50);
                 break;
+            case CONST.TITLE:
+                pCtx.fillStyle = "#020509";
+                pCtx.fillRect(0, 0, canvas.width, canvas.height);
+                pCtx.fillStyle = "#DFDFDF";
+                pCtx.font = "200px Pixel";
+                this.centerText(pCtx, "RUN DOCTOR!", this.width / 2, this.height / 2 - 200);
+                pCtx.font = "75px Pixel";
+                if (this.blinkVisible) this.centerText(pCtx, "Click pour jouer", this.width / 2, this.height / 2 + 200);
+                break;
             case CONST.PLAYING:
+            case CONST.PAUSE:
                 if (!this.gameReady) return;
                 this.map.Draw(pCtx);
                 this.lstSprites.forEach(sprite => sprite.draw(pCtx));
@@ -391,6 +436,14 @@ class Game {
                 if (debug) {
                     this.grid.DrawGrid(pCtx);
                     this.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
+                }
+                if (this.state === CONST.PAUSE) {
+                    pCtx.fillStyle = "#020509CC";
+                    pCtx.fillRect(0, 0, this.width, this.height);
+                    pCtx.fillStyle = "#DFDFDF";
+                    pCtx.font = "75px Pixel";
+                    this.centerText(pCtx, "PAUSE", this.width / 2, this.height / 2);
+                    this.centerText(pCtx, "P pour reprendre", this.width / 2, this.height / 2 + 100);
                 }
                 break;
             case CONST.GAMEOVER:
@@ -431,6 +484,7 @@ class Game {
             }
             hudCtx.fillText(textValue, block.x + block.textOffset, 30);
         });
+        hudCtx.fillText("P : Pause", 910, 30);
     }
 
 

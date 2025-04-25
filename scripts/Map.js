@@ -61,8 +61,8 @@ class Map {
                 this.level.enemies = 3;
                 this.level.forbiddenPathTiles = [
                     { x: 17, y: 4 },
-                    // { x: 18, y: 4 }, 
-                    // { x: 19, y: 4 }
+                    { x: 18, y: 4 },
+                    { x: 19, y: 4 }
                 ];
                 if (debug) console.log("Map lvl 1 chargée");
                 break;

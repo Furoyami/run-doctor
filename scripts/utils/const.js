@@ -24,6 +24,7 @@ const CONST = Object.freeze({
     KEYR: "KeyR",
     KEYQ: "KeyQ",
     KEYE: "KeyE",
+    KEYP: "KeyP",
 
     KEYF5: "F5",
 
@@ -33,6 +34,7 @@ const CONST = Object.freeze({
     KEYVOLMUTE: "Semicolon",
 
     // States
+    LOADING: "loading",
     TITLE: "title",
     PLAYING: "playing",
     PAUSE: "pause",
