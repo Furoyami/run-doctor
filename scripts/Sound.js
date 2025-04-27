@@ -17,6 +17,14 @@ class Sound {
         this.audio.play();
     }
 
+    pause() {
+        this.audio.pause();
+    }
+
+    resume() {
+        this.audio.play();
+    }
+
     stop() {
         this.audio.pause();
         this.audio.currentTime = 0;

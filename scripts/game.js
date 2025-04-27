@@ -135,7 +135,7 @@ class Game {
                         break;
                     case CONST.KEYP:
                         this.state = CONST.PAUSE;
-                        this.mscTheme.stop();
+                        this.mscTheme.pause();
                         console.log(this.state);
                         break;
                 }
@@ -143,7 +143,7 @@ class Game {
             case CONST.PAUSE:
                 if (e.code === CONST.KEYP) {
                     this.state = CONST.PLAYING;
-                    this.mscTheme.play();
+                    this.mscTheme.resume();
                 }
                 console.log(this.state);
 
