@@ -96,8 +96,17 @@ class Game {
 
     keyUp(e) {
         e.preventDefault();
-        if (this.state !== CONST.PLAYING) return;
-        this.playingScene.keyUpPlaying(e);
+
+        switch (this.state) {
+            case !CONST.PLAYING:
+                break;
+            case CONST.PLAYING:
+            case CONST.PAUSE:
+                this.playingScene.keyUpPlaying(e);
+                break;
+
+        }
+
     }
 
     restartGame() {
