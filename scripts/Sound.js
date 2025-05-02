@@ -71,20 +71,4 @@ class Sound {
         // affectation de la bonne valeur à audio.volume
         this.audio.volume = closest;
     }
-
-    // permet de lancer la musique de fond à la 1ere interaction, sans avoir besoin de relancer le jeu
-    startOnInteraction() {
-        if (this.isStarted) return;
-
-        this.isStarted = true;
-
-        const handler = () => {
-            this.play();
-            document.removeEventListener("click", handler);
-            document.removeEventListener("keydown", handler);
-        };
-
-        document.addEventListener("click", handler);
-        document.addEventListener("keydown", handler);
-    }
 }

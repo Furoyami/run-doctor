@@ -71,8 +71,6 @@ class Game {
             if (debug) console.log("----- Ennemi ajouté -----");
         }
 
-        this.mscTheme.play();
-
         this.gameReady = true;
     }
 
@@ -144,14 +142,18 @@ class Game {
             sound.mute();
         }
     }
+
+    handleTitleClick() {
+        if (this.state === CONST.TITLE) {
+            this.state = CONST.PLAYING;
+            this.mscTheme.play();
+        }
+    }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
 
     load() {
         document.addEventListener("keydown", (e) => this.keyDown(e), false);
         document.addEventListener("keyup", (e) => this.keyUp(e), false);
-        document.querySelector("#canvas").addEventListener("click", () => {
-            if (this.state === CONST.TITLE) this.state = CONST.PLAYING;
-        });
 
         this.imageLoader.add("images/doctor_tile.png");
         this.imageLoader.add("images/hole_tile.png");
@@ -171,7 +173,6 @@ class Game {
         this.imageLoader.add("images/icons/volUp.png");
         this.imageLoader.add("images/icons/volMute.png");
 
-
         this.imageLoader.start(() => this.startGame());
     }
 
@@ -181,7 +182,8 @@ class Game {
             case CONST.LOADING:
                 break;
             case CONST.TITLE:
-                this.mscTheme.startOnInteraction();     // start le theme du jeu à l'applui sur le click du titre
+                this.mscTheme.stop();
+                document.querySelector("#canvas").addEventListener("click", () => this.handleTitleClick(), { once: true });
                 this.titleScene.updateTitle(dt);
                 break;
             case CONST.PLAYING:
