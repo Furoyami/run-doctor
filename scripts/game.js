@@ -153,8 +153,6 @@ class Game {
             if (this.state === CONST.TITLE) this.state = CONST.PLAYING;
         });
 
-        if (this.state === CONST.PLAYING) this.mscTheme.startOnInteraction();
-
         this.imageLoader.add("images/doctor_tile.png");
         this.imageLoader.add("images/hole_tile.png");
         this.imageLoader.add("images/dalek_tile.png");
@@ -178,10 +176,12 @@ class Game {
     }
 
     update(dt) {
+
         switch (this.state) {
             case CONST.LOADING:
                 break;
             case CONST.TITLE:
+                this.mscTheme.startOnInteraction();     // start le theme du jeu à l'applui sur le click du titre
                 this.titleScene.updateTitle(dt);
                 break;
             case CONST.PLAYING:
