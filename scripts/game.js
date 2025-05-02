@@ -53,7 +53,10 @@ class Game {
 
         // état différent en fonction du premier lancement ou d'un retry
         if (this.state === CONST.LOADING) this.state = CONST.TITLE;
-        else if (this.state === CONST.GAMEOVER) this.state = CONST.PLAYING;
+        else if (this.state === CONST.GAMEOVER) {
+            this.state = CONST.PLAYING;
+            this.mscTheme.play(); // Relance le thème pour un restart
+        }
 
         this.grid.InitGrid();
         this.map.InitMap();
