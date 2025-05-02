@@ -153,7 +153,7 @@ class Game {
             if (this.state === CONST.TITLE) this.state = CONST.PLAYING;
         });
 
-        this.mscTheme.startOnInteraction();
+        if (this.state === CONST.PLAYING) this.mscTheme.startOnInteraction();
 
         this.imageLoader.add("images/doctor_tile.png");
         this.imageLoader.add("images/hole_tile.png");
