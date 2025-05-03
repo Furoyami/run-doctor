@@ -155,8 +155,17 @@ class Game {
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
 
     load() {
-        document.addEventListener("keydown", (e) => this.keyDown(e), false);
-        document.addEventListener("keyup", (e) => this.keyUp(e), false);
+        const canvas = document.querySelector("#canvas");
+        canvas.setAttribute("tabindex", "0");
+        canvas.addEventListener("keydown", (e) => this.keyDown(e), { capture: true });
+        canvas.addEventListener("keyup", (e) => this.keyUp(e), { capture: true });
+
+        // Bloque le défilement des flèches globalement
+        window.addEventListener("keydown", (e) => {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+                e.preventDefault();
+            }
+        }, { capture: true });
 
         this.imageLoader.add("images/doctor_tile.png");
         this.imageLoader.add("images/hole_tile.png");
