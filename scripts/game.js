@@ -48,7 +48,7 @@ class Game {
         this.spriteHole = null;
     }
 
-    startGame() {
+    async startGame() {
         if (debug) console.log("StartGame");
 
         // état différent en fonction du premier lancement ou d'un retry
@@ -59,7 +59,7 @@ class Game {
         }
 
         this.grid.InitGrid();
-        this.map.InitMap();
+        await this.map.InitMap();
 
         this.player.CreatePlayer();
         this.spritePlayer = this.player.CreatePlayer(); // Assume que Player initialise sprite
@@ -154,7 +154,7 @@ class Game {
     }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
 
-    load() {
+    async load() {
         const canvas = document.querySelector("#canvas");
         canvas.setAttribute("tabindex", "0");
         canvas.addEventListener("keydown", (e) => this.keyDown(e), { capture: true });
@@ -185,7 +185,8 @@ class Game {
         this.imageLoader.add("images/icons/volUp.png");
         this.imageLoader.add("images/icons/volMute.png");
 
-        this.imageLoader.start(() => this.startGame());
+        await this.imageLoader.start();
+        await this.startGame();
     }
 
     update(dt) {

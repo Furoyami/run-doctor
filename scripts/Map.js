@@ -1,7 +1,6 @@
 class Map {
     constructor() {
-        this.matrix = [];
-        this.level;
+        this.level = null;
         this.nbLines = 0;
         this.nbColumns = 0;
         this.cellSize = 0;
@@ -12,9 +11,15 @@ class Map {
         this.tardisVisible = false;
         this.originaleTile = null;
         this.itemsCollected = 0;
+
+        // chargement des levels
+        this.levels = { classic: {} }; //cache pour les JSON chargés. à étendre avec custom quand l'eiteur de lvl sera fait
+        this.currentLevelId = 1; // niveau actuel
+
+        // le pType présent dans les fonctions est dans l'optique de générer par la suite une liste de lvl custom
     }
 
-    InitMap() {
+    async InitMap() {
         let grid = new Grid();
 
         if (debug) console.log("-------------------------------------------------- Map Init --------------------------------------------------");
@@ -28,74 +33,68 @@ class Map {
         this.y = this.nbLines * this.cellSize;
 
         this.LoadTextures();
-        this.LoadLevel(1);
+        await this.LoadLevelOnDemand(this.currentLevelId); //charge le lvl 1
         this.Read();
     }
 
-    LoadLevel(pLevel) {
-        // l'id 8 dans les grille représente la position des ennemis, nécessaire pour pouvoir récuperer leur position de départ
-        switch (pLevel) {
-            case 1:
-                this.level =
-                    [
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 0, 0, 0, 0, 3, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 8, 0, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 2, 0, 0],
-                        [1, 1, 1, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1],
-                        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-                        [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                        [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                    ];
-                this.level.items = 0;
-                this.level.enemies = 3;
-                this.level.forbiddenPathTiles = [
-                    { x: 17, y: 4 },
-                    { x: 18, y: 4 },
-                    { x: 19, y: 4 }
-                ];
-                if (debug) console.log("Map lvl 1 chargée");
-                break;
-            case 2:
-                this.level =
-                    [
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    ];
-                this.level.items = 0;
-                this.level.enemies = null;
-                if (debug) console.log("Map lvl 2 chargée");
-                break;
-
-            default:
-                break;
+    // charge les levels en lazy loading
+    async LoadLevelOnDemand(pLevelId, pType = "classic") {
+        // Vérifie le cache
+        if (this.levels[pType][pLevelId]) {
+            this.LoadLevel(pLevelId, pType);
+            return;
         }
+
+        const formattedId = pLevelId.toString().padStart(3, "0");
+        const file = `scripts/levels/${pType}/level-${formattedId}.json`;
+
+        try {
+            const response = await fetch(file);
+            if (!response) throw new Error(`Fichier ${pLevelId} introuvable`);
+
+            const data = await response.json();
+            this.levels[pType][pLevelId] = data;
+            this.LoadLevel(pLevelId, pType);
+            this.currentLevelId = pLevelId; // met à jour le niveau courant
+
+            if (debug) console.log(`Niveau ${pLevelId} (${pType}) chargé depuis ${file}`);
+        } catch (error) {
+            console.error(`Erreur chargement ${file}:`, error);
+            // Revenir au niveau 1 si erreur
+            this.currentLevelId = 1;
+            await this.loadLevelOnDemand(1, "classic");
+        }
+
+    }
+
+    // charge les données depuis le JSON
+    LoadLevel(pLevelId, pType = "classic") {
+        const levelData = this.levels[pType][pLevelId];
+        if (!levelData) {
+            console.error(`Aucun niveau" ${pLevelId} (${pType}) trouvé`);
+            return;
+        }
+
+        this.level = {
+            matrix: levelData.matrix,
+            items: levelData.items,
+            enemies: levelData.enemies,
+            forbiddenPathTiles: levelData.forbiddenPathTiles
+        };
+
+        // Validation des dimensions
+        if (!Array.isArray(levelData.matrix) ||
+            levelData.matrix.length !== this.nbLines ||
+            levelData.matrix[0].length !== this.nbColumns) {
+            console.error(`Mauvaises dimensions pour le niveau ${pLevelId}`);
+            return;
+        }
+
+        // Réinit pour le nouveau niveau
+        this.tardisVisible = false;
+        this.itemsCollected = 0;
+        console.log(`Niveau ${pLevelId} (${pType}) chargé`);
+
     }
 
     LoadTextures() {
@@ -156,7 +155,7 @@ class Map {
             return CONST.OUT_OF_BOUNDS;
         }
 
-        let id = this.level[playerLine][playerCol];
+        let id = this.level.matrix[playerLine][playerCol];
 
         return id;
     }
@@ -171,7 +170,7 @@ class Map {
             return CONST.OUT_OF_BOUNDS;
         }
 
-        let id = this.level[enemyLine][enemyCol];
+        let id = this.level.matrix[enemyLine][enemyCol];
 
         return id;
     }
@@ -196,29 +195,29 @@ class Map {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.level[playerLine][playerCol] = CONST.VOID;
+        this.level.matrix[playerLine][playerCol] = CONST.VOID;
     }
 
     FillBrick(pOffsetX, pOffsetY) {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        this.level[playerLine][playerCol] = CONST.WALL;
+        this.level.matrix[playerLine][playerCol] = CONST.WALL;
     }
 
     ChangeToUnwalkable(pLine, pCol) {
-        this.level[pCol][pLine] = CONST.UNWALKABLE_VOID;
+        this.level.matrix[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
     CollectItem(pX, pY, isPlayer = false) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
-        if (this.level[line][col] === CONST.ITEM) {
+        if (this.level.matrix[line][col] === CONST.ITEM) {
             if (this.originaleTile !== null && this.originaleTile.col === col && this.originaleTile.line === line) {
-                this.level[line][col] = this.originaleTile.tileId; // Restaure la tile originale
+                this.level.matrix[line][col] = this.originaleTile.tileId; // Restaure la tile originale
                 this.originaleTile = null; // Reset
             } else {
-                this.level[line][col] = CONST.VOID; // Cas des clés initiales
+                this.level.matrix[line][col] = CONST.VOID; // Cas des clés initiales
             }
             this.itemsCollected += 1;
             if (isPlayer && this.level.items > 0) {
@@ -231,7 +230,7 @@ class Map {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
-        this.level[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
+        this.level.matrix[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
     }
 
 
@@ -239,9 +238,12 @@ class Map {
      *  Lis la map du niveau et compte le nombre de clés
      */
     Read() {
+        this.level.items = 0;
+        this.lstEnemiesCoords = [];
+
         for (let line = 0; line < this.nbLines; line++) {
             for (let col = 0; col < this.nbColumns; col++) {
-                let id = this.level[line][col];
+                let id = this.level.matrix[line][col];
                 if (id === CONST.ITEM) {
                     this.level.items += 1;
                 }
@@ -289,7 +291,7 @@ class Map {
                 let backgroundTexture = this.tileTextures[0];
                 if (this.backgroundTexture !== null) pCtx.drawImage(backgroundTexture, x, y);
 
-                let id = this.level[line][col];
+                let id = this.level.matrix[line][col];
                 // Masque le TARDIS tant que les clés ne sont pas ramassées
                 if (this.level.items != 0) {
                     if (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT ||
@@ -357,7 +359,7 @@ class Map {
     }
 
     getCurrentMapLevel() {
-        return this.level;
+        return this.level.matrix;
     }
 
     getMapNbLines() {
@@ -371,5 +373,10 @@ class Map {
     // pour récupérer les cases interdites
     getForbiddenPathTiles() {
         return this.level.forbiddenPathTiles;
+    }
+
+    // Pour récupérer currentLevelId
+    getCurrentLevelId() {
+        return this.currentLevelId;
     }
 }

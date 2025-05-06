@@ -1,7 +1,7 @@
 {
     "JSObfuscator.changeFileExtension": "o.js",
     "JSObfuscator.overwriteExistingFiles": true,
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
     "liveServer.settings.port": 5501
