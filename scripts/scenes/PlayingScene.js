@@ -1,5 +1,7 @@
 class PlayingScene {
-    constructor() { }
+    constructor() {
+        this.isLevelCompleted = false; // verrou pour assurer qu'un seule niveau soit passé en cas de contact avec le tardis
+    }
 
     keyDownPlaying(e) {
         switch (e.code) {
@@ -103,7 +105,7 @@ class PlayingScene {
         }
     }
 
-    updatePlaying(dt) {
+    async updatePlaying(dt) {
         if (!game.gameReady) return;
         game.map.Update(dt);
         game.lstSprites.forEach(sprite => sprite.update(dt));
@@ -122,6 +124,17 @@ class PlayingScene {
 
             enemy.Update(dt, playerCol, playerLine);
 
+            /* reduit la vitesse des ennemis au respawn du joueur
+                pour lui permettre de se replacer */
+            if (game.player.isInvincible) {
+                enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed;
+            } else {
+                // augmente la vitesse en fonction du nombre de clés ramassé
+                const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
+                enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
+            }
+
+
             // Tue le joueur s'il entre en collision avec un ennemi
             if (!game.player.isInvincible &&
                 playerCol === enemyCol &&
@@ -133,6 +146,31 @@ class PlayingScene {
 
             this.handleTraps(dt, enemy, enemyCol, enemyLine);
         });
+
+        if (this.isLevelCompleted) return;
+        
+        // level up si le joueur touche le tardis
+        if ((game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_LT || game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_RT ||
+            game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_LB || game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_RB)
+            && game.spritePlayer.vX === 0 && game.map.getNbItemsInLevel() === 0) {
+            this.isLevelCompleted = true;
+            game.map.currentLevelId += 1;
+
+            let result = await game.map.LoadLevelOnDemand(game.map.currentLevelId, CONST.CLASSIC);
+            if (result.success) {
+                await game.initLevel(false);
+                console.log("TARDIS touché, niveau chargé :", game.map.currentLevelId);
+            } else if (result.reason === CONST.NO_MORE_LEVELS) {
+                game.state = CONST.GAMEWIN;
+                game.mscTheme.stop();
+                console.log("Victoire ! Tous les niveaux terminés !");
+            } else {
+                console.error("Erreur de chargement du niveau, retour au niveau 1");
+                game.map.currentLevelId = 1;
+                await game.initLevel(true);
+            }
+            this.isLevelCompleted = false;
+        }
 
         game.lstHoles.forEach(hole => {
             if (hole.isDigging) hole.Update(dt);
@@ -147,7 +185,6 @@ class PlayingScene {
     }
 
     drawPlaying(pCtx) {
-        if (!game.gameReady) return;
         game.map.Draw(pCtx);
         game.lstSprites.forEach(sprite => sprite.draw(pCtx));
         this.drawHUD();

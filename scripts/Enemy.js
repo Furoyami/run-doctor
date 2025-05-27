@@ -48,9 +48,6 @@ class Enemy {
     }
 
     Update(dt, pTargetCol, pTargetLine) {
-        // augmente la vitesse en fonction du nombre de clés ramassé
-        const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
-        this.spriteEnemy.speed = this.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
 
         if (this.isTrapped) {
             this.trappedTimer -= dt;

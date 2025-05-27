@@ -16,9 +16,9 @@ function run() {
     draw(ctx);
 }
 
-function init() {
+async function init() {
     if (debug) console.log("Init");
-    load();
+    await load();
     interval = setInterval(run, 1000 / 60); // remplace le delta time
 }
 

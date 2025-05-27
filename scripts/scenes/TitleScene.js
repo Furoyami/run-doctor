@@ -6,6 +6,18 @@ class TitleScene {
         this.blinkVisible = true;
     }
 
+    keyDownTitle(e) {
+        switch (e.code) {
+            case CONST.KEYSPACE:
+                game.state = CONST.PLAYING;
+                game.mscTheme.play();
+                break;
+            case CONST.KEYE:
+                game.state = CONST.LEVELEDITOR;
+                break;
+        }
+    }
+
     updateTitle(dt) {
         this.blinkTitle += dt;
         if (this.blinkTitle >= this.blinkLimit) {
@@ -21,6 +33,6 @@ class TitleScene {
         pCtx.font = "200px Pixel";
         game.centerText(pCtx, "RUN DOCTOR!", game.width / 2, game.height / 2 - 200);
         pCtx.font = "75px Pixel";
-        if (this.blinkVisible) game.centerText(pCtx, "Click pour jouer", game.width / 2, game.height / 2 + 200);
+        if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 200);
     }
 }

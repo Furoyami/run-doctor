@@ -8,13 +8,15 @@ class Player {
         this.blinkInterval = 0.2;   // clignotement
     }
 
-    CreatePlayer() {
+    CreatePlayer(pCol = 0, pLine = 0) {
         // création du joueur
         let imgPlayer = game.imageLoader.getImage("images/doctor_tile.png");
         this.spritePlayer = new Sprite(imgPlayer);
         this.spritePlayer.setTileSheet(40, 40);
-        this.spritePlayer.x = (game.width / 2) - (3 * game.grid.cellSize);// <-- nombre de case retirées du placement original
-        this.spritePlayer.y = game.height - (2 * game.grid.cellSize);//  2* pour ne pas le placer dans le sol
+        this.spritePlayer.col = pCol; //x
+        this.spritePlayer.line = pLine; //y
+        this.spritePlayer.x = this.spritePlayer.col * game.grid.cellSize;
+        this.spritePlayer.y = this.spritePlayer.line * game.grid.cellSize;
         this.spritePlayer.startX = this.spritePlayer.x; // pour le resetPosition
         this.spritePlayer.startY = this.spritePlayer.y; // pour le resetPosition
         this.spritePlayer.vX = 0;
@@ -72,9 +74,6 @@ class Player {
         }
 
         this.getItems();
-
-        // Charge le niveau suivant si le joueur atteint le TARDIS
-        this.loadLevel();
     }
 
     handleFall() {
@@ -195,16 +194,6 @@ class Player {
         }
     }
 
-    loadLevel() {
-        if ((game.map.getUnderPlayerID(0, 0) === 4 || game.map.getUnderPlayerID(0, 0) === 5 ||
-            game.map.getUnderPlayerID(0, 0) === 6 || game.map.getUnderPlayerID(0, 0) === 7)
-            && this.spritePlayer.vX === 0 && game.map.getNbItemsInLevel() === 0) {
-
-            // Reinit le jeu
-            game.restartGame();
-        }
-    }
-
     // Déplacement à droite
     moveRight() {
         if (this.spritePlayer.vX === 0
@@ -304,8 +293,9 @@ class Player {
         this.selectIdleDirection();
     }
 
-    resetPlayer() {
-        this.lives = 3;
+    // reset joueur en cas de retry
+    resetPlayer(resetLives = true) {
+        if (resetLives) this.lives = 3;
         this.invincibilityTimer = 0; // Timer en secondes pour l’invincibilité
         this.isInvincible = false;   // État d’invincibilité
         this.blinkTimer = 0;
@@ -367,7 +357,7 @@ class Player {
 
             this.invincibilityBlink();
 
-            if (this.invincibilityTimer >= 2) {
+            if (this.invincibilityTimer >= 4) {
                 this.isInvincible = false;
                 this.invincibilityTimer = 0;
                 this.blinkTimer = 0;

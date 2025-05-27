@@ -25,6 +25,7 @@ const CONST = Object.freeze({
     KEYQ: "KeyQ",
     KEYE: "KeyE",
     KEYP: "KeyP",
+    KEYSPACE:"Space",
 
     KEYF5: "F5",
 
@@ -38,10 +39,19 @@ const CONST = Object.freeze({
     TITLE: "title",
     PLAYING: "playing",
     PAUSE: "pause",
+    GAMEWIN: "gamewin",
     GAMEOVER: "gameover",
+    LEVELEDITOR: "leveleditor",
 
     // Max speed pour l'acceleration des ennemis
     MAX_SPEED_COEFF: 2.5,
+
+    // Type de niveau (prévision lvl custom pour l'éditeur)
+    CLASSIC: "classic",
+
+    // Valeurs de success.reason pour les passage de niveaux
+    NO_MORE_LEVELS: "no_more_levels",
+    LOAD_ERROR: "load_error",
 
     // ---------- TILES ----------
 
@@ -60,6 +70,7 @@ const CONST = Object.freeze({
     TARDIS_RB: 7,
     // uniquement présente pour utilisation dans les détéctions de cases franchissables
     STARTPOSENEMY: 8,
+    STARTPOSPLAYER: 10,
 
     // franchissable ou permettant la chute
     WALKABLE: Object.freeze([

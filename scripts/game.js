@@ -26,6 +26,7 @@ class Game {
         this.pauseScene = new PauseScene();
         this.loadingScene = new LoadingScene();
         this.gameOverScene = new GameOverScene();
+        this.levelEditorScene = new LevelEditorScene();
 
         // Pathfinding
         this.pathfinding = new Pathfinding();
@@ -48,41 +49,35 @@ class Game {
         this.spriteHole = null;
     }
 
-    async startGame() {
-        if (debug) console.log("StartGame");
-
-        // état différent en fonction du premier lancement ou d'un retry
-        if (this.state === CONST.LOADING) this.state = CONST.TITLE;
-        else if (this.state === CONST.GAMEOVER) {
-            this.state = CONST.PLAYING;
-            this.mscTheme.play(); // Relance le thème pour un restart
-        }
-
-        this.grid.InitGrid();
-        await this.map.InitMap();
-
-        this.player.CreatePlayer();
-        this.spritePlayer = this.player.CreatePlayer(); // Assume que Player initialise sprite
-        this.lstSprites.push(this.spritePlayer);
-
-        let nbEnemies = this.map.getNbEnemiesInLevel();
-        for (let i = 0; i < nbEnemies; i++) {
-            let enemyPos = this.map.getEnemiesStartPos()[i];
-            let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
-            this.lstEnemies.push(enemy);
-            this.lstSprites.push(enemy.spriteEnemy);
-            if (debug) console.log("----- Ennemi ajouté -----");
-        }
-
-        this.gameReady = true;
-    }
-
     keyDown(e) {
         if (e.code === CONST.KEYF5) return;
         if (e.repeat) return;
         e.preventDefault();
 
+        // Bindings pour tests
+        if (this.state === CONST.PLAYING) {
+            if (e.code === "NumpadAdd") {
+                this.nextLevel();
+                return;
+            }
+            if (e.code === "NumpadSubtract") {
+                this.previousLevel();
+                return;
+            }
+            if (e.code === "NumpadMultiply") {
+                this.addLife();
+                return;
+            }
+            if (e.code === "NumpadDivide") {
+                this.removeLife();
+                return;
+            }
+        }
+
         switch (this.state) {
+            case CONST.TITLE:
+                this.titleScene.keyDownTitle(e);
+                break;
             case CONST.PLAYING:
                 this.playingScene.keyDownPlaying(e);
                 break;
@@ -91,6 +86,9 @@ class Game {
                 break;
             case CONST.GAMEOVER:
                 this.gameOverScene.keyDownGameOver(e);
+                break;
+            case CONST.LEVELEDITOR:
+                this.levelEditorScene.keyDownLevelEditor(e);
                 break;
         }
     }
@@ -105,12 +103,22 @@ class Game {
             case CONST.PAUSE:
                 this.playingScene.keyUpPlaying(e);
                 break;
-
         }
-
     }
 
-    restartGame() {
+    async startGame() {
+        if (debug) console.log("StartGame");
+
+        if (this.state === CONST.LOADING) this.state = CONST.TITLE;
+
+        // map init
+        this.grid.InitGrid();
+        await this.map.InitMap();
+        await this.initLevel(true);
+    }
+
+    // restart completement le jeu au lvl 1 (après game over)
+    async restartGame() {
         this.lstSprites = [];
         this.lstEnemies = [];
         this.lstHoles = [];
@@ -118,9 +126,47 @@ class Game {
         this.keyOrder = [];
         this.isDiggingDirection = null; // Réinitialiser l'état de creusage
         this.map.tardisVisible = false;
-        this.player.resetPlayer();
-        this.startGame();
+        this.map.resetLevel();
+        this.map.currentLevelId = 1;
+        await this.initLevel(true);
+        this.state = CONST.PLAYING;
+        this.mscTheme.play(); // Relance le thème pour un restart
+    }
+
+    async initLevel(resetLives = false) {
+        this.lstSprites = [];
+        this.lstEnemies = [];
+        this.lstHoles = [];
+        this.activeKeys = new Set();
+        this.keyOrder = [];
+        this.isDiggingDirection = null; // Réinitialiser l'état de creusage
+        this.map.tardisVisible = false;
         this.map.itemsCollected = 0;
+        this.spritePlayer = null; // Purge spritePlayer
+        this.player.resetPlayer(resetLives); // Réinitialise l'état du joueur et conserve ses vies actuelles
+
+        await this.map.LoadLevelOnDemand(this.map.currentLevelId, CONST.CLASSIC);
+        this.map.Read();
+
+        // player creation
+        let playerPos = this.map.getPlayerStartPos();
+        this.spritePlayer = this.player.CreatePlayer(playerPos.col, playerPos.line);
+        this.lstSprites.push(this.spritePlayer);
+
+        // enemies creation
+        let nbEnemies = this.map.getNbEnemiesInLevel();
+        for (let i = 0; i < nbEnemies; i++) {
+            let enemyPos = this.map.getEnemiesStartPos()[i];
+            let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
+            this.lstEnemies.push(enemy);
+            this.lstSprites.push(enemy.spriteEnemy);
+            if (debug) console.log("----- Ennemi ajouté -----");
+        }
+
+        // reload les sprites du tardis pour rejouer l'animation
+        this.map.LoadTardisTextures();
+
+        this.gameReady = true;
     }
 
     // Récupères les trous consommés
@@ -145,11 +191,59 @@ class Game {
             sound.mute();
         }
     }
+    // ------------------------------------------------------------- GOD MOD A VIRER AVANT DE METTRE LE JEU EN LIGNE -------------------------------------------------------------
+    async nextLevel() {
+        if (this.state !== CONST.PLAYING) {
+            console.log("[Game] nextLevel: Ignoré, pas en mode PLAYING");
+            return;
+        }
+        this.map.currentLevelId += 1;
+        console.log("[Game] Passage au niveau suivant:", this.map.currentLevelId);
+        await this.initLevel(false); // Conserve les vies
+    }
 
-    handleTitleClick() {
-        if (this.state === CONST.TITLE) {
-            this.state = CONST.PLAYING;
-            this.mscTheme.play();
+    async previousLevel() {
+        if (this.state !== CONST.PLAYING) {
+            console.log("[Game] previousLevel: Ignoré, pas en mode PLAYING");
+            return;
+        }
+        if (this.map.currentLevelId <= 1) {
+            console.log("[Game] previousLevel: Déjà au niveau 1");
+            return;
+        }
+        this.map.currentLevelId -= 1;
+        console.log("[Game] Retour au niveau précédent:", this.map.currentLevelId);
+        await this.initLevel(false); // Conserve les vies
+    }
+
+    addLife() {
+        if (this.state !== CONST.PLAYING) {
+            console.log("[Game] addLife: Ignoré, pas en mode PLAYING");
+            return;
+        }
+        const maxLives = 13;
+        if (this.player.lives < maxLives) {
+            this.player.lives += 1;
+            console.log("[Game] Vie ajoutée: lives=", this.player.lives);
+        } else {
+            console.log("[Game] addLife: Maximum de vies atteint:", maxLives);
+        }
+    }
+
+    removeLife() {
+        if (this.state !== CONST.PLAYING) {
+            console.log("[Game] removeLife: Ignoré, pas en mode PLAYING");
+            return;
+        }
+        if (this.player.lives > 0) {
+            this.player.lives -= 1;
+            console.log("[Game] Vie retirée: lives=", this.player.lives);
+            if (this.player.lives <= 0) {
+                this.state = CONST.GAMEOVER;
+                console.log("[Game] GameOver déclenché");
+            }
+        } else {
+            console.log("[Game] removeLife: Aucune vie restante");
         }
     }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
@@ -187,6 +281,11 @@ class Game {
 
         await this.imageLoader.start();
         await this.startGame();
+
+        // timeout défensif au cas ou certains navigateurs bloquent focus si appelé trop tôt
+        setTimeout(() => {
+            canvas.focus();
+        }, 100);
     }
 
     update(dt) {
@@ -196,7 +295,6 @@ class Game {
                 break;
             case CONST.TITLE:
                 this.mscTheme.stop();
-                document.querySelector("#canvas").addEventListener("click", () => this.handleTitleClick(), { once: true });
                 this.titleScene.updateTitle(dt);
                 break;
             case CONST.PLAYING:
@@ -207,11 +305,16 @@ class Game {
             case CONST.GAMEOVER:
                 this.gameOverScene.updateGameOver(dt);
                 break;
+            case CONST.LEVELEDITOR:
+                this.levelEditorScene.updateLevelEditor(dt);
+                break;
         }
         console.log(this.state);
     }
 
     draw(pCtx) {
+        if (!this.gameReady) return;
+
         pCtx.clearRect(0, 0, this.width, this.height);
         switch (this.state) {
             case CONST.LOADING:
@@ -227,6 +330,9 @@ class Game {
                 break;
             case CONST.GAMEOVER:
                 this.gameOverScene.drawGameOver(pCtx);
+                break;
+            case CONST.LEVELEDITOR:
+                this.levelEditorScene.drawLevelEditor(pCtx);
                 break;
         }
     }

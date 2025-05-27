@@ -8,6 +8,7 @@ class Map {
         this.y = 0;
         this.tileTextures = [];
         this.lstEnemiesCoords = [];
+        this.playerStartCoords = null;
         this.tardisVisible = false;
         this.originaleTile = null;
         this.itemsCollected = 0;
@@ -38,11 +39,11 @@ class Map {
     }
 
     // charge les levels en lazy loading
-    async LoadLevelOnDemand(pLevelId, pType = "classic") {
+    async LoadLevelOnDemand(pLevelId, pType = CONST.CLASSIC) {
         // Vérifie le cache
         if (this.levels[pType][pLevelId]) {
             this.LoadLevel(pLevelId, pType);
-            return;
+            return { success: true };
         }
 
         const formattedId = pLevelId.toString().padStart(3, "0");
@@ -50,25 +51,25 @@ class Map {
 
         try {
             const response = await fetch(file);
-            if (!response) throw new Error(`Fichier ${pLevelId} introuvable`);
-
+            if (!response.ok) {
+                console.log(`Niveau ${pLevelId} introuvable, fin du jeu !`);
+                return { success: false, reason: CONST.NO_MORE_LEVELS };
+            }
             const data = await response.json();
             this.levels[pType][pLevelId] = data;
             this.LoadLevel(pLevelId, pType);
             this.currentLevelId = pLevelId; // met à jour le niveau courant
-
             if (debug) console.log(`Niveau ${pLevelId} (${pType}) chargé depuis ${file}`);
+            return { success: true };
         } catch (error) {
             console.error(`Erreur chargement ${file}:`, error);
-            // Revenir au niveau 1 si erreur
-            this.currentLevelId = 1;
-            await this.loadLevelOnDemand(1, "classic");
+            return { success: false, reason: CONST.LOAD_ERROR };
         }
 
     }
 
     // charge les données depuis le JSON
-    LoadLevel(pLevelId, pType = "classic") {
+    LoadLevel(pLevelId, pType = CONST.CLASSIC) {
         const levelData = this.levels[pType][pLevelId];
         if (!levelData) {
             console.error(`Aucun niveau" ${pLevelId} (${pType}) trouvé`);
@@ -93,8 +94,18 @@ class Map {
         // Réinit pour le nouveau niveau
         this.tardisVisible = false;
         this.itemsCollected = 0;
-        console.log(`Niveau ${pLevelId} (${pType}) chargé`);
+        if (debug) console.log(`Niveau ${pLevelId} (${pType}) chargé`);
 
+    }
+
+    // réinit la map du jeu au lvl 1
+    resetLevel() {
+        this.level = null;
+        this.itemsCollected = 0;
+        this.tardisVisible = false;
+        this.lstEnemiesCoords = [];
+        this.currentLevelId = 1;
+        this.levels.classic = {}; // Vide le cache
     }
 
     LoadTextures() {
@@ -119,6 +130,13 @@ class Map {
         this.tileTextures[3].addAnimation("KEY_ANIM", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0.15, 1);
         this.tileTextures[3].startAnimation("KEY_ANIM");
 
+        this.LoadTardisTextures();
+
+        if (debug) console.log("Toutes les textures sont chargées !");
+    }
+
+    LoadTardisTextures() {
+        // Tardis
         // LT
         this.tileTextures[4] = new Sprite(game.imageLoader.getImage("images/tardis_lt_tile.png"));
         this.tileTextures[4].name = "TARDIS_LT";
@@ -139,10 +157,6 @@ class Map {
         this.tileTextures[7].name = "TARDIS_RB";
         this.tileTextures[7].setTileSheet(40, 40);
         this.tileTextures[7].addAnimation("APPEAR", [0, 1, 2, 3], 0.5, 0, false);
-
-
-        if (debug) console.log("Toutes les textures sont chargées !");
-
     }
 
     getUnderPlayerID(pOffsetX, pOffsetY) {
@@ -244,23 +258,34 @@ class Map {
         for (let line = 0; line < this.nbLines; line++) {
             for (let col = 0; col < this.nbColumns; col++) {
                 let id = this.level.matrix[line][col];
-                if (id === CONST.ITEM) {
-                    this.level.items += 1;
-                }
-                else if (id === 8 && this.lstEnemiesCoords.length != this.level.enemies) {
-                    //position de départ d'un ennemi
-                    //quand on trouve l'id 8, on stocke les coordonnées de l'id dans la liste
-                    let enemyStartCoords = {
-                        col: col,
-                        line: line
-                    };
-                    this.lstEnemiesCoords.push(enemyStartCoords);
+                switch (id) {
+                    case CONST.ITEM:
+                        this.level.items += 1;
+                        break;
+                    case CONST.STARTPOSENEMY:
+                        if (this.lstEnemiesCoords.length != this.level.enemies) {
+                            //position de départ d'un ennemi
+                            //quand on trouve l'id 8, on stocke les coordonnées de l'id dans la liste
+                            let enemyStartCoords = {
+                                col: col,
+                                line: line
+                            };
+                            this.lstEnemiesCoords.push(enemyStartCoords);
+                        }
+                        break;
+                    case CONST.STARTPOSPLAYER:
+                        this.playerStartCoords = {
+                            col: col,
+                            line: line
+                        };
+                        break;
                 }
             }
         }
     }
 
     Update(dt) {
+        // Apparition du tardis
         if (this.level.items === 0 && !this.tardisVisible) {
             for (let tileID in this.tileTextures) {
                 let texture = this.tileTextures[tileID];
@@ -315,6 +340,7 @@ class Map {
                     }
                 }
 
+                // Dessine les sprite animées
                 let texture = this.tileTextures[id];
                 if (texture != null) {
                     if (texture instanceof Sprite) {
@@ -356,6 +382,10 @@ class Map {
     */
     getEnemiesStartPos() {
         return this.lstEnemiesCoords;
+    }
+
+    getPlayerStartPos() {
+        return this.playerStartCoords;
     }
 
     getCurrentMapLevel() {
