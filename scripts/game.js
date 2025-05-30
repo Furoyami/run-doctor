@@ -254,6 +254,8 @@ class Game {
         canvas.addEventListener("keydown", (e) => this.keyDown(e), { capture: true });
         canvas.addEventListener("keyup", (e) => this.keyUp(e), { capture: true });
 
+        this.levelEditorScene.loadLevelEditor();
+
         // Bloque le défilement des flèches globalement
         window.addEventListener("keydown", (e) => {
             if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
