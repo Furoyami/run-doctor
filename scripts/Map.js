@@ -344,7 +344,13 @@ class Map {
                 }
 
                 // Dessine les sprite animées
-                let texture = this.tileTextures[id];
+                let texture;
+                // permet les dessin des placeholder dalek / doctor
+                if (game.state === CONST.LEVELEDITOR && (id === CONST.STARTPOSENEMY || id === CONST.STARTPOSPLAYER)) {
+                    texture = game.levelEditorScene.editorTextures[id];
+                } else {
+                    texture = this.tileTextures[id];
+                }
                 if (texture != null) {
                     if (texture instanceof Sprite) {
                         texture.x = x;

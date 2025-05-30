@@ -93,27 +93,6 @@ class LevelEditorScene {
         game.centerText(pCtx, "Level Editor WIP", game.width / 2, game.height / 2 - 50);
 
         game.map.Draw(pCtx);
-
-        // dessin des placehoolder dalek / doctor
-        for (let line = 0; line < game.map.nbLines; line++) {
-            for (let col = 0; col < game.map.nbColumns; col++) {
-                let x = (col * game.grid.cellSize) + game.grid.getGridOffset();
-                let y = (line * game.grid.cellSize);
-
-                let id = game.map.level.matrix[line][col];
-
-                let texture = this.editorTextures[id];
-                if (texture != null) {
-                    if (texture instanceof Sprite) {
-                        texture.x = x;
-                        texture.y = y;
-                        texture.draw(pCtx);
-                    } else {
-                        pCtx.drawImage(texture, x, y);
-                    }
-                }
-            }
-        }
         // grid
         game.grid.DrawGrid(pCtx);
 
