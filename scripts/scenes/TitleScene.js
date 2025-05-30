@@ -14,6 +14,7 @@ class TitleScene {
                 break;
             case CONST.KEYE:
                 game.state = CONST.LEVELEDITOR;
+                game.levelEditorScene.startLevelEditor();
                 break;
         }
     }

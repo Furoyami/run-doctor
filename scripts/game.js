@@ -262,8 +262,10 @@ class Game {
         }, { capture: true });
 
         this.imageLoader.add("images/doctor_tile.png");
+        this.imageLoader.add("images/doctor.png");  // pour le level editor
         this.imageLoader.add("images/hole_tile.png");
         this.imageLoader.add("images/dalek_tile.png");
+        this.imageLoader.add("images/dalek.png");   // pour le level editor
         this.imageLoader.add("images/key_tile.png");
         this.imageLoader.add("images/key.png");
         this.imageLoader.add("images/tardis_rt_tile.png");

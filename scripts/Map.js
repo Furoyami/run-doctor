@@ -38,6 +38,24 @@ class Map {
         this.Read();
     }
 
+    createEmptyMap() {
+        this.level = {
+            matrix: [],
+            items: 0,
+            enemies: 0,
+            forbiddenPathTiles: []
+        };
+
+        for (let l = 0; l < this.nbLines; l++) {
+            this.level.matrix[l] = [];
+            for (let c = 0; c < this.nbColumns; c++) {
+                this.level.matrix[l][c] = 0;
+            }
+        }
+
+        console.log("Map vide créée:", this.level.matrix);
+    }
+
     // charge les levels en lazy loading
     async LoadLevelOnDemand(pLevelId, pType = CONST.CLASSIC) {
         // Vérifie le cache
@@ -322,21 +340,6 @@ class Map {
                     if (id === CONST.TARDIS_LT || id === CONST.TARDIS_RT ||
                         id === CONST.TARDIS_LB || id === CONST.TARDIS_RB) {
                         id = CONST.VOID;
-                    }
-                }
-
-                // Si c’est la clé droppée
-                if (id === CONST.ITEM && this.originaleTile !== null &&
-                    this.originaleTile.col === col && this.originaleTile.line === line) {
-                    let originalTexture = this.tileTextures[this.originaleTile.tileId];
-                    if (originalTexture) {
-                        if (originalTexture instanceof Sprite) {
-                            originalTexture.x = x;
-                            originalTexture.y = y;
-                            originalTexture.draw(pCtx); // Dessine la tile originale
-                        } else {
-                            pCtx.drawImage(originalTexture, x, y); // Dessine la tile originale
-                        }
                     }
                 }
 
