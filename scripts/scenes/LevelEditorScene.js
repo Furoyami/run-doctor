@@ -3,6 +3,8 @@ class LevelEditorScene {
         this.getMouseBound = this.getMouseCoordinates.bind(this);
         this.preventContextMenuBound = this.preventContextMenu.bind(this);
         this.handleWheelBound = this.handleWheel.bind(this);
+        this.handleMouseMoveBound = this.handleMouseMove.bind(this);
+        this.handleMouseUpBound = this.handleMouseUp.bind(this);
         this.tileTypes = [
             CONST.WALL,
             CONST.LADDER,
@@ -17,6 +19,8 @@ class LevelEditorScene {
         this.currentTileIndex = 0;
         this.editorTextures = [];
         this.levelNumber = 2;
+        this.isPainting = false;
+        this.isErasing = false;
     }
 
     preventContextMenu(e) {
@@ -39,10 +43,14 @@ class LevelEditorScene {
     setEventListener(mode) {
         if (mode === "add") {
             canvas.addEventListener("mousedown", this.getMouseBound);
+            canvas.addEventListener("mousemove", this.handleMouseMoveBound);
+            canvas.addEventListener("mouseup", this.handleMouseUpBound);
             canvas.addEventListener("contextmenu", this.preventContextMenuBound);
             canvas.addEventListener("wheel", this.handleWheelBound);
         } else if (mode === "remove") {
             canvas.removeEventListener("mousedown", this.getMouseBound);
+            canvas.removeEventListener("mousemove", this.handleMouseMoveBound);
+            canvas.removeEventListener("mouseup", this.handleMouseUpBound);
             canvas.removeEventListener("contextmenu", this.preventContextMenuBound);
             canvas.removeEventListener("wheel", this.handleWheelBound);
         }
@@ -58,12 +66,13 @@ class LevelEditorScene {
                 // reset sur une map vierge
                 this.setEventListener("remove");
                 game.map.createEmptyMap();
+                this.setEventListener("add");
                 break;
             case CONST.KEYS:
                 const json = this.buildLevelJson();
                 const jsonString = JSON.stringify(json);
                 const formattedId = this.levelNumber.toString().padStart(3, "0");
-                const fileName = `level-${formattedId}.json`
+                const fileName = `level-${formattedId}.json`;
                 this.downloadJson(jsonString, fileName);
                 this.levelNumber++;
                 break;
@@ -120,7 +129,7 @@ class LevelEditorScene {
     }
 
     // récup les coords de la souris en ligne / colonne
-    getMouseCoordinates(e) {
+    getTileCoordinates(e) {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -128,25 +137,53 @@ class LevelEditorScene {
         // conversion en tile 
         const tileCol = Math.trunc(x / game.grid.cellSize);
         const tileLine = Math.trunc(y / game.grid.cellSize);
+        return { tileLine, tileCol };
+    }
 
-        this.changeTileValue(e, tileLine, tileCol);
+    getMouseCoordinates(e) {
+        const { tileLine, tileCol } = this.getTileCoordinates(e);
+        if (e.button === 0) {
+            this.isPainting = true;
+            this.changeTileValue(e, tileLine, tileCol);
+        } else if (e.button === 2) {
+            this.isErasing = true;
+            this.changeTileValue(e, tileLine, tileCol);
+        }
+    }
+
+    handleMouseMove(e) {
+        if (!this.isPainting && !this.isErasing) return;
+        const { tileLine, tileCol } = this.getTileCoordinates(e);
+        if (tileLine >= 0 && tileLine <= game.map.getMapNbLines() && tileCol >= 0 && tileCol <= game.map.getMapNbColumns()) {
+            if (this.isPainting) {
+                game.map.level.matrix[tileLine][tileCol] = this.tileTypes[this.currentTileIndex];
+            } else if (this.isErasing) {
+                game.map.level.matrix[tileLine][tileCol] = CONST.VOID;
+            }
+        }
+    }
+
+    handleMouseUp(e) {
+        if (e.button === 0) {
+            this.isPainting = false;
+            console.log("Peinture arrêtée");
+        } else if (e.button === 2) {
+            this.isErasing = false;
+            console.log("Effacement arrêté");
+        }
     }
 
     // modifie la valeur de la case cliquée
     changeTileValue(e, pTileLine, pTileCol) {
-
         if (e.button === 0) {
-            if (pTileLine >= 0 && pTileLine <= game.map.getMapNbLines()) {
-                if (pTileCol >= 0 && pTileCol <= game.map.getMapNbColumns()) {
+            if (pTileLine >= 0 && pTileLine < game.map.getMapNbLines()) {
+                if (pTileCol >= 0 && pTileCol < game.map.getMapNbColumns()) {
                     game.map.level.matrix[pTileLine][pTileCol] = this.tileTypes[this.currentTileIndex];
-                    console.log(game.map.level.matrix);
-
                 }
             }
-        }
-        if (e.button === 2) {
-            if (pTileLine >= 0 && pTileLine <= game.map.getMapNbLines()) {
-                if (pTileCol >= 0 && pTileCol <= game.map.getMapNbColumns()) {
+        } else if (e.button === 2) {
+            if (pTileLine >= 0 && pTileLine < game.map.getMapNbLines()) {
+                if (pTileCol >= 0 && pTileCol < game.map.getMapNbColumns()) {
                     game.map.level.matrix[pTileLine][pTileCol] = CONST.VOID;
                 }
             }
