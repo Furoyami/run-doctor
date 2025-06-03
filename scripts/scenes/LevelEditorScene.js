@@ -16,6 +16,7 @@ class LevelEditorScene {
         ];
         this.currentTileIndex = 0;
         this.editorTextures = [];
+        this.levelNumber = 2;
     }
 
     preventContextMenu(e) {
@@ -43,14 +44,29 @@ class LevelEditorScene {
         } else if (mode === "remove") {
             canvas.removeEventListener("mousedown", this.getMouseBound);
             canvas.removeEventListener("contextmenu", this.preventContextMenuBound);
-            canvas.removeListener("wheel", this.handleWheelBound);
+            canvas.removeEventListener("wheel", this.handleWheelBound);
         }
     }
 
     keyDownLevelEditor(e) {
-        if (e.code === CONST.KEYE) {
-            this.setEventListener("remove");
-            game.state = CONST.TITLE;
+        switch (e.code) {
+            case CONST.KEYE:
+                this.setEventListener("remove");
+                game.state = CONST.TITLE;
+                break;
+            case CONST.KEYR:
+                // reset sur une map vierge
+                this.setEventListener("remove");
+                game.map.createEmptyMap();
+                break;
+            case CONST.KEYS:
+                const json = this.buildLevelJson();
+                const jsonString = JSON.stringify(json);
+                const formattedId = this.levelNumber.toString().padStart(3, "0");
+                const fileName = `level-${formattedId}.json`
+                this.downloadJson(jsonString, fileName);
+                this.levelNumber++;
+                break;
         }
     }
 
@@ -100,7 +116,7 @@ class LevelEditorScene {
         // sauver et ajouter aux lvl custom
         // jouer le lvl
 
-        // menu d'edition( canvas supplementaire)
+        // menu d'edition
     }
 
     // récup les coords de la souris en ligne / colonne
@@ -113,18 +129,18 @@ class LevelEditorScene {
         const tileCol = Math.trunc(x / game.grid.cellSize);
         const tileLine = Math.trunc(y / game.grid.cellSize);
 
-        this.changeTileValue(e, tileLine, tileCol)
+        this.changeTileValue(e, tileLine, tileCol);
     }
 
     // modifie la valeur de la case cliquée
     changeTileValue(e, pTileLine, pTileCol) {
-        
+
         if (e.button === 0) {
             if (pTileLine >= 0 && pTileLine <= game.map.getMapNbLines()) {
                 if (pTileCol >= 0 && pTileCol <= game.map.getMapNbColumns()) {
                     game.map.level.matrix[pTileLine][pTileCol] = this.tileTypes[this.currentTileIndex];
                     console.log(game.map.level.matrix);
-                    
+
                 }
             }
         }
@@ -135,5 +151,54 @@ class LevelEditorScene {
                 }
             }
         }
+    }
+
+    buildLevelJson() {
+        let matrix = JSON.parse(JSON.stringify(game.map.level.matrix));
+        let items = 0;
+        let enemies = 0;
+        let playerCount = 0;
+
+        for (let line = 0; line < game.map.nbLines; line++) {
+            for (let col = 0; col < game.map.nbColumns; col++) {
+                let id = matrix[line][col];
+                switch (id) {
+                    case CONST.ITEM:
+                        items++;
+                        break;
+                    case CONST.STARTPOSENEMY:
+                        enemies++;
+                        break;
+                    case CONST.STARTPOSPLAYER:
+                        playerCount++;
+                        if (playerCount > 1) matrix[line][col] = CONST.VOID;
+                        break;
+                }
+            }
+        }
+
+        if (playerCount > 1) {
+            alert(`Attention : ${playerCount} positions de joueur détectées. Les supplémentaires ont été remplacées par VOID.`);
+        } else if (playerCount === 0) {
+            alert("Attention : Aucune position de joueur (STARTPOSPLAYER) détectée !");
+        }
+
+        return {
+            id: this.levelNumber,
+            matrix: matrix,
+            items: items,
+            enemies: enemies,
+            forbiddenPathTiles: []
+        };
+    }
+
+    downloadJson(jsonString, fileName) {
+        const blob = new Blob([jsonString], { type: 'application/json' }); // crée le fichier qui sera dl par le navigateur
+        const url = URL.createObjectURL(blob); // crée l'url temp ver le blob en mémoire
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click(); // simule le click sur le bouton download
+        URL.revokeObjectURL(url);
     }
 }
