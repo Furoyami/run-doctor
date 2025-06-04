@@ -26,6 +26,7 @@ class Game {
         this.pauseScene = new PauseScene();
         this.loadingScene = new LoadingScene();
         this.gameOverScene = new GameOverScene();
+        this.gameWinScene = new GameWinScene();
         this.levelEditorScene = new LevelEditorScene();
 
         // Pathfinding
@@ -94,6 +95,9 @@ class Game {
             case CONST.GAMEOVER:
                 this.gameOverScene.keyDownGameOver(e);
                 break;
+            case CONST.GAMEWIN:
+                this.gameWinScene.keyDownGameWin(e);
+                break;
             case CONST.LEVELEDITOR:
                 this.levelEditorScene.keyDownLevelEditor(e);
                 break;
@@ -126,6 +130,7 @@ class Game {
 
     // restart completement le jeu au lvl 1 (après game over)
     async restartGame() {
+        this.isCheatActive = false;
         this.lstSprites = [];
         this.lstEnemies = [];
         this.lstHoles = [];
@@ -315,6 +320,9 @@ class Game {
             case CONST.GAMEOVER:
                 this.gameOverScene.updateGameOver(dt);
                 break;
+            case CONST.GAMEWIN:
+                this.gameWinScene.updateGameWin(dt);
+                    break;
             case CONST.LEVELEDITOR:
                 this.levelEditorScene.updateLevelEditor(dt);
                 break;
@@ -340,6 +348,9 @@ class Game {
                 break;
             case CONST.GAMEOVER:
                 this.gameOverScene.drawGameOver(pCtx);
+                break;
+            case CONST.GAMEWIN:
+                this.gameWinScene.drawGameWin(pCtx);
                 break;
             case CONST.LEVELEDITOR:
                 this.levelEditorScene.drawLevelEditor(pCtx);
