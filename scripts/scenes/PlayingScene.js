@@ -224,6 +224,12 @@ class PlayingScene {
             hudCtx.fillText(textValue, block.x + block.textOffset, 30);
         });
         hudCtx.fillText("P : Pause", 910, 30);
+
+        if (game.timeLord) {
+            hudCtx.fillStyle = "#FFD700";
+            hudCtx.font = "10px Arial";
+            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie", hudCanvas.width / 2, hudCanvas.height - 5);
+        }
     }
 
     handleDigging(direction, offsetX, animation) {

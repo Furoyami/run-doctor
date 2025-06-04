@@ -47,6 +47,13 @@ class Game {
         this.spritePlayer = null;
         this.spriteEnemy = null;
         this.spriteHole = null;
+
+        // GODMOD
+        this.timeLord = false;
+        this.cheatCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "B", "A"]; // Konami Code
+        this.cheatInput = [];
+        this.cheatTimer = 0;
+        this.isCheatActive = false;
     }
 
     keyDown(e) {
@@ -55,7 +62,7 @@ class Game {
         e.preventDefault();
 
         // Bindings pour tests
-        if (this.state === CONST.PLAYING) {
+        if (this.state === CONST.PLAYING && this.timeLord) {
             if (e.code === "NumpadAdd") {
                 this.nextLevel();
                 return;
