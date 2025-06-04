@@ -7,6 +7,7 @@ class LevelEditorScene {
         this.handleMouseUpBound = this.handleMouseUp.bind(this);
         this.tileTypes = [
             CONST.WALL,
+            CONST.METAL,
             CONST.LADDER,
             CONST.ITEM,
             CONST.TARDIS_LT,
@@ -14,7 +15,7 @@ class LevelEditorScene {
             CONST.TARDIS_LB,
             CONST.TARDIS_RB,
             CONST.STARTPOSENEMY,
-            CONST.STARTPOSPLAYER
+            CONST.STARTPOSPLAYER,
         ];
         this.currentTileIndex = 0;
         this.editorTextures = [];

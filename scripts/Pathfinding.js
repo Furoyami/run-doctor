@@ -97,7 +97,7 @@ class Pathfinding {
             if (targetTile === CONST.VOID && neighbor.y < current.y && tileBelow === CONST.VOID) return false;
 
             // Cases infranchissable
-            if (targetTile === CONST.WALL || targetTile === CONST.UNWALKABLE_VOID) return false;
+            if (targetTile === CONST.WALL || targetTile === CONST.UNWALKABLE_VOID || targetTile === CONST.METAL) return false;
 
             // Exclure les cases interdites définies dans le niveau
             if (levelForbiddenTiles.some(tile => tile.x === neighbor.x && tile.y === neighbor.y)) {

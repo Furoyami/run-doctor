@@ -139,6 +139,9 @@ class Map {
         this.tileTextures[2] = new Image();
         this.tileTextures[2].name = "LADDER";
         this.tileTextures[2].src = "images/ladder.png";
+        this.tileTextures[11] = new Image();
+        this.tileTextures[11].name = "METAL";
+        this.tileTextures[11].src = "images/metal.png";
 
         // Tiles animées
         let imgKey = game.imageLoader.getImage("images/key_tile.png");

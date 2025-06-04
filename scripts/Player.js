@@ -199,7 +199,7 @@ class Player {
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x < game.width - game.grid.cellSize
-            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(1, 0) !== CONST.WALL) {
+            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(1, 0) !== CONST.WALL && game.map.getUnderPlayerID(1, 0) !== CONST.METAL ) {
 
             this.spritePlayer.startAnimation("RUN_RIGHT");
             this.spritePlayer.vX = this.spritePlayer.speed;
@@ -212,7 +212,7 @@ class Player {
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x > 0
-            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL) {
+            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL ) {
 
             this.spritePlayer.startAnimation("RUN_LEFT");
             this.spritePlayer.vX = -this.spritePlayer.speed;

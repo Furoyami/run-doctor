@@ -59,7 +59,8 @@ const CONST = Object.freeze({
     VOID: 0,
     // infranchissable
     WALL: 1,
-    // unwalkable pour le calcul de PF uniquement. Les ennemis peuvent le traverser en retombant après respawn
+    METAL: 11,
+    // unwalkable pour passer sur un ennemi piégé
     UNWALKABLE_VOID: 9,
     // interactions
     LADDER: 2,

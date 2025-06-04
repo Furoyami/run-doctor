@@ -279,6 +279,7 @@ class Game {
         this.imageLoader.add("images/tardis_lt_tile.png");
         this.imageLoader.add("images/tardis_rb_tile.png");
         this.imageLoader.add("images/tardis_lb_tile.png");
+        this.imageLoader.add("images/metal.png");
 
         this.imageLoader.add("images/icons/move.png");
         this.imageLoader.add("images/icons/dig.png");
