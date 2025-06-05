@@ -371,6 +371,15 @@ class Map {
                     tardisTexture.y = y;
                     tardisTexture.draw(pCtx);
                 }
+
+                // dessine les valeurs des cases en godmod
+                if (game.timeLord && game.isCoordsVisible) {
+                    pCtx.font = "10px Arial";
+                    pCtx.fillStyle = "#FFF";
+                    pCtx.fillText("l: " + line, x, y + 10);
+                    pCtx.fillText("c: " + col, x, y + 20);
+                    
+                }
             }
         }
     }

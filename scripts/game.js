@@ -55,6 +55,8 @@ class Game {
         this.cheatInput = [];
         this.cheatTimer = 0;
         this.isCheatActive = false;
+        this.isPathVisible = false;
+        this.isCoordsVisible = false;
     }
 
     keyDown(e) {

@@ -28,6 +28,8 @@ const CONST = Object.freeze({
     KEYSPACE:"Space",
 
     KEYF5: "F5",
+    KEYF1: "F1",
+    KEYF2: "F2",
 
     // Clés de gestion du son
     KEYVOLUP: "KeyV",

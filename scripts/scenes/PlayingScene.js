@@ -61,6 +61,12 @@ class PlayingScene {
                 game.mscTheme.pause();
                 console.log(game.state);
                 break;
+            case CONST.KEYF1:
+                if (game.timeLord) game.isPathVisible = !game.isPathVisible;
+                break;
+            case CONST.KEYF2:
+                if (game.timeLord) game.isCoordsVisible = !game.isCoordsVisible;
+                break;
         }
     }
 
@@ -148,7 +154,7 @@ class PlayingScene {
         });
 
         if (this.isLevelCompleted) return;
-        
+
         // level up si le joueur touche le tardis
         if ((game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_LT || game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_RT ||
             game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_LB || game.map.getUnderPlayerID(0, 0) === CONST.TARDIS_RB)
@@ -188,7 +194,7 @@ class PlayingScene {
         game.map.Draw(pCtx);
         game.lstSprites.forEach(sprite => sprite.draw(pCtx));
         this.drawHUD();
-        if (debug) {
+        if (game.timeLord && game.isPathVisible) {
             game.grid.DrawGrid(pCtx);
             game.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
         }
