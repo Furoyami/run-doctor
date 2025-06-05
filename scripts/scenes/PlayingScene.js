@@ -234,7 +234,7 @@ class PlayingScene {
         if (game.timeLord) {
             hudCtx.fillStyle = "#FFD700";
             hudCtx.font = "10px Arial";
-            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie", hudCanvas.width / 2, hudCanvas.height - 5);
+            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie  F1: afficher path des ennemis  F2: afficher coords des tiles", hudCanvas.width / 2, hudCanvas.height - 5);
         }
     }
 

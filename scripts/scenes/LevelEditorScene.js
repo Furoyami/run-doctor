@@ -19,7 +19,6 @@ class LevelEditorScene {
         ];
         this.currentTileIndex = 0;
         this.editorTextures = [];
-        this.levelNumber = 2;
         this.isPainting = false;
         this.isErasing = false;
     }
@@ -72,10 +71,8 @@ class LevelEditorScene {
             case CONST.KEYS:
                 const json = this.buildLevelJson();
                 const jsonString = JSON.stringify(json);
-                const formattedId = this.levelNumber.toString().padStart(3, "0");
-                const fileName = `level-${formattedId}.json`;
+                const fileName = `level-000.json`;
                 this.downloadJson(jsonString, fileName);
-                this.levelNumber++;
                 break;
         }
     }
@@ -112,21 +109,14 @@ class LevelEditorScene {
     updateLevelEditor(dt) { }
 
     drawLevelEditor(pCtx) {
-
         // wip test
         pCtx.fillStyle = "#FFF";
         pCtx.font = "75px Pixel";
-        game.centerText(pCtx, "Level Editor WIP", game.width / 2, game.height / 2 - 50);
+        game.centerText(pCtx, "Level Editor", game.width / 2, game.height / 2 - 50);
 
         game.map.Draw(pCtx);
         // grid
         game.grid.DrawGrid(pCtx);
-
-        //retour titre sans sauver
-        // sauver et ajouter aux lvl custom
-        // jouer le lvl
-
-        // menu d'edition
     }
 
     // récup les coords de la souris en ligne / colonne
@@ -222,7 +212,6 @@ class LevelEditorScene {
         }
 
         return {
-            id: this.levelNumber,
             matrix: matrix,
             items: items,
             enemies: enemies,
