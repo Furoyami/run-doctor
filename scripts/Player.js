@@ -49,9 +49,10 @@ class Player {
         this.handleFall();
 
         // Si hors limites reset à la position de départ
-        if (this.spritePlayer.y >= game.map.y) {
-            this.playerDies();
-        }
+        if (this.spritePlayer.y >= game.map.y) this.playerDies();
+        // si coincé dans une brick qui a respawn
+        if (game.map.getUnderPlayerID(0, 0) === CONST.WALL) this.playerDies(dt); 
+        
         this.setInvicibility(dt);
 
         // gestion clavier
