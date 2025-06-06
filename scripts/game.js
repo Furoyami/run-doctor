@@ -57,6 +57,8 @@ class Game {
         this.isCheatActive = false;
         this.isPathVisible = false;
         this.isCoordsVisible = false;
+        this.isUnkillable = false;
+        this.isFrozen = false;
     }
 
     keyDown(e) {
@@ -329,7 +331,7 @@ class Game {
                 this.levelEditorScene.updateLevelEditor(dt);
                 break;
         }
-        console.log(this.state);
+        console.log(this.state);        
     }
 
     draw(pCtx) {

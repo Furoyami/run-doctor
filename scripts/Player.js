@@ -45,18 +45,18 @@ class Player {
     Update(dt) {
         this.setOffsetX();
 
+        // gestion clavier avant la chute pour pouvoir grimper à une échelle même si la case dessous est vide
+        this.handleKeyOrder();
+
         // Vérifie les cases sous le joueur
         this.handleFall();
 
         // Si hors limites reset à la position de départ
         if (this.spritePlayer.y >= game.map.y) this.playerDies();
         // si coincé dans une brick qui a respawn
-        if (game.map.getUnderPlayerID(0, 0) === CONST.WALL) this.playerDies(dt); 
-        
-        this.setInvicibility(dt);
+        if (game.map.getUnderPlayerID(0, 0) === CONST.WALL) this.playerDies(dt);
 
-        // gestion clavier
-        this.handleKeyOrder();
+        this.setInvicibility(dt);
 
         // Mise à jour des coordonnées du joueur 
         this.updatePlayerCoords(dt);
@@ -79,7 +79,10 @@ class Player {
 
     handleFall() {
         const tileUnderPlayer = game.map.getUnderPlayerID(0, 1);
+        const tileOnPlayer = game.map.getUnderPlayerID(0, 0);
         const FALLVOID = CONST.WALKABLE.includes(tileUnderPlayer);
+
+        if (tileOnPlayer === CONST.LADDER) return;
 
         // CHUTE : Le joueur tombe uniquement si la case directement sous lui est vide
         if (FALLVOID && this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
@@ -197,12 +200,16 @@ class Player {
 
     // Déplacement à droite
     moveRight() {
+        const tileOnPlayer = game.map.getUnderPlayerID(0,0);
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x < game.width - game.grid.cellSize
-            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(1, 0) !== CONST.WALL && game.map.getUnderPlayerID(1, 0) !== CONST.METAL ) {
-
+            && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
+            && game.map.getUnderPlayerID(1, 0) !== CONST.WALL
+            && game.map.getUnderPlayerID(1, 0) !== CONST.METAL)
+        {
             this.spritePlayer.startAnimation("RUN_RIGHT");
+            if(tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = this.spritePlayer.speed;
             this.spritePlayer.dist = 0;
         }
@@ -210,12 +217,16 @@ class Player {
 
     // Déplacement à gauche
     moveLeft() {
+        const tileOnPlayer = game.map.getUnderPlayerID(0,0);
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x > 0
-            && game.map.getUnderPlayerID(0, 1) !== CONST.VOID && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL ) {
-
+            && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
+            && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL
+            && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL)
+        {
             this.spritePlayer.startAnimation("RUN_LEFT");
+            if(tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = -this.spritePlayer.speed;
             this.spritePlayer.dist = 0;
         }
@@ -266,7 +277,11 @@ class Player {
     // Retourne true si le joueur peut descendre (échelle sous le joueur)
     canMoveDown() {
         this.setOffsetX();
-        return game.map.isLadder(this.spritePlayer.offsetX, 1);
+        return game.map.isLadder(this.spritePlayer.offsetX, 1)
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.VOID
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ITEM
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSPLAYER
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY
     }
 
     // retourne la case et ligne actuelles du joueur
@@ -304,23 +319,27 @@ class Player {
     }
 
     playerDies() {
-        this.lives -= 1;
-        if (this.lives >= 0) {
-            this.isInvincible = true;
-            this.blinkTimer = 0;
-            this.resetPosition();
-
-            // bouche un trou eventuel sous la tile de respawn
-            this.fillHoleAtRespawnPos();
-
-            // Réinitialiser les touches pour éviter un mouvement résiduel
-            game.activeKeys = new Set();
-            game.keyOrder = [];
+        if (game.timeLord && game.isUnkillable) {
+            return;
         } else {
-            game.state = CONST.GAMEOVER;
-            // confirmation
-            game.activeKeys = new Set();
-            game.keyOrder = [];
+            this.lives -= 1;
+            if (this.lives >= 0) {
+                this.isInvincible = true;
+                this.blinkTimer = 0;
+                this.resetPosition();
+
+                // bouche un trou eventuel sous la tile de respawn
+                this.fillHoleAtRespawnPos();
+
+                // Réinitialiser les touches pour éviter un mouvement résiduel
+                game.activeKeys = new Set();
+                game.keyOrder = [];
+            } else {
+                game.state = CONST.GAMEOVER;
+                // confirmation
+                game.activeKeys = new Set();
+                game.keyOrder = [];
+            }
         }
     }
 

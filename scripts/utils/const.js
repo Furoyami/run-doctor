@@ -27,9 +27,11 @@ const CONST = Object.freeze({
     KEYP: "KeyP",
     KEYSPACE:"Space",
 
-    KEYF5: "F5",
     KEYF1: "F1",
     KEYF2: "F2",
+    KEYF3: "F3",
+    KEYF4: "F4",
+    KEYF5: "F5",
 
     // Clés de gestion du son
     KEYVOLUP: "KeyV",
@@ -84,7 +86,8 @@ const CONST = Object.freeze({
         5,  // TARDIS_RT
         6,  // TARDIS_LB
         7,  // TARDIS_RB
-        8   // STARTPOSENEMY
+        8,   // STARTPOSENEMY
+        10 //STARTPOSPLAYER
     ]),
 
     // ---------- HUD BLOCKS ----------

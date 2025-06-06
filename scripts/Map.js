@@ -14,7 +14,7 @@ class Map {
         this.itemsCollected = 0;
 
         // chargement des levels
-        this.levels = { classic: {} }; //cache pour les JSON chargés. à étendre avec custom quand l'eiteur de lvl sera fait
+        this.levels = { classic: {} }; //cache pour les JSON chargés. à étendre avec custom quand l'editeur de lvl sera fait
         this.currentLevelId = 1; // niveau actuel
 
         // le pType présent dans les fonctions est dans l'optique de générer par la suite une liste de lvl custom

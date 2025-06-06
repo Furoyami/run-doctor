@@ -67,6 +67,12 @@ class PlayingScene {
             case CONST.KEYF2:
                 if (game.timeLord) game.isCoordsVisible = !game.isCoordsVisible;
                 break;
+            case CONST.KEYF3:
+                if (game.timeLord) game.isUnkillable = !game.isUnkillable;
+                break;
+            case CONST.KEYF4:
+                if (game.timeLord) game.isFrozen = !game.isFrozen;
+                    break;
         }
     }
 
@@ -118,41 +124,44 @@ class PlayingScene {
 
         game.player.Update(dt);
 
-        game.lstEnemies.forEach(enemy => {
+        if (game.timeLord && game.isFrozen) {
+            return;
+        } else {
+            game.lstEnemies.forEach(enemy => {
 
-            let enemyPos = enemy.getEnemyPos();
-            let enemyLine = enemyPos[0];
-            let enemyCol = enemyPos[1];
+                let enemyPos = enemy.getEnemyPos();
+                let enemyLine = enemyPos[0];
+                let enemyCol = enemyPos[1];
 
-            let playerPos = game.player.getPlayerPos();
-            let playerLine = playerPos[0];
-            let playerCol = playerPos[1];
+                let playerPos = game.player.getPlayerPos();
+                let playerLine = playerPos[0];
+                let playerCol = playerPos[1];
 
-            enemy.Update(dt, playerCol, playerLine);
+                enemy.Update(dt, playerCol, playerLine);
 
-            /* reduit la vitesse des ennemis au respawn du joueur
-                pour lui permettre de se replacer */
-            if (game.player.isInvincible) {
-                enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed;
-            } else {
-                // augmente la vitesse en fonction du nombre de clés ramassé
-                const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
-                enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
-            }
+                /* reduit la vitesse des ennemis au respawn du joueur
+                    pour lui permettre de se replacer */
+                if (game.player.isInvincible) {
+                    enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed;
+                } else {
+                    // augmente la vitesse en fonction du nombre de clés ramassé
+                    const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
+                    enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
+                }
 
 
-            // Tue le joueur s'il entre en collision avec un ennemi
-            if (!game.player.isInvincible &&
-                playerCol === enemyCol &&
-                playerLine === enemyLine) {
-                enemy.hasReachedTarget = false;
-                game.sndDalek.play();
-                game.player.playerDies();
-            }
+                // Tue le joueur s'il entre en collision avec un ennemi
+                if (!game.player.isInvincible &&
+                    playerCol === enemyCol &&
+                    playerLine === enemyLine) {
+                    enemy.hasReachedTarget = false;
+                    game.sndDalek.play();
+                    game.player.playerDies();
+                }
 
-            this.handleTraps(dt, enemy, enemyCol, enemyLine);
-        });
-
+                this.handleTraps(dt, enemy, enemyCol, enemyLine);
+            });
+        }
         if (this.isLevelCompleted) return;
 
         // level up si le joueur touche le tardis
@@ -234,7 +243,7 @@ class PlayingScene {
         if (game.timeLord) {
             hudCtx.fillStyle = "#FFD700";
             hudCtx.font = "10px Arial";
-            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie  F1: afficher path des ennemis  F2: afficher coords des tiles", hudCanvas.width / 2, hudCanvas.height - 5);
+            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie    F1: afficher path des ennemis    F2: afficher coords des tiles    F3: mode invincible    F4: freeze ennemis et creusage", hudCanvas.width / 2, hudCanvas.height - 5);
         }
     }
 
