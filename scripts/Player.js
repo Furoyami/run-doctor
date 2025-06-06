@@ -45,11 +45,11 @@ class Player {
     Update(dt) {
         this.setOffsetX();
 
-        // gestion clavier avant la chute pour pouvoir grimper à une échelle même si la case dessous est vide
-        this.handleKeyOrder();
-
         // Vérifie les cases sous le joueur
         this.handleFall();
+
+        // gestion clavier
+        this.handleKeyOrder();
 
         // Si hors limites reset à la position de départ
         if (this.spritePlayer.y >= game.map.y) this.playerDies();
@@ -173,6 +173,7 @@ class Player {
         if (this.spritePlayer.currentAnimation.name.startsWith("FALL") &&
             game.map.getUnderPlayerID(0, 1) !== CONST.VOID &&
             game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSENEMY &&
+            game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSPLAYER &&
             game.map.getUnderPlayerID(0, 1) !== CONST.OUT_OF_BOUNDS) {
             this.selectIdleDirection();
         }
@@ -274,7 +275,7 @@ class Player {
         return game.map.isLadder(this.spritePlayer.offsetX, 0);
     }
 
-    // Retourne true si le joueur peut descendre (échelle sous le joueur)
+    // Retourne true si le joueur peut descendre
     canMoveDown() {
         this.setOffsetX();
         return game.map.isLadder(this.spritePlayer.offsetX, 1)
@@ -284,7 +285,7 @@ class Player {
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY
     }
 
-    // retourne la case et ligne actuelles du joueur
+    // retourne la col et ligne actuelles du joueur
     getPlayerPos() {
         if (this.spritePlayer !== undefined) {
             let playerCol = Math.floor(this.spritePlayer.x / game.grid.cellSize);
