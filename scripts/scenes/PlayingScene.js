@@ -72,7 +72,7 @@ class PlayingScene {
                 break;
             case CONST.KEYF4:
                 if (game.timeLord) game.isFrozen = !game.isFrozen;
-                    break;
+                break;
         }
     }
 
@@ -139,9 +139,9 @@ class PlayingScene {
 
                 enemy.Update(dt, playerCol, playerLine);
 
-                /* reduit la vitesse des ennemis au respawn du joueur
+                /* reduit la vitesse des ennemis au respawn du joueur ou sur une échelle
                     pour lui permettre de se replacer */
-                if (game.player.isInvincible) {
+                if (game.player.isInvincible || (game.map.getUnderEnemyID(enemy, 0, 0) === CONST.LADDER)) {
                     enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed;
                 } else {
                     // augmente la vitesse en fonction du nombre de clés ramassé
@@ -149,7 +149,11 @@ class PlayingScene {
                     enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
                 }
 
-
+                /* vérifie la direction dans laquelle va le joueur et applique un offset s'il va vers la gauche
+                l'offset ajoute une tolérance pour rendre la collsion plus précise dans ce sens */
+                let playerDir = game.player.spritePlayer.offsetX;
+                if (playerDir) playerCol - 1;
+                
                 // Tue le joueur s'il entre en collision avec un ennemi
                 if (!game.player.isInvincible &&
                     playerCol === enemyCol &&
