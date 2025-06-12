@@ -8,6 +8,7 @@ class LevelEditorScene {
         this.tileTypes = [
             CONST.WALL,
             CONST.METAL,
+            CONST.TRAP,
             CONST.LADDER,
             CONST.ITEM,
             CONST.TARDIS_LT,

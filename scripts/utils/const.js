@@ -61,6 +61,7 @@ const CONST = Object.freeze({
 
     OUT_OF_BOUNDS: -1,
     VOID: 0,
+    TRAP: 12, // feedbackvisuel mais comportement de void
     // infranchissable
     WALL: 1,
     METAL: 11,
@@ -81,6 +82,7 @@ const CONST = Object.freeze({
     WALKABLE: Object.freeze([
         -1, // OUT_OF_BOUNDS
         0,  // VOID
+        12, // TRAP
         3,  // ITEM
         4,  // TARDIS_LT
         5,  // TARDIS_RT

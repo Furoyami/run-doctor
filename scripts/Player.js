@@ -172,6 +172,7 @@ class Player {
         // Stoppe les animations "FALL" une fois au sol
         if (this.spritePlayer.currentAnimation.name.startsWith("FALL") &&
             game.map.getUnderPlayerID(0, 1) !== CONST.VOID &&
+            game.map.getUnderPlayerID(0, 1) !== CONST.TRAP &&
             game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSENEMY &&
             game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSPLAYER &&
             game.map.getUnderPlayerID(0, 1) !== CONST.OUT_OF_BOUNDS) {
@@ -280,6 +281,7 @@ class Player {
         this.setOffsetX();
         return game.map.isLadder(this.spritePlayer.offsetX, 1)
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.VOID
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TRAP
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ITEM
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSPLAYER
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY
