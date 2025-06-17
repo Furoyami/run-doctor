@@ -35,17 +35,11 @@ class PlayingScene {
                 break;
             // animation de creusage
             case CONST.KEYQ:
-                // if (game.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
-                    // (game.map.getUnderPlayerID(0, 0) === CONST.LADDER && game.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
                     this.handleDigging("left", CONST.OFFSET_LEFT, "DIG_LEFT");
-                // }
                 break;
 
             case CONST.KEYE:
-                // if (game.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
-                    // (game.map.getUnderPlayerID(0, 0) === CONST.LADDER && game.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
                     this.handleDigging("right", CONST.OFFSET_RIGHT, "DIG_RIGHT");
-                // }
                 break;
             case CONST.KEYVOLDOWN:
                 game.adjustAllVolumes("down");
@@ -73,6 +67,9 @@ class PlayingScene {
             case CONST.KEYF4:
                 if (game.timeLord) game.isFrozen = !game.isFrozen;
                 break;
+            case CONST.KEYF6:
+                if (game.timeLord) game.isAccelerated = !game.isAccelerated;
+                    break;
         }
     }
 
@@ -101,18 +98,12 @@ class PlayingScene {
                 if (game.player.isAligned()) game.spritePlayer.startAnimation("IDLE_LEFT");
                 break;
             case CONST.KEYQ:
-                // if (game.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
-                    // (game.map.getUnderPlayerID(0, 0) === CONST.LADDER && game.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
                     game.spritePlayer.startAnimation("IDLE_LEFT");
                     game.isDiggingDirection = null;
-                // }
                 break;
             case CONST.KEYE:
-                // if (game.map.getUnderPlayerID(0, 0) !== CONST.LADDER ||
-                    // (game.map.getUnderPlayerID(0, 0) === CONST.LADDER && game.map.getUnderPlayerID(0, 1) === CONST.WALL)) {
                     game.spritePlayer.startAnimation("IDLE_RIGHT");
                     game.isDiggingDirection = null;
-                // }
                 break;
         }
     }

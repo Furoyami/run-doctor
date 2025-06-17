@@ -43,6 +43,12 @@ class Player {
     }
 
     Update(dt) {
+        if (game.timeLord && game.isAccelerated) {
+            this.spritePlayer.speed = 10;
+        } else {
+            this.spritePlayer.speed = 2.5; 
+        }
+
         this.setOffsetX();
 
         // Vérifie les cases sous le joueur
@@ -202,16 +208,15 @@ class Player {
 
     // Déplacement à droite
     moveRight() {
-        const tileOnPlayer = game.map.getUnderPlayerID(0,0);
+        const tileOnPlayer = game.map.getUnderPlayerID(0, 0);
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x < game.width - game.grid.cellSize
             && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
             && game.map.getUnderPlayerID(1, 0) !== CONST.WALL
-            && game.map.getUnderPlayerID(1, 0) !== CONST.METAL)
-        {
+            && game.map.getUnderPlayerID(1, 0) !== CONST.METAL) {
             this.spritePlayer.startAnimation("RUN_RIGHT");
-            if(tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
+            if (tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = this.spritePlayer.speed;
             this.spritePlayer.dist = 0;
         }
@@ -219,16 +224,15 @@ class Player {
 
     // Déplacement à gauche
     moveLeft() {
-        const tileOnPlayer = game.map.getUnderPlayerID(0,0);
+        const tileOnPlayer = game.map.getUnderPlayerID(0, 0);
         if (this.spritePlayer.vX === 0
             && this.spritePlayer.vY === 0
             && this.spritePlayer.x > 0
             && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
             && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL
-            && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL)
-        {
+            && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL) {
             this.spritePlayer.startAnimation("RUN_LEFT");
-            if(tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
+            if (tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = -this.spritePlayer.speed;
             this.spritePlayer.dist = 0;
         }
@@ -284,7 +288,7 @@ class Player {
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TRAP
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ITEM
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSPLAYER
-            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY;
     }
 
     // retourne la col et ligne actuelles du joueur

@@ -14,10 +14,10 @@ class Map {
         this.itemsCollected = 0;
 
         // chargement des levels
-        this.levels = { classic: {} }; //cache pour les JSON chargés. à étendre avec custom quand l'editeur de lvl sera fait
+        this.levels = { classic: {} }; //cache pour les JSON chargés.
         this.currentLevelId = 1; // niveau actuel
 
-        // le pType présent dans les fonctions est dans l'optique de générer par la suite une liste de lvl custom
+        // le pType présent dans les fonctions est dans l'optique de générer par la suite une liste de lvl custom → abandonné laissé pour ne pas avoir a refaire le chemin du dossier
     }
 
     async InitMap() {
@@ -379,8 +379,8 @@ class Map {
                 if (game.timeLord && game.isCoordsVisible) {
                     pCtx.font = "10px Arial";
                     pCtx.fillStyle = "#FFF";
-                    pCtx.fillText("l: " + line, x, y + 10);
-                    pCtx.fillText("c: " + col, x, y + 20);
+                    pCtx.fillText("x: " + col, x, y + 10);
+                    pCtx.fillText("y: " + line, x, y + 20);
                     
                 }
             }

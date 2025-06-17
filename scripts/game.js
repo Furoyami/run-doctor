@@ -59,6 +59,7 @@ class Game {
         this.isCoordsVisible = false;
         this.isUnkillable = false;
         this.isFrozen = false;
+        this.isAccelerated = false;
     }
 
     keyDown(e) {
