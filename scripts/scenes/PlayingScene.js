@@ -238,7 +238,7 @@ class PlayingScene {
         if (game.timeLord) {
             hudCtx.fillStyle = "#FFD700";
             hudCtx.font = "10px Arial";
-            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie    F1: afficher path des ennemis    F2: afficher coords des tiles    F3: mode invincible    F4: freeze ennemis et creusage", hudCanvas.width / 2, hudCanvas.height - 5);
+            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie    F1: afficher path des ennemis    F2: afficher coords des tiles    F3: mode invincible    F4: freeze ennemis et creusage   F6: Speed Boost", hudCanvas.width / 2, hudCanvas.height - 5);
         }
     }
 
