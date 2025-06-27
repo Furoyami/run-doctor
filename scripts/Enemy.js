@@ -87,13 +87,18 @@ class Enemy {
 
         // Gestion des chutes et vérifications des VOID
         let belowTile = game.map.getUnderEnemyID(this, 0, 1);
+        let currentTile = game.map.getUnderEnemyID(this, 0, 0);
 
         //Vérifie si l'ennemi est bien centré sur la colonne actuelle
         const centerX = this.spriteEnemy.col * game.grid.cellSize;
         const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
 
         if ((CONST.WALKABLE.includes(belowTile))
-            && isAlignedToColumn && !this.isFalling && !this.justFreed) {
+            && isAlignedToColumn
+            && !this.isFalling
+            && !this.justFreed
+            && currentTile !== CONST.LADDER
+            && belowTile !== CONST.LADDER) {
             this.startFalling();
         }
 
@@ -191,6 +196,12 @@ class Enemy {
             this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
             this.spriteEnemy.line = Math.floor(this.spriteEnemy.y / game.grid.cellSize);
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
+
+            game.pathfinding.raiseCost({ x: this.spriteEnemy.col, y: this.spriteEnemy.line });
+            console.log("Test raiseCost:", {
+                position: { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
+                costMap: game.pathfinding.costMap.matrix.map(row => row.map(cell => cell.cost))
+            });
 
             // Recalculer le chemin après la chute
             this.updatePath();

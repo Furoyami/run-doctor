@@ -56,6 +56,27 @@ class Map {
         console.log("Map vide créée:", this.level.matrix);
     }
 
+    createEmptyCostMap() {
+        let costMap = {
+            matrix: []
+        };
+
+        for (let l = 0; l < this.nbLines; l++) {
+            costMap.matrix[l] = [];
+            for (let c = 0; c < this.nbColumns; c++) {
+                costMap.matrix[l][c] = {
+                    cost: 1,
+                    elapsedTime: 0,
+                    tileType: this.level.matrix[l][c]
+                };
+            }
+        }
+
+        console.log("Map de coûts créée:", costMap.matrix);
+
+        return costMap;
+    }
+
     // charge les levels en lazy loading
     async LoadLevelOnDemand(pLevelId, pType = CONST.CLASSIC) {
         // Vérifie le cache
@@ -381,7 +402,7 @@ class Map {
                     pCtx.fillStyle = "#FFF";
                     pCtx.fillText("x: " + col, x, y + 10);
                     pCtx.fillText("y: " + line, x, y + 20);
-                    
+
                 }
             }
         }

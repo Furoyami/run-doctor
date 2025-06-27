@@ -161,8 +161,9 @@ class Game {
         this.map.itemsCollected = 0;
         this.spritePlayer = null; // Purge spritePlayer
         this.player.resetPlayer(resetLives); // Réinitialise l'état du joueur et conserve ses vies actuelles
-
+        
         await this.map.LoadLevelOnDemand(this.map.currentLevelId, CONST.CLASSIC);
+        this.pathfinding.costMap = this.map.createEmptyCostMap();
         this.map.Read();
 
         // player creation
@@ -320,6 +321,7 @@ class Game {
                 break;
             case CONST.PLAYING:
                 this.playingScene.updatePlaying(dt);
+                this.pathfinding.updateCostMapTimers(dt);
                 break;
             case CONST.PAUSE:
                 break;
