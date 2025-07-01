@@ -3,6 +3,7 @@ class Pathfinding {
         this.costMap = null;
     }
 
+    // estime le cout pour atteindre la cible
     heuristic(a, b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
@@ -14,8 +15,8 @@ class Pathfinding {
 
         while (openSet.length > 0) {
             let current = openSet.reduce((prev, node) => (node.f < prev.f ? node : prev), openSet[0]);
-            console.log("current", current);
-            
+            if (debug) console.log("current", current);
+
 
             if (current.x === goal.x && current.y === goal.y) {
                 let path = [];
@@ -39,10 +40,7 @@ class Pathfinding {
 
                 const neighborNode = new Node(neighbor.x, neighbor.y);
                 let moveCost = Number(this.costMap.matrix[neighbor.y][neighbor.x].cost) || 1;
-                // console.log("moveCost :", moveCost);
                 const tentative_g = current.g + moveCost;
-                // console.log("tentative_g :", tentative_g);
-                
 
                 if (!openSet.some(n => n.x === neighborNode.x && n.y === neighborNode.y) || tentative_g < neighborNode.g) {
                     neighborNode.g = tentative_g;
@@ -129,7 +127,15 @@ class Pathfinding {
                 tileBelow = CONST.WALL;
             }
 
-            // Gestion du VOID 
+            // Verif montée
+            if (neighbor.y < current.y) {
+                // Vérifier si la case actuelle est une échelle
+                if (map[current.y][current.x] !== CONST.LADDER) {
+                    return false;
+                }
+            }
+
+            // Gestion du VOID
             if (targetTile === CONST.VOID) {
                 // si la tile du dessous est void check la position du joueur
                 if (tileBelow === CONST.VOID) {
@@ -137,14 +143,17 @@ class Pathfinding {
                     if (neighbor.x === goal.x && neighbor.y === goal.y) return true;
                     // 2 - OK joueur en dessous
                     if (goal.y > current.y) return true;
+
                 }
 
-                // Bloquer montée si tileBelow n’est pas solide ou échelle
-                if (targetTile === CONST.VOID && neighbor.y < current.y) {
+                // si la tile en dessous n'est pas un solide ou une échelle,bloquer montée
+                if (neighbor.y < current.y) {
+                    // Vérifier si la case en dessous de la destination est solide ou échelle
                     if (![CONST.WALL, CONST.METAL, CONST.LADDER].includes(tileBelow)) {
                         return false;
                     }
                 }
+
             }
 
             // Bloquer les montées sur les cases TARDIS si visible
