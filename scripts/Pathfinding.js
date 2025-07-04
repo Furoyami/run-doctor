@@ -127,6 +127,9 @@ class Pathfinding {
                 tileBelow = CONST.WALL;
             }
 
+            // si le voisin direct est le joueur, toujours accessible
+            if (neighbor.x === goal.x && neighbor.y === goal.y) return true;
+
             // Verif montée
             if (neighbor.y < current.y) {
                 // Vérifier si la case actuelle est une échelle
@@ -137,23 +140,12 @@ class Pathfinding {
 
             // Gestion du VOID
             if (targetTile === CONST.VOID) {
-                // si la tile du dessous est void check la position du joueur
-                if (tileBelow === CONST.VOID) {
-                    // 1 - OK si c'est la case cible
-                    if (neighbor.x === goal.x && neighbor.y === goal.y) return true;
-                    // 2 - OK joueur en dessous
-                    if (goal.y > current.y) return true;
-
-                }
-
-                // si la tile en dessous n'est pas un solide ou une échelle,bloquer montée
-                if (neighbor.y < current.y) {
-                    // Vérifier si la case en dessous de la destination est solide ou échelle
-                    if (![CONST.WALL, CONST.METAL, CONST.LADDER].includes(tileBelow)) {
-                        return false;
-                    }
-                }
-
+                // Autoriser les trous actifs (pièges) comme des cases accessibles
+                if (game.lstHoles.some(hole => hole.isTrap)) return true;
+                // joueur en dessous
+                if (tileBelow === CONST.VOID && goal.y > current.y) return true;
+                // Vérifier si la case en dessous de la destination est solide ou échelle
+                if (!(neighbor.y > current.y) &&![CONST.WALL, CONST.METAL, CONST.LADDER].includes(tileBelow)) return false;
             }
 
             // Bloquer les montées sur les cases TARDIS si visible
