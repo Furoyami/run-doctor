@@ -15,7 +15,6 @@ class Pathfinding {
 
         while (openSet.length > 0) {
             let current = openSet.reduce((prev, node) => (node.f < prev.f ? node : prev), openSet[0]);
-            if (debug) console.log("current", current);
 
 
             if (current.x === goal.x && current.y === goal.y) {
@@ -69,11 +68,13 @@ class Pathfinding {
         while (line >= 0 && this.costMap.matrix[line][col].tileType === CONST.VOID) {
             this.costMap.matrix[line][col].cost = 100;
             this.costMap.matrix[line][col].elapsedTime = 0; // reinit timer
+            console.log("line: ", line, "col: ", col, "cost: ", this.costMap.matrix[line][col].cost)
             line--;
         }
 
     }
 
+    // met à jour les timers de pénalité de coûts de costMap
     updateCostMapTimers(dt) {
         for (let line = 0; line < this.costMap.matrix.length; line++) {
             for (let col = 0; col < this.costMap.matrix[line].length; col++) {
@@ -83,7 +84,8 @@ class Pathfinding {
                     if (cell.elapsedTime >= 10) {
                         cell.cost = 1;
                         cell.elapsedTime = 0;
-                        console.log("timer et réinit pour col:", { col }, "line: ", { line });
+                        console.log("timer reinit line: ", line, "col: ", col, "cost: ", cell.cost);
+                        
                     }
                 }
             }
@@ -108,6 +110,7 @@ class Pathfinding {
         // Récupérer les cases interdites définies dans le niveau
         const levelForbiddenTiles = game.map.getForbiddenPathTiles();
         const tardisTiles = [CONST.TARDIS_LB, CONST.TARDIS_LT, CONST.TARDIS_RB, CONST.TARDIS_RT];
+        const solidTiles = [CONST.WALL, CONST.METAL, CONST.LADDER];
 
         return potentialNeighbors.filter(neighbor => {
 
@@ -144,8 +147,24 @@ class Pathfinding {
                 if (game.lstHoles.some(hole => hole.isTrap)) return true;
                 // joueur en dessous
                 if (tileBelow === CONST.VOID && goal.y > current.y) return true;
-                // Vérifier si la case en dessous de la destination est solide ou échelle
-                if (!(neighbor.y > current.y) &&![CONST.WALL, CONST.METAL, CONST.LADDER].includes(tileBelow)) return false;
+                // Autoriser VOID au-dessus d'une TRAP pour permettre la descente
+                if (tileBelow === CONST.TRAP) return true;
+                // Interdire les cases VOID non soutenues (sauf si chute)
+                if (!solidTiles.includes(tileBelow)) {
+                    const currentTile = map[current.y][current.x];
+                    const isHorizontalMove = neighbor.y === current.y;
+                    const isVerticalMove = neighbor.y > current.y;
+                    const isFall = (isHorizontalMove && (solidTiles.includes(currentTile) || currentTile === CONST.VOID || currentTile === CONST.TRAP) && tileBelow === CONST.VOID) ||
+                        (isVerticalMove && (solidTiles.includes(currentTile) || currentTile === CONST.TRAP) && tileBelow === CONST.VOID);
+                    if (!isFall) return false;
+                }
+                return true; // Autoriser si soutenu ou chute
+            }
+
+            // Gestion des traps
+            if (targetTile === CONST.TRAP) {
+                if (neighbor.y <= current.y) return false; // Bloquer les déplacements latéraux ou montants
+                return true; // Autoriser les déplacements verticaux descendants
             }
 
             // Bloquer les montées sur les cases TARDIS si visible

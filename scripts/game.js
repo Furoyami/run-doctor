@@ -50,7 +50,7 @@ class Game {
         this.spriteHole = null;
 
         // GODMOD
-        this.timeLord = false;
+        this.timeLord = true;
         this.cheatCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "B", "A"]; // Konami Code
         this.cheatInput = [];
         this.cheatTimer = 0;
@@ -321,7 +321,6 @@ class Game {
                 break;
             case CONST.PLAYING:
                 this.playingScene.updatePlaying(dt);
-                this.pathfinding.updateCostMapTimers(dt);
                 break;
             case CONST.PAUSE:
                 break;

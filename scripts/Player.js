@@ -214,7 +214,8 @@ class Player {
             && this.spritePlayer.x < game.width - game.grid.cellSize
             && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
             && game.map.getUnderPlayerID(1, 0) !== CONST.WALL
-            && game.map.getUnderPlayerID(1, 0) !== CONST.METAL) {
+            && game.map.getUnderPlayerID(1, 0) !== CONST.METAL
+            && game.map.getUnderPlayerID(1, 0) !== CONST.TRAP) {
             this.spritePlayer.startAnimation("RUN_RIGHT");
             if (tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = this.spritePlayer.speed;
@@ -230,7 +231,8 @@ class Player {
             && this.spritePlayer.x > 0
             && (tileOnPlayer === CONST.LADDER || game.map.getUnderPlayerID(0, 1) !== CONST.VOID)
             && game.map.getUnderPlayerID(-1, 0) !== CONST.WALL
-            && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL) {
+            && game.map.getUnderPlayerID(-1, 0) !== CONST.METAL
+            && game.map.getUnderPlayerID(-1, 0) !== CONST.TRAP) {
             this.spritePlayer.startAnimation("RUN_LEFT");
             if (tileOnPlayer === CONST.LADDER) this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vX = -this.spritePlayer.speed;

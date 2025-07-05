@@ -192,6 +192,8 @@ class PlayingScene {
             let spriteIndex = game.lstSprites.indexOf(finishedHole.spriteHole);
             if (spriteIndex !== -1) game.lstSprites.splice(spriteIndex, 1);
         }
+
+        game.pathfinding.updateCostMapTimers(dt);
     }
 
     drawPlaying(pCtx) {

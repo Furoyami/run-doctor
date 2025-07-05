@@ -62,7 +62,7 @@ const CONST = Object.freeze({
 
     OUT_OF_BOUNDS: -1,
     VOID: 0,
-    TRAP: 12, // feedbackvisuel mais comportement de void
+    TRAP: 12, // chute au travers mais bloquée en horizontal
     // infranchissable
     WALL: 1,
     METAL: 11,

@@ -198,10 +198,6 @@ class Enemy {
             this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
 
             game.pathfinding.raiseCost({ x: this.spriteEnemy.col, y: this.spriteEnemy.line });
-            console.log("Test raiseCost:", {
-                position: { x: this.spriteEnemy.col, y: this.spriteEnemy.line },
-                costMap: game.pathfinding.costMap.matrix.map(row => row.map(cell => cell.cost))
-            });
 
             // Recalculer le chemin après la chute
             this.updatePath();
