@@ -50,7 +50,7 @@ class Game {
         this.spriteHole = null;
 
         // GODMOD
-        this.timeLord = true;
+        this.timeLord = false;
         this.cheatCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "B", "A"]; // Konami Code
         this.cheatInput = [];
         this.cheatTimer = 0;
