@@ -141,6 +141,17 @@ const CONST = Object.freeze({
             iconHeight: 30
         },
 
+        // energy (à modif avec les données d'energie)
+        // {
+        //     icon: "images/icons/heart.png",
+        //     text: (game) => ": " + game.player.lives,
+        //     x: 750,
+        //     iconOffset: 0,
+        //     textOffset: 35,
+        //     iconWidth: 30,
+        //     iconHeight: 30
+        // },
+
         // son
         {
             icon: "images/icons/volMute.png",

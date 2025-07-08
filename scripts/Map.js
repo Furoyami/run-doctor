@@ -16,8 +16,6 @@ class Map {
         // chargement des levels
         this.levels = { classic: {} }; //cache pour les JSON chargés.
         this.currentLevelId = 1; // niveau actuel
-
-        // le pType présent dans les fonctions est dans l'optique de générer par la suite une liste de lvl custom → abandonné laissé pour ne pas avoir a refaire le chemin du dossier
     }
 
     async InitMap() {
@@ -78,15 +76,15 @@ class Map {
     }
 
     // charge les levels en lazy loading
-    async LoadLevelOnDemand(pLevelId, pType = CONST.CLASSIC) {
+    async LoadLevelOnDemand(pLevelId,) {
         // Vérifie le cache
-        if (this.levels[pType][pLevelId]) {
-            this.LoadLevel(pLevelId, pType);
+        if (this.levels[pLevelId]) {
+            this.LoadLevel(pLevelId);
             return { success: true };
         }
 
         const formattedId = pLevelId.toString().padStart(3, "0");
-        const file = `scripts/levels/${pType}/level-${formattedId}.json`;
+        const file = `scripts/levels/level-${formattedId}.json`;
 
         try {
             const response = await fetch(file);
@@ -95,10 +93,10 @@ class Map {
                 return { success: false, reason: CONST.NO_MORE_LEVELS };
             }
             const data = await response.json();
-            this.levels[pType][pLevelId] = data;
-            this.LoadLevel(pLevelId, pType);
+            this.levels[pLevelId] = data;
+            this.LoadLevel(pLevelId);
             this.currentLevelId = pLevelId; // met à jour le niveau courant
-            if (debug) console.log(`Niveau ${pLevelId} (${pType}) chargé depuis ${file}`);
+            if (debug) console.log(`Niveau ${pLevelId} chargé depuis ${file}`);
             return { success: true };
         } catch (error) {
             console.error(`Erreur chargement ${file}:`, error);
@@ -108,10 +106,10 @@ class Map {
     }
 
     // charge les données depuis le JSON
-    LoadLevel(pLevelId, pType = CONST.CLASSIC) {
-        const levelData = this.levels[pType][pLevelId];
+    LoadLevel(pLevelId) {
+        const levelData = this.levels[pLevelId];
         if (!levelData) {
-            console.error(`Aucun niveau" ${pLevelId} (${pType}) trouvé`);
+            console.error(`Aucun niveau" ${pLevelId} trouvé`);
             return;
         }
 
@@ -133,7 +131,7 @@ class Map {
         // Réinit pour le nouveau niveau
         this.tardisVisible = false;
         this.itemsCollected = 0;
-        if (debug) console.log(`Niveau ${pLevelId} (${pType}) chargé`);
+        if (debug) console.log(`Niveau ${pLevelId} chargé`);
 
     }
 
