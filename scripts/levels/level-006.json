@@ -22,5 +22,6 @@
         ],
     "items":16,
     "enemies":5,
-    "forbiddenPathTiles":[]
+    "forbiddenPathTiles":[],
+    "isSpecial": false
 }

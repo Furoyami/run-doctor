@@ -216,7 +216,8 @@ class LevelEditorScene {
             matrix: matrix,
             items: items,
             enemies: enemies,
-            forbiddenPathTiles: []
+            forbiddenPathTiles: [],
+            isSpecial : false
         };
     }
 
