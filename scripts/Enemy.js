@@ -48,71 +48,74 @@ class Enemy {
     }
 
     Update(dt, pTargetCol, pTargetLine) {
-
-        if (this.isTrapped) {
-            this.trappedTimer -= dt;
-            if (this.trappedTimer <= 0) {
-                this.trappedTimer = 0;
-            }
+        if (game.timeLord && game.isFrozen) {
             return;
-        }
-
-        // Si cible atteinte mais joueur ailleurs, recalculer
-        if (this.hasReachedTarget &&
-            (this.spriteEnemy.col !== pTargetCol || this.spriteEnemy.line !== pTargetLine)) {
-            this.hasReachedTarget = false;
-            this.updatePath();
-        }
-
-        if (this.hasReachedTarget) return;
-
-        if (!this.isFalling) {
-            // Recalculer le chemin si la cible a changé de position et que l'ennemi n'est pas en chute
-            if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
-                this.targetCol = pTargetCol;
-                this.targetLine = pTargetLine;
-
-                this.updatePath();
-
-                this.previousTargetCol = pTargetCol;
-                this.previousTargetLine = pTargetLine;
-
-                this.facePathDirection();
-            }
-            // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
-            if (!this.path || this.path.length === 0) {
-                this.updatePath();
-            }
-        }
-
-        // Gestion des chutes et vérifications des VOID
-        let belowTile = game.map.getUnderEnemyID(this, 0, 1);
-        let currentTile = game.map.getUnderEnemyID(this, 0, 0);
-
-        //Vérifie si l'ennemi est bien centré sur la colonne actuelle
-        const centerX = this.spriteEnemy.col * game.grid.cellSize;
-        const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
-
-        if ((CONST.WALKABLE.includes(belowTile))
-            && isAlignedToColumn
-            && !this.isFalling
-            && !this.justFreed
-            && currentTile !== CONST.LADDER
-            && belowTile !== CONST.LADDER) {
-            this.startFalling();
-        }
-
-        // Mettre à jour spriteKey à chaque frame, avant et pendant tout mouvement
-        if (this.spriteKey) {
-            this.spriteKey.x = this.spriteEnemy.x;
-            this.spriteKey.y = this.spriteEnemy.y;
-        }
-
-        if (this.isFalling) {
-            this.handleFall(dt);
         } else {
-            this.followPath(dt);
-            this.justFreed = false;
+            if (this.isTrapped) {
+                this.trappedTimer -= dt;
+                if (this.trappedTimer <= 0) {
+                    this.trappedTimer = 0;
+                }
+                return;
+            }
+
+            // Si cible atteinte mais joueur ailleurs, recalculer
+            if (this.hasReachedTarget &&
+                (this.spriteEnemy.col !== pTargetCol || this.spriteEnemy.line !== pTargetLine)) {
+                this.hasReachedTarget = false;
+                this.updatePath();
+            }
+
+            if (this.hasReachedTarget) return;
+
+            if (!this.isFalling) {
+                // Recalculer le chemin si la cible a changé de position et que l'ennemi n'est pas en chute
+                if (this.previousTargetCol !== pTargetCol || this.previousTargetLine !== pTargetLine) {
+                    this.targetCol = pTargetCol;
+                    this.targetLine = pTargetLine;
+
+                    this.updatePath();
+
+                    this.previousTargetCol = pTargetCol;
+                    this.previousTargetLine = pTargetLine;
+
+                    this.facePathDirection();
+                }
+                // Si aucun chemin ou chemin vide, recalculer pour éviter un blocage
+                if (!this.path || this.path.length === 0) {
+                    this.updatePath();
+                }
+            }
+
+            // Gestion des chutes et vérifications des VOID
+            let belowTile = game.map.getUnderEnemyID(this, 0, 1);
+            let currentTile = game.map.getUnderEnemyID(this, 0, 0);
+
+            //Vérifie si l'ennemi est bien centré sur la colonne actuelle
+            const centerX = this.spriteEnemy.col * game.grid.cellSize;
+            const isAlignedToColumn = Math.abs(this.spriteEnemy.x - centerX) < 0.1; // Tolérance pour éviter des imprécisions flottantes
+
+            if ((CONST.WALKABLE.includes(belowTile))
+                && isAlignedToColumn
+                && !this.isFalling
+                && !this.justFreed
+                && currentTile !== CONST.LADDER
+                && belowTile !== CONST.LADDER) {
+                this.startFalling();
+            }
+
+            // Mettre à jour spriteKey à chaque frame, avant et pendant tout mouvement
+            if (this.spriteKey) {
+                this.spriteKey.x = this.spriteEnemy.x;
+                this.spriteKey.y = this.spriteEnemy.y;
+            }
+
+            if (this.isFalling) {
+                this.handleFall(dt);
+            } else {
+                this.followPath(dt);
+                this.justFreed = false;
+            }
         }
     }
 
