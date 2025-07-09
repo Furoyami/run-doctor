@@ -14,7 +14,7 @@ class Map {
         this.itemsCollected = 0;
 
         // chargement des levels
-        this.levels = { classic: {} }; //cache pour les JSON chargés.
+        this.levels = {}; //cache pour les JSON chargés.
         this.currentLevelId = 1; // niveau actuel
     }
 
@@ -142,7 +142,7 @@ class Map {
         this.tardisVisible = false;
         this.lstEnemiesCoords = [];
         this.currentLevelId = 1;
-        this.levels.classic = {}; // Vide le cache
+        this.levels = {}; // Vide le cache
     }
 
     LoadTextures() {
