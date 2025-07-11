@@ -130,9 +130,6 @@ class Pathfinding {
                 tileBelow = CONST.WALL;
             }
 
-            // si le voisin direct est le joueur, toujours accessible
-            if (neighbor.x === goal.x && neighbor.y === goal.y) return true;
-
             // Verif montée
             if (neighbor.y < current.y) {
                 // Vérifier si la case actuelle est une échelle
@@ -140,6 +137,9 @@ class Pathfinding {
                     return false;
                 }
             }
+
+            // si le voisin direct est le joueur, autorise mouvement vertical, descente ou montée validée
+            if (neighbor.x === goal.x && neighbor.y === goal.y) return true;
 
             // Gestion du VOID
             if (targetTile === CONST.VOID) {

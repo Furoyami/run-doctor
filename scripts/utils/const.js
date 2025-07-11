@@ -49,7 +49,7 @@ const CONST = Object.freeze({
     LEVELEDITOR: "leveleditor",
 
     // Max speed pour l'acceleration des ennemis
-    MAX_SPEED_COEFF: 2.5,
+    MAX_SPEED_COEFF: 2.25,
 
     // Type de niveau (prévision lvl custom pour l'éditeur)
     CLASSIC: "classic",

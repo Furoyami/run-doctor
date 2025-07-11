@@ -292,7 +292,7 @@ class Map {
 
 
     /** 
-     *  Lis la map du niveau et compte le nombre de clés
+     *  Lis la map du niveau et compte le nombre d'entités
      */
     Read() {
         this.level.items = 0;

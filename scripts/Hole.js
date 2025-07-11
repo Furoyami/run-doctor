@@ -35,6 +35,7 @@ class Hole {
     UpdateTimer(dt) {
         // gestion du timer
         if (this.timerStart) {
+            if (game.map.level.matrix[this.line][this.col] === CONST.ITEM) return; // empêche de refermer un trou qui contient une clé
             this.timer += dt;
         }
         if (this.timer >= 10) {
@@ -51,7 +52,8 @@ class Hole {
             this.spriteHole.currentAnimation.name === "FILL" &&
             this.spriteHole.currentFrameInAnimation >= 6 &&
             !this.isFilled &&
-            !game.map.isWall(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0])) {
+            !game.map.isWall(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]))
+        {
             game.map.FillBrick(this.col - game.player.getPlayerPos()[1], this.line - game.player.getPlayerPos()[0]); // Utilise la position absolue
             this.isFilled = true; // Marque la brique remplie
             this.isTrap = false;
