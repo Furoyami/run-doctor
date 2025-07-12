@@ -158,7 +158,6 @@ class Game {
         this.keyOrder = [];
         this.isDiggingDirection = null; // Réinitialiser l'état de creusage
         this.map.tardisVisible = false;
-        this.map.itemsCollected = 0;
         this.spritePlayer = null; // Purge spritePlayer
         this.player.resetPlayer(resetLives); // Réinitialise l'état du joueur et conserve ses vies actuelles
         

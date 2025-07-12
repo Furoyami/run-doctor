@@ -134,7 +134,7 @@ class PlayingScene {
                     enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed;
                 } else {
                     // augmente la vitesse en fonction du nombre de clés ramassé
-                    const SPEEDMUTLIPLIER = Math.min(1 + game.map.getItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);
+                    const SPEEDMUTLIPLIER = Math.min(1 + game.map.getNbItemsCollected() * 0.25, CONST.MAX_SPEED_COEFF);                    
                     enemy.spriteEnemy.speed = enemy.spriteEnemy.baseSpeed * SPEEDMUTLIPLIER;
                 }
 

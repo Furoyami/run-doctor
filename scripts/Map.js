@@ -11,7 +11,7 @@ class Map {
         this.playerStartCoords = null;
         this.tardisVisible = false;
         this.originaleTile = null;
-        this.itemsCollected = 0;
+        this.maxItemsInLevel = 0;
 
         // chargement des levels
         this.levels = {}; //cache pour les JSON chargés.
@@ -130,7 +130,6 @@ class Map {
 
         // Réinit pour le nouveau niveau
         this.tardisVisible = false;
-        this.itemsCollected = 0;
         if (debug) console.log(`Niveau ${pLevelId} chargé`);
 
     }
@@ -138,7 +137,6 @@ class Map {
     // réinit la map du jeu au lvl 1
     resetLevel() {
         this.level = null;
-        this.itemsCollected = 0;
         this.tardisVisible = false;
         this.lstEnemiesCoords = [];
         this.currentLevelId = 1;
@@ -276,7 +274,6 @@ class Map {
             } else {
                 this.level.matrix[line][col] = CONST.VOID; // Cas des clés initiales
             }
-            this.itemsCollected += 1;
             if (isPlayer && this.level.items > 0) {
                 this.level.items -= 1;
             }
@@ -325,6 +322,7 @@ class Map {
                 }
             }
         }
+        this.maxItemsInLevel = this.level.items;        
     }
 
     Update(dt) {
@@ -412,8 +410,8 @@ class Map {
     getNbItemsInLevel() {
         return this.level.items;
     }
-    getItemsCollected() {
-        return this.itemsCollected;
+    getNbItemsCollected() {
+        return this.maxItemsInLevel - this.level.items;
     }
 
     getNbEnemiesInLevel() {
