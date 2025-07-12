@@ -257,10 +257,12 @@ class Map {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
+        if (this.level.matrix[playerLine][playerCol] === CONST.ITEM) this.level.items -+1
         this.level.matrix[playerLine][playerCol] = CONST.WALL;
     }
 
     ChangeToUnwalkable(pLine, pCol) {
+        if (this.level.matrix[pCol][pLine] === CONST.ITEM) this.level.items -= 1; 
         this.level.matrix[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
@@ -283,6 +285,7 @@ class Map {
     DropItem(pX, pY, dropTargetTile) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
+        if ((line - 1) >= 0 && this.level.matrix[line - 1][col] === CONST.ITEM) this.level.items -= 1; 
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
         this.level.matrix[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
     }
