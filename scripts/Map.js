@@ -171,6 +171,13 @@ class Map {
         this.tileTextures[3].addAnimation("KEY_ANIM", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0.15, 1);
         this.tileTextures[3].startAnimation("KEY_ANIM");
 
+        let imgEnergy = game.imageLoader.getImage("images/energy_tile.png");
+        this.tileTextures[13] = new Sprite(imgEnergy);
+        this.tileTextures[13].name = "ENERGY";
+        this.tileTextures[13].setTileSheet(40, 40);
+        this.tileTextures[13].addAnimation("ENERGY_ANIM", [0, 1, 2, 3], 0.3);
+        this.tileTextures[13].startAnimation("ENERGY_ANIM");
+
         this.LoadTardisTextures();
 
         if (debug) console.log("Toutes les textures sont chargées !");
@@ -257,12 +264,12 @@ class Map {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
         let playerCol = playerPos[1] + pOffsetX;
-        if (this.level.matrix[playerLine][playerCol] === CONST.ITEM) this.level.items -+1
+        if (this.level.matrix[playerLine][playerCol] === CONST.ITEM) this.level.items - +1;
         this.level.matrix[playerLine][playerCol] = CONST.WALL;
     }
 
     ChangeToUnwalkable(pLine, pCol) {
-        if (this.level.matrix[pCol][pLine] === CONST.ITEM) this.level.items -= 1; 
+        if (this.level.matrix[pCol][pLine] === CONST.ITEM) this.level.items -= 1;
         this.level.matrix[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
@@ -285,7 +292,7 @@ class Map {
     DropItem(pX, pY, dropTargetTile) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
-        if ((line - 1) >= 0 && this.level.matrix[line - 1][col] === CONST.ITEM) this.level.items -= 1; 
+        if ((line - 1) >= 0 && this.level.matrix[line - 1][col] === CONST.ITEM) this.level.items -= 1;
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
         this.level.matrix[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
     }
@@ -325,7 +332,7 @@ class Map {
                 }
             }
         }
-        this.maxItemsInLevel = this.level.items;        
+        this.maxItemsInLevel = this.level.items;
     }
 
     Update(dt) {

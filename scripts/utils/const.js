@@ -71,6 +71,7 @@ const CONST = Object.freeze({
     // interactions
     LADDER: 2,
     ITEM: 3,
+    ENERGY: 13,
     TARDIS_LT: 4,
     TARDIS_RT: 5,
     TARDIS_LB: 6,
