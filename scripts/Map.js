@@ -276,6 +276,7 @@ class Map {
     CollectItem(pX, pY, isPlayer = false) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
+
         if (this.level.matrix[line][col] === CONST.ITEM) {
             if (this.originaleTile !== null && this.originaleTile.col === col && this.originaleTile.line === line) {
                 this.level.matrix[line][col] = this.originaleTile.tileId; // Restaure la tile originale
@@ -286,6 +287,8 @@ class Map {
             if (isPlayer && this.level.items > 0) {
                 this.level.items -= 1;
             }
+        } else if (this.level.matrix[line][col] === CONST.ENERGY) {
+            this.level.matrix[line][col] = CONST.VOID;
         }
     }
 

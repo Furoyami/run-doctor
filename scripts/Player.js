@@ -200,7 +200,8 @@ class Player {
 
     getItems() {
         // Ramasse les clés
-        if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
+        // séparer en 2 conditions quand le son energy sera ok
+        if ((game.map.getUnderPlayerID(0, 0) === CONST.ITEM || game.map.getUnderPlayerID(0, 0) === CONST.ENERGY) && this.spritePlayer.vX === 0) {
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
             game.sndKey.play();
         }

@@ -11,6 +11,7 @@ class LevelEditorScene {
             CONST.TRAP,
             CONST.LADDER,
             CONST.ITEM,
+            CONST.ENERGY,
             CONST.TARDIS_LT,
             CONST.TARDIS_RT,
             CONST.TARDIS_LB,
