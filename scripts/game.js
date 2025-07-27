@@ -238,12 +238,12 @@ class Game {
             console.log("[Game] addLife: Ignoré, pas en mode PLAYING");
             return;
         }
-        const maxLives = 13;
-        if (this.player.lives < maxLives) {
+        
+        if (this.player.lives < CONST.MAXLIVES) {
             this.player.lives += 1;
             console.log("[Game] Vie ajoutée: lives=", this.player.lives);
         } else {
-            console.log("[Game] addLife: Maximum de vies atteint:", maxLives);
+            console.log("[Game] addLife: Maximum de vies atteint:", CONST.MAXLIVES);
         }
     }
 
@@ -296,10 +296,13 @@ class Game {
         this.imageLoader.add("images/icons/move.png");
         this.imageLoader.add("images/icons/dig.png");
         this.imageLoader.add("images/icons/heart.png");
+        this.imageLoader.add("images/icons/energy.png");
         this.imageLoader.add("images/icons/keyIcon.png");
         this.imageLoader.add("images/icons/volDown.png");
         this.imageLoader.add("images/icons/volUp.png");
         this.imageLoader.add("images/icons/volMute.png");
+        this.imageLoader.add("images/icons/+1.png");
+        this.imageLoader.add("images/icons/+heart.png");
 
         await this.imageLoader.start();
         await this.startGame();

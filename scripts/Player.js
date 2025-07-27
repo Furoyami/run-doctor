@@ -2,6 +2,7 @@ class Player {
     constructor() {
         this.sprite = null;
         this.lives = 3;
+        this.energy = 0;
         this.invincibilityTimer = 0; // Timer en secondes pour l’invincibilité
         this.isInvincible = false;   // État d’invincibilité
         this.blinkTimer = 0;
@@ -46,7 +47,7 @@ class Player {
         if (game.timeLord && game.isAccelerated) {
             this.spritePlayer.speed = 10;
         } else {
-            this.spritePlayer.speed = 2.5; 
+            this.spritePlayer.speed = 2.5;
         }
 
         this.setOffsetX();
@@ -201,9 +202,14 @@ class Player {
     getItems() {
         // Ramasse les clés
         // séparer en 2 conditions quand le son energy sera ok
-        if ((game.map.getUnderPlayerID(0, 0) === CONST.ITEM || game.map.getUnderPlayerID(0, 0) === CONST.ENERGY) && this.spritePlayer.vX === 0) {
-            game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
+        const collectItem = game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
+
+        if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
+            collectItem;
             game.sndKey.play();
+        } else if (game.map.getUnderPlayerID(0, 0) === CONST.ENERGY && this.spritePlayer.vX === 0) {
+            collectItem;
+            // son energy
         }
     }
 
@@ -252,7 +258,7 @@ class Player {
 
     // Montée d'une échelle
     moveUp() {
-        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0) {
+        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && game.map.getUnderPlayerID(0, -1) !== CONST.WALL) {
             this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vY = -this.spritePlayer.speed;
         }
@@ -290,6 +296,7 @@ class Player {
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.VOID
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TRAP
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ITEM
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ENERGY
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSPLAYER
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY;
     }
@@ -349,6 +356,19 @@ class Player {
                 // confirmation
                 game.activeKeys = new Set();
                 game.keyOrder = [];
+            }
+        }
+    }
+
+    playerLifeUp() {
+        if (this.energy < 5) this.energy += 1;
+        console.log("energy:", this.energy);  
+
+        if (this.energy >= 5) {
+            console.log("vie gagnée");
+            if (this.lives < CONST.MAXLIVES) {
+                this.energy = 0;
+                this.lives += 1;
             }
         }
     }

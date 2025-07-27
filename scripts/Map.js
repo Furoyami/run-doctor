@@ -287,8 +287,9 @@ class Map {
             if (isPlayer && this.level.items > 0) {
                 this.level.items -= 1;
             }
-        } else if (this.level.matrix[line][col] === CONST.ENERGY) {
+        } else if (isPlayer && this.level.matrix[line][col] === CONST.ENERGY) {
             this.level.matrix[line][col] = CONST.VOID;
+            game.player.playerLifeUp();
         }
     }
 

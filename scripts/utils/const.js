@@ -51,8 +51,8 @@ const CONST = Object.freeze({
     // Max speed pour l'acceleration des ennemis
     MAX_SPEED_COEFF: 2.25,
 
-    // Type de niveau (prévision lvl custom pour l'éditeur)
-    CLASSIC: "classic",
+    // Max de vies pouvant être obtenues
+    MAXLIVES : 13,
 
     // Valeurs de success.reason pour les passage de niveaux
     NO_MORE_LEVELS: "no_more_levels",
@@ -86,12 +86,13 @@ const CONST = Object.freeze({
         0,  // VOID
         12, // TRAP
         3,  // ITEM
+        13, // ENERGY
         4,  // TARDIS_LT
         5,  // TARDIS_RT
         6,  // TARDIS_LB
         7,  // TARDIS_RB
-        8,   // STARTPOSENEMY
-        10 //STARTPOSPLAYER
+        8,  // STARTPOSENEMY
+        10  //STARTPOSPLAYER
     ]),
 
     // ---------- HUD BLOCKS ----------
@@ -142,16 +143,16 @@ const CONST = Object.freeze({
             iconHeight: 30
         },
 
-        // energy (à modif avec les données d'energie)
-        // {
-        //     icon: "images/icons/heart.png",
-        //     text: (game) => ": " + game.player.lives,
-        //     x: 750,
-        //     iconOffset: 0,
-        //     textOffset: 35,
-        //     iconWidth: 30,
-        //     iconHeight: 30
-        // },
+        // energy 
+        {
+            icon: "images/icons/energy.png",
+            text: (game) => ": " + game.player.energy,
+            x: 750,
+            iconOffset: 0,
+            textOffset: 35,
+            iconWidth: 30,
+            iconHeight: 30
+        },
 
         // son
         {
