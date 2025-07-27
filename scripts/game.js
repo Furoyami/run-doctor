@@ -35,7 +35,9 @@ class Game {
 
         // Sons
         this.sounds = [
-            this.sndKey = new Sound("sounds/key.wav", .45),
+            this.sndItem = new Sound("sounds/key.wav", .45),
+            this.sndEnergy = new Sound("sounds/energy.wav", .4),
+            this.sndLifeUp = new Sound("sounds/lifeUp.wav", .4),
             this.sndDalek = new Sound("sounds/exterminate.wav", .5),
             this.sndDig = new Sound("sounds/dig.wav", .4),
             this.sndFill = new Sound("sounds/fill.wav", .35),

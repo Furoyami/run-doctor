@@ -208,7 +208,6 @@ class Player {
             game.sndItem.play();
         } else if (game.map.getUnderPlayerID(0, 0) === CONST.ENERGY && this.spritePlayer.vX === 0) {
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
-            // son energy
         }
     }
 
@@ -327,7 +326,10 @@ class Player {
 
     // reset joueur en cas de retry
     resetPlayer(resetLives = true) {
-        if (resetLives) this.lives = 3;
+        if (resetLives) {
+            this.lives = 3;
+            this.energy = 0;
+        }
         this.invincibilityTimer = 0; // Timer en secondes pour l’invincibilité
         this.isInvincible = false;   // État d’invincibilité
         this.blinkTimer = 0;
@@ -365,13 +367,15 @@ class Player {
         }
     }
 
-    onEnergyPickup (tileX, tileY) {
+    onEnergyPickup(tileX, tileY) {
         if (this.energy < CONST.ENERGYMAX) {
             this.energy += 1;
             game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_ONE");
+            game.sndEnergy.play();
             console.log("energy:", this.energy);
         } else if (this.energy === CONST.ENERGYMAX && this.lives < CONST.MAXLIVES) {
             game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_LIFE");
+            game.sndLifeUp.play();
             console.log("vie gagnée");
             this.energy = 0;
             this.lives += 1;
