@@ -9,6 +9,7 @@ class Game {
         this.lstSprites = [];
         this.lstEnemies = [];
         this.lstHoles = [];
+        this.lstEffects = []; // pour les effets de +1 / +life
         this.activeKeys = new Set();
         this.keyOrder = [];
         this.isDiggingDirection = null;
@@ -193,6 +194,7 @@ class Game {
             .map(enemy => ({ x: enemy.trappedAt.col, y: enemy.trappedAt.line }));
     }
 
+    // ------------------------------------------------------------- GESTION VOLUME -------------------------------------------------------------
     adjustAllVolumes(direction) {
         for (let sound of this.sounds) {
             if (direction === "up") {
@@ -208,7 +210,7 @@ class Game {
             sound.mute();
         }
     }
-    // ------------------------------------------------------------- GOD MOD A VIRER AVANT DE METTRE LE JEU EN LIGNE -------------------------------------------------------------
+    // ------------------------------------------------------------- GOD MOD -------------------------------------------------------------
     async nextLevel() {
         if (this.state !== CONST.PLAYING) {
             console.log("[Game] nextLevel: Ignoré, pas en mode PLAYING");
@@ -301,8 +303,8 @@ class Game {
         this.imageLoader.add("images/icons/volDown.png");
         this.imageLoader.add("images/icons/volUp.png");
         this.imageLoader.add("images/icons/volMute.png");
-        this.imageLoader.add("images/icons/+1.png");
-        this.imageLoader.add("images/icons/+heart.png");
+        this.imageLoader.add("images/plus_one.png");
+        this.imageLoader.add("images/plus_life.png");
 
         await this.imageLoader.start();
         await this.startGame();
@@ -368,7 +370,8 @@ class Game {
         }
     }
 
-    //utilitaire
+    // ------------------------------------------------------------- UTILITAIRE -------------------------------------------------------------
+
     rnd(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
     }

@@ -1,6 +1,6 @@
 class PlayingScene {
     constructor() {
-        this.isLevelCompleted = false; // verrou pour assurer qu'un seule niveau soit passé en cas de contact avec le tardis
+        this.isLevelCompleted = false; // verrou pour assurer qu'un seul niveau soit passé en cas de contact avec le tardis
     }
 
     keyDownPlaying(e) {
@@ -115,6 +115,19 @@ class PlayingScene {
 
         game.player.Update(dt);
 
+        //Mise à jour des effets
+        for (let i = game.lstEffects.length - 1; i >= 0; i--) {
+            let effect = game.lstEffects[i];
+            effect.y -= 20 * dt; // Monte à 20 pixels/s
+            effect.life -= dt;
+            if (effect.life < 0.3) {
+                effect.alpha = effect.life / 0.3; // S’estompe sur les dernières 0.3s
+            }
+            if (effect.life <= 0) {
+                game.lstEffects.splice(i, 1);
+            }
+        }
+
         
             game.lstEnemies.forEach(enemy => {
 
@@ -197,6 +210,17 @@ class PlayingScene {
     drawPlaying(pCtx) {
         game.map.Draw(pCtx);
         game.lstSprites.forEach(sprite => sprite.draw(pCtx));
+
+        // dessine les effets +1/+life
+        for (let effect of game.lstEffects) {
+            pCtx.globalAlpha = effect.alpha; // Opacité pour estompage
+            pCtx.drawImage(
+                game.map.effectTextures[effect.type], // PLUS_ONE ou PLUS_LIFE
+                effect.x,
+                effect.y
+            );
+            pCtx.globalAlpha = 1; // Restaure l’opacité pour éviter d’affecter joueur/ennemis
+        }
         this.drawHUD();
         if (game.timeLord && game.isPathVisible) {
             game.grid.DrawGrid(pCtx);
@@ -320,5 +344,16 @@ class PlayingScene {
             enemy.trappedTimer = 0;
             enemy.trappedAt = null;
         }
+    }
+
+    // affiche les effet +1/+life
+    showFloatingEffect(pX, pY, pType) {
+        game.lstEffects.push({
+            x: pX - 20, // centre l'image
+            y: pY - 40, // une case au dessus
+            life: 0.75, // durée de vie de l'effet
+            alpha: 1,
+            type: pType
+        })
     }
 }

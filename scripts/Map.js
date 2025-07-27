@@ -180,6 +180,11 @@ class Map {
 
         this.LoadTardisTextures();
 
+        // Effets au ramassage d'energie
+        this.effectTextures = this.effectTextures || {};
+        this.effectTextures["PLUS_ONE"] = game.imageLoader.getImage("images/plus_one.png");
+        this.effectTextures["PLUS_LIFE"] = game.imageLoader.getImage("images/plus_life.png")
+
         if (debug) console.log("Toutes les textures sont chargées !");
     }
 
@@ -289,7 +294,10 @@ class Map {
             }
         } else if (isPlayer && this.level.matrix[line][col] === CONST.ENERGY) {
             this.level.matrix[line][col] = CONST.VOID;
-            game.player.playerLifeUp();
+            // calcule le centre de la tile (pour afficher l'effet au dessus)
+            let tileX = col * game.grid.cellSize + game.grid.cellSize / 2;
+            let tileY = line * game.grid.cellSize + game.grid.cellSize / 2; 
+            game.player.onEnergyPickup (tileX,tileY);
         }
     }
 

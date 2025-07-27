@@ -351,6 +351,12 @@ class Player {
                 // Réinitialiser les touches pour éviter un mouvement résiduel
                 game.activeKeys = new Set();
                 game.keyOrder = [];
+
+                if (this.energy >= 5 && this.lives < CONST.MAXLIVES) {
+                    console.log("vie gagnée via enegy stockée");
+                    this.energy = 0;
+                    this.lives += 1;
+                }
             } else {
                 game.state = CONST.GAMEOVER;
                 // confirmation
@@ -360,16 +366,16 @@ class Player {
         }
     }
 
-    playerLifeUp() {
-        if (this.energy < 5) this.energy += 1;
-        console.log("energy:", this.energy);  
-
-        if (this.energy >= 5) {
+    onEnergyPickup (tileX, tileY) {
+        if (this.energy < CONST.ENERGYMAX) {
+            this.energy += 1;
+            game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_ONE");
+            console.log("energy:", this.energy);
+        } else if (this.energy === CONST.ENERGYMAX && this.lives < CONST.MAXLIVES) {
+            game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_LIFE");
             console.log("vie gagnée");
-            if (this.lives < CONST.MAXLIVES) {
-                this.energy = 0;
-                this.lives += 1;
-            }
+            this.energy = 0;
+            this.lives += 1;
         }
     }
 
