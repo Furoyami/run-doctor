@@ -205,7 +205,7 @@ class Player {
 
         if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
-            game.sndKey.play();
+            game.sndItem.play();
         } else if (game.map.getUnderPlayerID(0, 0) === CONST.ENERGY && this.spritePlayer.vX === 0) {
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
             // son energy

@@ -290,7 +290,7 @@ class Enemy {
             this.spriteKey.setScale(15 / naturalWidth, 15 / naturalHeight);
             game.lstSprites.push(this.spriteKey);
             game.map.CollectItem(this.spriteEnemy.x, this.spriteEnemy.y, false);
-            game.sndKey.play();
+            game.sndItem.play();
         }
     }
 
