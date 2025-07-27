@@ -54,7 +54,7 @@ const CONST = Object.freeze({
     // Max de vies pouvant être obtenues
     MAXLIVES: 13,
 
-    // Max d'energie à ramasser (in game c'est 5 = 1+vie comme voulu mais la const est a 4 pour limiter correctement)
+    // Max d'energie à ramasser (1-4 : effet +1, 5: effet +life)
     ENERGYMAX: 4,
 
     // Valeurs de success.reason pour les passage de niveaux
