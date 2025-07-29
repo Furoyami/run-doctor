@@ -7,6 +7,7 @@ class GameOverScene {
 
     updateGameOver(dt) {
         game.mscTheme.stop();
+        game.mscSpecialTheme.stop();
     }
 
     drawGameOver(pCtx) {

@@ -41,7 +41,8 @@ class Map {
             matrix: [],
             items: 0,
             enemies: 0,
-            forbiddenPathTiles: []
+            forbiddenPathTiles: [],
+            isSpecial: false
         };
 
         for (let l = 0; l < this.nbLines; l++) {
@@ -76,7 +77,7 @@ class Map {
     }
 
     // charge les levels en lazy loading
-    async LoadLevelOnDemand(pLevelId,) {
+    async LoadLevelOnDemand(pLevelId) {
         // Vérifie le cache
         if (this.levels[pLevelId]) {
             this.LoadLevel(pLevelId);
@@ -117,7 +118,8 @@ class Map {
             matrix: levelData.matrix,
             items: levelData.items,
             enemies: levelData.enemies,
-            forbiddenPathTiles: levelData.forbiddenPathTiles
+            forbiddenPathTiles: levelData.forbiddenPathTiles,
+            isSpecial : levelData.isSpecial
         };
 
         // Validation des dimensions

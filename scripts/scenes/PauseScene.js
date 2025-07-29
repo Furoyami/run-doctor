@@ -4,7 +4,11 @@ class PauseScene {
     keyDownPause(e) {
         if (e.code === CONST.KEYP) {
             game.state = CONST.PLAYING;
-            game.mscTheme.resume();
+            if (game.map.level.isSpecial) {
+                game.mscSpecialTheme.resume();
+            } else {
+                game.mscTheme.resume();
+            }
         }
     }
 

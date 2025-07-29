@@ -7,6 +7,7 @@ class GameWinScene {
 
     updateGameWin(dt) {
         game.mscTheme.stop();
+        game.mscSpecialTheme.stop();
     }
 
     drawGameWin(pCtx) {

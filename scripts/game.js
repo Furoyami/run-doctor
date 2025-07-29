@@ -44,7 +44,8 @@ class Game {
             this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4),
             this.sndTardis = new Sound("sounds/tardis.wav", .6),
 
-            this.mscTheme = new Sound("sounds/theme.wav", .35, true)
+            this.mscTheme = new Sound("sounds/theme.wav", .35, true),
+            this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true)
         ];
 
         // Sprites
@@ -164,9 +165,10 @@ class Game {
         this.spritePlayer = null; // Purge spritePlayer
         this.player.resetPlayer(resetLives); // Réinitialise l'état du joueur et conserve ses vies actuelles
         
-        await this.map.LoadLevelOnDemand(this.map.currentLevelId, CONST.CLASSIC);
+        await this.map.LoadLevelOnDemand(this.map.currentLevelId);
         this.pathfinding.costMap = this.map.createEmptyCostMap();
         this.map.Read();
+        this.selectMusicTheme();
 
         // player creation
         let playerPos = this.map.getPlayerStartPos();
@@ -174,7 +176,7 @@ class Game {
         this.lstSprites.push(this.spritePlayer);
 
         // enemies creation
-        let nbEnemies = this.map.getNbEnemiesInLevel();
+        let nbEnemies = this.map.getNbEnemiesInLevel();        
         for (let i = 0; i < nbEnemies; i++) {
             let enemyPos = this.map.getEnemiesStartPos()[i];
             let enemy = new Enemy(enemyPos.line, enemyPos.col, this.player.getPlayerPos()[1], this.player.getPlayerPos()[0], this.map, this.pathfinding);
@@ -185,6 +187,8 @@ class Game {
 
         // reload les sprites du tardis pour rejouer l'animation
         this.map.LoadTardisTextures();
+        console.log("this.map.level.isSpecial: ", this.map.level.isSpecial);
+        
 
         this.gameReady = true;
     }
@@ -210,6 +214,16 @@ class Game {
     muteAll() {
         for (let sound of this.sounds) {
             sound.mute();
+        }
+    }
+
+    selectMusicTheme() {
+        if (this.map.level.isSpecial) {
+            this.mscTheme.stop();
+            this.mscSpecialTheme.play();
+        } else {
+            this.mscSpecialTheme.stop();
+            return
         }
     }
     // ------------------------------------------------------------- GOD MOD -------------------------------------------------------------
@@ -324,6 +338,7 @@ class Game {
                 break;
             case CONST.TITLE:
                 this.mscTheme.stop();
+                this.mscSpecialTheme.stop();
                 this.titleScene.updateTitle(dt);
                 break;
             case CONST.PLAYING:

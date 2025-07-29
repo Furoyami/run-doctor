@@ -21,7 +21,7 @@
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ],
         "items":5,
-        "enemies":1,
+        "enemies":0,
         "forbiddenPathTiles":[],
         "isSpecial": true
     }

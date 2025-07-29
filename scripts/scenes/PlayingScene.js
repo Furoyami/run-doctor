@@ -52,7 +52,11 @@ class PlayingScene {
                 break;
             case CONST.KEYP:
                 game.state = CONST.PAUSE;
-                game.mscTheme.pause();
+                if (game.map.level.isSpecial) {
+                    game.mscSpecialTheme.pause();
+                } else {
+                    game.mscTheme.pause();
+                }
                 console.log(game.state);
                 break;
             case CONST.KEYF1:
@@ -183,7 +187,11 @@ class PlayingScene {
                 console.log("TARDIS touché, niveau chargé :", game.map.currentLevelId);
             } else if (result.reason === CONST.NO_MORE_LEVELS) {
                 game.state = CONST.GAMEWIN;
-                game.mscTheme.stop();
+                if (game.map.level.isSpecial) {
+                    game.mscSpecialTheme.stop();
+                } else {
+                    game.mscTheme.stop();
+                }
                 console.log("Victoire ! Tous les niveaux terminés !");
             } else {
                 console.error("Erreur de chargement du niveau, retour au niveau 1");
