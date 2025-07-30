@@ -19,6 +19,8 @@ class Enemy {
         this.spriteEnemy.addAnimation("LEVITATE_RIGHT", [4, 5], 0.5);
         this.spriteEnemy.addAnimation("LEVITATE_LEFT", [6, 7], 0.5);
 
+        this.spriteEnemy.startAnimation("RIGHT");
+
         // ----- propriétés utilisées pour le pathfinding -----
         this.targetCol = pTargetCol;
         this.targetLine = pTargetLine;
@@ -152,12 +154,13 @@ class Enemy {
         this.spriteEnemy.x = Math.round(this.spriteEnemy.x / game.grid.cellSize) * game.grid.cellSize;
         this.spriteEnemy.y = Math.round(this.spriteEnemy.y / game.grid.cellSize) * game.grid.cellSize;
 
-
-        if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
-            this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
-        }
-        else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
-            this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+        if (this.spriteEnemy.currentAnimation !== null && this.spriteEnemy.currentAnimation.name !== null) {
+            if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
+                this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
+            }
+            else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
+                this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+            }
         }
     }
 
@@ -259,11 +262,13 @@ class Enemy {
                 }
 
                 if (currentTile === CONST.LADDER || belowTile === CONST.LADDER || aboveTile === CONST.LADDER) {
-                    if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
-                        this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
-                    }
-                    else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
-                        this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+                    if (this.spriteEnemy.currentAnimation !== null) {
+                        if (this.spriteEnemy.currentAnimation.name === "RIGHT") {
+                            this.spriteEnemy.startAnimation("LEVITATE_RIGHT");
+                        }
+                        else if (this.spriteEnemy.currentAnimation.name === "LEFT") {
+                            this.spriteEnemy.startAnimation("LEVITATE_LEFT");
+                        }
                     }
                 }
 
