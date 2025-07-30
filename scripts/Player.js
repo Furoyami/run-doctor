@@ -180,6 +180,8 @@ class Player {
         if (this.spritePlayer.currentAnimation.name.startsWith("FALL") &&
             game.map.getUnderPlayerID(0, 1) !== CONST.VOID &&
             game.map.getUnderPlayerID(0, 1) !== CONST.TRAP &&
+            game.map.getUnderPlayerID(0, 1) !== CONST.ENERGY &&
+            game.map.getUnderPlayerID(0, 1) !== CONST.ITEM &&
             game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSENEMY &&
             game.map.getUnderPlayerID(0, 1) !== CONST.STARTPOSPLAYER &&
             game.map.getUnderPlayerID(0, 1) !== CONST.OUT_OF_BOUNDS) {
