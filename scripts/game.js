@@ -47,6 +47,7 @@ class Game {
             this.mscTheme = new Sound("sounds/theme.wav", .35, true),
             this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true)
         ];
+        this.isMainThemePlaying = false;
 
         // Sprites
         this.spritePlayer = null;
@@ -219,12 +220,19 @@ class Game {
 
     selectMusicTheme() {
         if (this.map.level.isSpecial) {
-            this.mscTheme.stop();
+            if (this.isMainThemePlaying) {
+                this.mscTheme.pause();
+                this.isMainThemePlaying = false;
+            }
             this.mscSpecialTheme.play();
         } else {
             this.mscSpecialTheme.stop();
-            return
+            if (!this.isMainThemePlaying) {
+                this.mscTheme.play();
+                this.isMainThemePlaying = true;
+            }
         }
+
     }
     // ------------------------------------------------------------- GOD MOD -------------------------------------------------------------
     async nextLevel() {
