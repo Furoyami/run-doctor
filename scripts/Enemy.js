@@ -352,7 +352,7 @@ class Enemy {
      * gère la réaffectation des propriétés pour la réapparition de l'ennemi en haut de l'écran
      */
     respawnAtTop() {
-        this.spriteEnemy.x = game.rnd(0, game.map.getMapNbColumns()) * game.grid.cellSize; // respawn aleatoire sur le haut
+        this.spriteEnemy.x = game.rnd(1, game.map.getMapNbColumns()) * game.grid.cellSize - 1; // respawn aleatoire sur le haut en excluant les limites pour éviter des blocages
         this.lockedX = this.spriteEnemy.x;// verrouillage de la colonne
         this.spriteEnemy.y = -this.imgHeight;
         this.spriteEnemy.col = Math.floor(this.spriteEnemy.x / game.grid.cellSize);
