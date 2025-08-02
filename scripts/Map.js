@@ -260,6 +260,14 @@ class Map {
         return false;
     }
 
+    isMetal(pOffsetX, pOffsetY) {
+        let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
+        if (id === CONST.METAL) {
+            return true;
+        }
+        return false;
+    }
+
     EmptyBrick(pOffsetX, pOffsetY) {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;
