@@ -322,7 +322,6 @@ class Map {
     DropItem(pX, pY, dropTargetTile) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
-        if ((line - 1) >= 0 && this.level.matrix[line - 1][col] === CONST.ITEM) this.level.items -= 1;
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
         this.level.matrix[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
     }

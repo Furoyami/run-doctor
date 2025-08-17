@@ -203,12 +203,11 @@ class Player {
 
     getItems() {
         // Ramasse les clés
-        // séparer en 2 conditions quand le son energy sera ok
-
         if (game.map.getUnderPlayerID(0, 0) === CONST.ITEM && this.spritePlayer.vX === 0) {
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
             game.sndItem.play();
         } else if (game.map.getUnderPlayerID(0, 0) === CONST.ENERGY && this.spritePlayer.vX === 0) {
+            // Ramasse les energy
             game.map.CollectItem(this.spritePlayer.x, this.spritePlayer.y, true);
         }
     }
