@@ -268,6 +268,14 @@ class Map {
         return false;
     }
 
+    isOutOfBounds(pOffsetX, pOffsetY) {
+        let id = this.getUnderPlayerID(pOffsetX, pOffsetY);
+        if (id === CONST.OUT_OF_BOUNDS) {
+            return true;
+        }
+        return false;
+    }
+
     EmptyBrick(pOffsetX, pOffsetY) {
         let playerPos = game.player.getPlayerPos();
         let playerLine = playerPos[0] + pOffsetY;

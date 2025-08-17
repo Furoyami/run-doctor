@@ -258,7 +258,7 @@ class Player {
 
     // Montée d'une échelle
     moveUp() {
-        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && !game.map.isWall(0, -1) && !game.map.isMetal(0, -1) ) {
+        if (this.spritePlayer.vX === 0 && this.spritePlayer.vY === 0 && !game.map.isWall(0, -1) && !game.map.isMetal(0, -1) && !game.map.isOutOfBounds(0, -1) ) {
             this.spritePlayer.startAnimation("CLIMB");
             this.spritePlayer.vY = -this.spritePlayer.speed;
         }
