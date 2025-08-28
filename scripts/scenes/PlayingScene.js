@@ -342,6 +342,9 @@ class PlayingScene {
                     }
                 }
             }
+
+            game.map.ChangeToWalkable(enemy.trappedAt.col, enemy.trappedAt.line); // change la case en unwalkable pour que le joueur puisse marcher dessus
+
         } else if (enemy.isTrapped && !game.lstHoles.some(hole =>
             // enterré → respawn
             hole.isTrap &&

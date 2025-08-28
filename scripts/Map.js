@@ -296,6 +296,10 @@ class Map {
         this.level.matrix[pCol][pLine] = CONST.UNWALKABLE_VOID;
     }
 
+    ChangeToWalkable(pLine, pCol) {
+        this.level.matrix[pCol][pLine] = CONST.VOID;
+    }
+
     CollectItem(pX, pY, isPlayer = false) {
         let line = Math.floor(pY / game.grid.cellSize);
         let col = Math.floor(pX / game.grid.cellSize);
