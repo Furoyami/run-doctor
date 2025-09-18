@@ -297,7 +297,11 @@ class Player {
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ITEM
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.ENERGY
             || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSPLAYER
-            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY;
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.STARTPOSENEMY
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TARDIS_LT
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TARDIS_RT
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TARDIS_RB
+            || game.map.getUnderPlayerID(this.spritePlayer.offsetX, 1) === CONST.TARDIS_LB;
     }
 
     // retourne la col et ligne actuelles du joueur
