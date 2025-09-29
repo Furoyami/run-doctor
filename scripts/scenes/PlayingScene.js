@@ -132,6 +132,32 @@ class PlayingScene {
             }
         }
 
+        // pixelpool
+        if (game.map.getUnderPlayerID(0, 0) === CONST.PIXELPOOL){
+            switch (game.map.currentLevelId) {
+                case 1:
+                    console.log("PSSST ! Le titre cache un truc !");
+                    break; 
+                case 2:
+                    console.log("Le dev a parlé d'un code à taper vite, magne-toi !");
+                    break; 
+                case 3:
+                    console.log("Des flèches deux par deux, t'as pigé toi?");
+                    break; 
+                case 4:
+                    console.log("Haut, bas, gauche-droite. Ouais je spoil, j'm'ennuie !");
+                    break; 
+                case 5:
+                    console.log("Rajoute B et A et finito poto!");
+                    break; 
+                case 6:
+                    console.log("Effort maximum ! ↑↑↓↓←→←→BA Un Godmod baby!");
+                    break;
+    
+                default:
+                    break;
+            }
+        }
         
             game.lstEnemies.forEach(enemy => {
 

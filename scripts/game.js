@@ -318,6 +318,7 @@ class Game {
         this.imageLoader.add("images/metal.png");
         this.imageLoader.add("images/trap.png");
         this.imageLoader.add("images/energy_tile.png");
+        this.imageLoader.add("images/pixelpool.png")
 
         this.imageLoader.add("images/icons/move.png");
         this.imageLoader.add("images/icons/dig.png");

@@ -79,6 +79,7 @@ const CONST = Object.freeze({
     TARDIS_RT: 5,
     TARDIS_LB: 6,
     TARDIS_RB: 7,
+    PIXELPOOL: 14,
     // uniquement présente pour utilisation dans les détéctions de cases franchissables
     STARTPOSENEMY: 8,
     STARTPOSPLAYER: 10,
@@ -95,7 +96,8 @@ const CONST = Object.freeze({
         6,  // TARDIS_LB
         7,  // TARDIS_RB
         8,  // STARTPOSENEMY
-        10  //STARTPOSPLAYER
+        10, //STARTPOSPLAYER
+        14  // PIXELPOOL
     ]),
 
     // ---------- HUD BLOCKS ----------

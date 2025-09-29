@@ -180,6 +180,13 @@ class Map {
         this.tileTextures[13].addAnimation("ENERGY_ANIM", [0, 1, 2, 3], 0.3);
         this.tileTextures[13].startAnimation("ENERGY_ANIM");
 
+        let imgPixelpool = game.imageLoader.getImage("images/pixelpool.png");
+        this.tileTextures[14] = new Sprite(imgPixelpool);
+        this.tileTextures[14].name = "PIXELPOOL";
+        this.tileTextures[14].setTileSheet(40, 40);
+        this.tileTextures[14].addAnimation("IDLEPOOL", [0, 1], 1);
+        this.tileTextures[14].startAnimation("IDLEPOOL")
+
         this.LoadTardisTextures();
 
         // Effets au ramassage d'energie
