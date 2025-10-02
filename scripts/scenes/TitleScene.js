@@ -32,6 +32,9 @@ class TitleScene {
                     game.levelEditorScene.startLevelEditor();
                 }
                 break;
+            case CONST.KEYX:
+                game.state = CONST.CREDITS;
+                break;
         }
     }
 
@@ -68,5 +71,7 @@ class TitleScene {
             pCtx.font = "100px Pixel";
             game.centerText(pCtx, "Mode Time Lord", game.width / 2, game.height / 2 - 100);
         }
+        pCtx.font = "50px Pixel";
+        pCtx.fillText("X : Crédits", game.width - 200, game.height - 25)
     }
 }

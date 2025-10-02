@@ -25,6 +25,7 @@ const CONST = Object.freeze({
     KEYQ: "KeyQ",
     KEYE: "KeyE",
     KEYP: "KeyP",
+    KEYX: "KeyX",
     KEYSPACE:"Space",
 
     KEYF1: "F1",
@@ -42,6 +43,7 @@ const CONST = Object.freeze({
     // States
     LOADING: "loading",
     TITLE: "title",
+    CREDITS: "credits",
     PLAYING: "playing",
     PAUSE: "pause",
     GAMEWIN: "gamewin",

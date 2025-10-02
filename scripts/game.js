@@ -29,6 +29,7 @@ class Game {
         this.gameOverScene = new GameOverScene();
         this.gameWinScene = new GameWinScene();
         this.levelEditorScene = new LevelEditorScene();
+        this.creditsScene = new CreditsScene();
 
         // Pathfinding
         this.pathfinding = new Pathfinding();
@@ -72,7 +73,7 @@ class Game {
         if (e.repeat) return;
         e.preventDefault();
 
-        // Bindings pour tests
+        // Bindings pour godmod
         if (this.state === CONST.PLAYING && this.timeLord) {
             if (e.code === "NumpadAdd") {
                 this.nextLevel();
@@ -95,6 +96,9 @@ class Game {
         switch (this.state) {
             case CONST.TITLE:
                 this.titleScene.keyDownTitle(e);
+                break;
+            case CONST.CREDITS:
+                this.creditsScene.keyDownCredits(e);
                 break;
             case CONST.PLAYING:
                 this.playingScene.keyDownPlaying(e);
@@ -337,6 +341,8 @@ class Game {
         this.imageLoader.add("images/plus_one.png");
         this.imageLoader.add("images/plus_life.png");
 
+        this.imageLoader.add("images/shinpool.png");
+
         await this.imageLoader.start();
         await this.startGame();
 
@@ -384,6 +390,9 @@ class Game {
                 break;
             case CONST.TITLE:
                 this.titleScene.drawTitle(pCtx);
+                break;
+            case CONST.CREDITS:
+                this.creditsScene.drawCredits(pCtx);
                 break;
             case CONST.PLAYING:
             case CONST.PAUSE:
