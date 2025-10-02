@@ -319,6 +319,12 @@ class Game {
         this.imageLoader.add("images/trap.png");
         this.imageLoader.add("images/energy_tile.png");
         this.imageLoader.add("images/pixelpool.png")
+        this.imageLoader.add("images/bubblelvl5.png");
+        this.imageLoader.add("images/bubblelvl15.png");
+        this.imageLoader.add("images/bubblelvl25.png");
+        this.imageLoader.add("images/bubblelvl35.png");
+        this.imageLoader.add("images/bubblelvl50.png");
+        this.imageLoader.add("images/bubblelvl77.png");
 
         this.imageLoader.add("images/icons/move.png");
         this.imageLoader.add("images/icons/dig.png");

@@ -9,6 +9,7 @@ class Map {
         this.tileTextures = [];
         this.lstEnemiesCoords = [];
         this.playerStartCoords = null;
+        this.pixelpoolCoords = null;
         this.tardisVisible = false;
         this.originaleTile = null;
         this.maxItemsInLevel = 0;
@@ -365,6 +366,12 @@ class Map {
                             line: line
                         };
                         break;
+                    case CONST.PIXELPOOL:
+                        this.pixelpoolCoords = {
+                            col: col,
+                            line: line
+                        };
+                        break;
                 }
             }
         }
@@ -473,6 +480,10 @@ class Map {
 
     getPlayerStartPos() {
         return this.playerStartCoords;
+    }
+
+    getPixelpoolCoords() {
+        return this.pixelpoolCoords;
     }
 
     getCurrentMapLevel() {

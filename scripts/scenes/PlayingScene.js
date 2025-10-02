@@ -62,9 +62,9 @@ class PlayingScene {
             case CONST.KEYF1:
                 if (game.timeLord) game.isPathVisible = !game.isPathVisible;
                 break;
-            case CONST.KEYF2:
-                if (game.timeLord) game.isCoordsVisible = !game.isCoordsVisible;
-                break;
+            // case CONST.KEYF2:
+            //     if (game.timeLord) game.isCoordsVisible = !game.isCoordsVisible;
+            //     break;
             case CONST.KEYF3:
                 if (game.timeLord) game.isUnkillable = !game.isUnkillable;
                 break;
@@ -129,33 +129,6 @@ class PlayingScene {
             }
             if (effect.life <= 0) {
                 game.lstEffects.splice(i, 1);
-            }
-        }
-
-        // pixelpool
-        if (game.map.getUnderPlayerID(0, 0) === CONST.PIXELPOOL){
-            switch (game.map.currentLevelId) {
-                case 1:
-                    console.log("PSSST ! Le titre cache un truc !");
-                    break; 
-                case 2:
-                    console.log("Le dev a parlé d'un code à taper vite, magne-toi !");
-                    break; 
-                case 3:
-                    console.log("Des flèches deux par deux, t'as pigé toi?");
-                    break; 
-                case 4:
-                    console.log("Haut, bas, gauche-droite. Ouais je spoil, j'm'ennuie !");
-                    break; 
-                case 5:
-                    console.log("Rajoute B et A et finito poto!");
-                    break; 
-                case 6:
-                    console.log("Effort maximum ! ↑↑↓↓←→←→BA Un Godmod baby!");
-                    break;
-    
-                default:
-                    break;
             }
         }
         
@@ -260,6 +233,10 @@ class PlayingScene {
             game.grid.DrawGrid(pCtx);
             game.lstEnemies.forEach(enemy => enemy.drawPath(pCtx)); // path des ennemis
         }
+
+        // pixelpool
+        if (game.map.getUnderPlayerID(0, 0) === CONST.PIXELPOOL) this.drawPixelpool(pCtx);
+
     }
 
     drawHUD() {
@@ -296,8 +273,42 @@ class PlayingScene {
         if (game.timeLord) {
             hudCtx.fillStyle = "#FFD700";
             hudCtx.font = "10px Arial";
-            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie    F1: afficher path des ennemis    F2: afficher coords des tiles    F3: mode invincible    F4: freeze ennemis   F6: Speed Boost", hudCanvas.width / 2, hudCanvas.height - 5);
+            game.centerText(hudCtx, "Numpad + ou - : changer niveau    Numpad / ou * : changer vie    F1: toggle path ennemis    F3: toggle mode invincible    F4: toggle freeze ennemis   F6: toggle speed boost", hudCanvas.width / 2, hudCanvas.height - 5);
         }
+    }
+
+    // affiche les pixelpool dans certains niveaux pour les indices sur le godmod
+    drawPixelpool(pCtx) {
+        let bubble;
+        let pixelpool = game.map.getPixelpoolCoords();
+        let pixelpoolCol = pixelpool.col;
+        let pixelpoolLine = pixelpool.line;
+
+        switch (game.map.currentLevelId) {
+            case 5:
+                bubble = game.imageLoader.getImage("images/bubblelvl5.png");
+                break;
+            case 15:
+                bubble = game.imageLoader.getImage("images/bubblelvl15.png");
+                break;
+            case 25:
+                bubble = game.imageLoader.getImage("images/bubblelvl25.png");
+                break;
+            case 35:
+                bubble = game.imageLoader.getImage("images/bubblelvl35.png");
+                break;
+            case 50:
+                bubble = game.imageLoader.getImage("images/bubblelvl50.png");
+                break;
+            case 77:
+                bubble = game.imageLoader.getImage("images/bubblelvl77.png");
+                break;
+
+            default:
+                break;
+        }
+        pCtx.drawImage(bubble, pixelpoolCol * game.grid.cellSize, pixelpoolLine * game.grid.cellSize - 65);
+
     }
 
     handleDigging(direction, offsetX, animation) {
