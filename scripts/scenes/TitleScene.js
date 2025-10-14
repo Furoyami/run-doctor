@@ -4,6 +4,7 @@ class TitleScene {
         this.blinkTitle = 0;
         this.blinkLimit = 0.5;
         this.blinkVisible = true;
+        this.alpha = 1;
     }
 
     keyDownTitle(e) {
@@ -45,6 +46,10 @@ class TitleScene {
             this.blinkVisible = !this.blinkVisible;
             this.blinkTitle = 0;
         }
+
+        // animation de l'alpha écran titre
+        this.alpha -= dt / 2;
+        if (this.alpha <= 0) this.alpha = 0;
         
         if (game.isCheatActive) {
             game.cheatTimer += dt;
@@ -63,9 +68,10 @@ class TitleScene {
         pCtx.fillRect(0, 0, canvas.width, canvas.height);
         pCtx.fillStyle = "#DFDFDF";
         pCtx.font = "200px Pixel";
-        game.centerText(pCtx, "RUN DOCTOR!", game.width / 2, game.height / 2 - 200);
+        let imgTitle = game.imageLoader.getImage("images/title_screen.png");
+        pCtx.drawImage(imgTitle, 0, 0);
         pCtx.font = "75px Pixel";
-        if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 200);
+        if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 300);
         if (game.timeLord) {
             pCtx.fillStyle = "#FFD700";
             pCtx.font = "100px Pixel";
@@ -73,5 +79,9 @@ class TitleScene {
         }
         pCtx.font = "50px Pixel";
         pCtx.fillText("X : Crédits", game.width - 200, game.height - 25)
+
+        // rectangle noir fondu
+        pCtx.fillStyle = `rgba(2, 5, 9, ${this.alpha})`;
+        pCtx.fillRect(0, 0, 1280, 720);
     }
 }

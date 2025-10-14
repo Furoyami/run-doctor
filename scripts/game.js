@@ -342,6 +342,7 @@ class Game {
         this.imageLoader.add("images/plus_life.png");
 
         this.imageLoader.add("images/shinpool.png");
+        this.imageLoader.add("images/title_screen.png");
 
         await this.imageLoader.start();
         await this.startGame();
