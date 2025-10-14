@@ -10,3 +10,6 @@ images/itch/
 
 # Ignorer les projets audacity
 sounds/audacity/
+
+# Ignore le level pour dessiner le titre
+scripts/levels/level-166(title).json
