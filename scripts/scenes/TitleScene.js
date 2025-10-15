@@ -71,11 +71,11 @@ class TitleScene {
         let imgTitle = game.imageLoader.getImage("images/title_screen.png");
         pCtx.drawImage(imgTitle, 0, 0);
         pCtx.font = "75px Pixel";
-        if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 300);
+        if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 275);
         if (game.timeLord) {
             pCtx.fillStyle = "#FFD700";
             pCtx.font = "100px Pixel";
-            game.centerText(pCtx, "Mode Time Lord", game.width / 2, game.height / 2 - 100);
+            game.centerText(pCtx, "Mode Time Lord", game.width / 2, game.height / 2 - 40);
         }
         pCtx.font = "50px Pixel";
         pCtx.fillText("X : Crédits", game.width - 200, game.height - 25)

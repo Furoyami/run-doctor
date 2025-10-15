@@ -332,6 +332,7 @@ class Map {
         let col = Math.floor(pX / game.grid.cellSize);
         this.originaleTile = { col, line: line - 1, tileId: dropTargetTile }; // Stocke position + ID
         this.level.matrix[line - 1][col] = CONST.ITEM; // Pose la clé au-dessus
+        game.sndDrop.play();
     }
 
 

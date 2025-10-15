@@ -37,6 +37,7 @@ class Game {
         // Sons
         this.sounds = [
             this.sndItem = new Sound("sounds/key.wav", .45),
+            this.sndDrop = new Sound("sounds/keyDrop.wav", .45),
             this.sndEnergy = new Sound("sounds/energy.wav", .4),
             this.sndLifeUp = new Sound("sounds/lifeUp.wav", .4),
             this.sndDalek = new Sound("sounds/exterminate.wav", .5),
@@ -44,6 +45,7 @@ class Game {
             this.sndFill = new Sound("sounds/fill.wav", .35),
             this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4),
             this.sndTardis = new Sound("sounds/tardis.wav", .6),
+            this.sndFall = new Sound("sounds/fall.wav", .25),
 
             this.mscTheme = new Sound("sounds/theme.wav", .35, true),
             this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true)
