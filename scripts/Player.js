@@ -370,6 +370,7 @@ class Player {
                 // confirmation
                 game.activeKeys = new Set();
                 game.keyOrder = [];
+                game.gameOverScene.handleAudio();
             }
         }
     }

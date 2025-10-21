@@ -25,6 +25,7 @@ class TitleScene {
         switch (e.code) {
             case CONST.KEYSPACE:
                 game.state = CONST.PLAYING;
+                game.mscTitleTheme.stop();
                 game.mscTheme.play();
                 break;
             case CONST.KEYE:

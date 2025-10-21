@@ -48,7 +48,11 @@ class Game {
             this.sndFall = new Sound("sounds/fall.wav", .25),
 
             this.mscTheme = new Sound("sounds/theme.wav", .35, true),
-            this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true)
+            this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true),
+            this.mscTitleTheme = new Sound("sounds/titleTheme.wav", .25, true),
+            this.mscLoseTheme = new Sound("sounds/loseTheme.wav", .25),
+            this.mscWinTheme = new Sound("sounds/winTheme.wav", .75)
+
         ];
         this.isMainThemePlaying = false;
 
@@ -353,6 +357,8 @@ class Game {
         setTimeout(() => {
             canvas.focus();
         }, 100);
+
+        this.mscTitleTheme.play();
     }
 
     update(dt) {
@@ -371,7 +377,6 @@ class Game {
             case CONST.PAUSE:
                 break;
             case CONST.GAMEOVER:
-                this.gameOverScene.updateGameOver(dt);
                 break;
             case CONST.GAMEWIN:
                 this.gameWinScene.updateGameWin(dt);

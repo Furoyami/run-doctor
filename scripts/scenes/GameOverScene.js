@@ -5,9 +5,10 @@ class GameOverScene {
         if (e.code === CONST.KEYR) game.restartGame();
     }
 
-    updateGameOver(dt) {
+    handleAudio() {
         game.mscTheme.stop();
         game.mscSpecialTheme.stop();
+        game.mscLoseTheme.play();
     }
 
     drawGameOver(pCtx) {
