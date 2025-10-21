@@ -40,7 +40,7 @@ class Sound {
             this.audio.volume = Math.min(1, this.audio.volume + 0.1);
             this.roundToNearest();
         }
-        console.log(this.audio.volume);
+        if (debug) console.log(this.audio.volume);
     }
 
     downVolume() {
@@ -48,7 +48,7 @@ class Sound {
             this.audio.volume = Math.max(0, this.audio.volume - 0.1);
             this.roundToNearest();
         }
-        console.log(this.audio.volume);
+        if (debug) console.log(this.audio.volume);
     }
 
     // permet de forcer des arrondis décimaux selon un pas

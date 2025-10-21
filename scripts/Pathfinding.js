@@ -68,7 +68,7 @@ class Pathfinding {
         while (line >= 0 && this.costMap.matrix[line][col].tileType === CONST.VOID) {
             this.costMap.matrix[line][col].cost = 100;
             this.costMap.matrix[line][col].elapsedTime = 0; // reinit timer
-            console.log("line: ", line, "col: ", col, "cost: ", this.costMap.matrix[line][col].cost)
+            if (debug) console.log("line: ", line, "col: ", col, "cost: ", this.costMap.matrix[line][col].cost)
             line--;
         }
 
@@ -84,7 +84,7 @@ class Pathfinding {
                     if (cell.elapsedTime >= 10) {
                         cell.cost = 1;
                         cell.elapsedTime = 0;
-                        console.log("timer reinit line: ", line, "col: ", col, "cost: ", cell.cost);
+                        if (debug) console.log("timer reinit line: ", line, "col: ", col, "cost: ", cell.cost);
                         
                     }
                 }

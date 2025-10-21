@@ -56,7 +56,7 @@ class TitleScene {
             game.cheatTimer += dt;
 
             if (game.cheatTimer >= 3) {
-                console.log("Cheat input réinitialisé (3s sans touche)");
+                if (debug) console.log("Cheat input réinitialisé (3s sans touche)");
                 game.cheatInput = [];
                 game.isCheatActive = false;
                 game.cheatTimer = 0;

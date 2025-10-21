@@ -57,7 +57,7 @@ class PlayingScene {
                 } else {
                     game.mscTheme.pause();
                 }
-                console.log(game.state);
+                if (debug) console.log(game.state);
                 break;
             case CONST.KEYF1:
                 if (game.timeLord) game.isPathVisible = !game.isPathVisible;
@@ -183,7 +183,7 @@ class PlayingScene {
             let result = await game.map.LoadLevelOnDemand(game.map.currentLevelId, CONST.CLASSIC);
             if (result.success) {
                 await game.initLevel(false);
-                console.log("TARDIS touché, niveau chargé :", game.map.currentLevelId);
+                if (debug) console.log("TARDIS touché, niveau chargé :", game.map.currentLevelId);
             } else if (result.reason === CONST.NO_MORE_LEVELS) {
                 game.state = CONST.GAMEWIN;
                 if (game.map.level.isSpecial) {
@@ -192,7 +192,7 @@ class PlayingScene {
                     game.mscTheme.stop();
                 }
                 game.mscWinTheme.play();
-                console.log("Victoire ! Tous les niveaux terminés !");
+                if (debug) console.log("Victoire ! Tous les niveaux terminés !");
             } else {
                 console.error("Erreur de chargement du niveau, retour au niveau 1");
                 game.map.currentLevelId = 1;

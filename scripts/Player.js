@@ -361,7 +361,7 @@ class Player {
                 game.keyOrder = [];
 
                 if (this.energy >= 5 && this.lives < CONST.MAXLIVES) {
-                    console.log("vie gagnée via enegy stockée");
+                    if (debug) console.log("vie gagnée via enegy stockée");
                     this.energy = 0;
                     this.lives += 1;
                 }
@@ -380,11 +380,11 @@ class Player {
             this.energy += 1;
             game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_ONE");
             game.sndEnergy.play();
-            console.log("energy:", this.energy);
+            if (debug) console.log("energy:", this.energy);
         } else if (this.energy === CONST.ENERGYMAX && this.lives < CONST.MAXLIVES) {
             game.playingScene.showFloatingEffect(tileX, tileY, "PLUS_LIFE");
             game.sndLifeUp.play();
-            console.log("vie gagnée");
+            if (debug) console.log("vie gagnée");
             this.energy = 0;
             this.lives += 1;
         }

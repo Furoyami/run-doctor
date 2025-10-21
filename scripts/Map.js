@@ -53,7 +53,7 @@ class Map {
             }
         }
 
-        console.log("Map vide créée:", this.level.matrix);
+        if (debug) console.log("Map vide créée:", this.level.matrix);
     }
 
     createEmptyCostMap() {
@@ -72,7 +72,7 @@ class Map {
             }
         }
 
-        console.log("Map de coûts créée:", costMap.matrix);
+        if (debug) console.log("Map de coûts créée:", costMap.matrix);
 
         return costMap;
     }
@@ -91,7 +91,7 @@ class Map {
         try {
             const response = await fetch(file);
             if (!response.ok) {
-                console.log(`Niveau ${pLevelId} introuvable, fin du jeu !`);
+                if (debug) console.log(`Niveau ${pLevelId} introuvable, fin du jeu !`);
                 return { success: false, reason: CONST.NO_MORE_LEVELS };
             }
             const data = await response.json();

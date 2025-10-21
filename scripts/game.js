@@ -198,7 +198,7 @@ class Game {
 
         // reload les sprites du tardis pour rejouer l'animation
         this.map.LoadTardisTextures();
-        console.log("this.map.level.isSpecial: ", this.map.level.isSpecial);
+        if (debug) console.log("this.map.level.isSpecial: ", this.map.level.isSpecial);
         
 
         this.gameReady = true;
@@ -247,56 +247,56 @@ class Game {
     // ------------------------------------------------------------- GOD MOD -------------------------------------------------------------
     async nextLevel() {
         if (this.state !== CONST.PLAYING) {
-            console.log("[Game] nextLevel: Ignoré, pas en mode PLAYING");
+            if (debug) console.log("[Game] nextLevel: Ignoré, pas en mode PLAYING");
             return;
         }
         this.map.currentLevelId += 1;
-        console.log("[Game] Passage au niveau suivant:", this.map.currentLevelId);
+        if (debug) console.log("[Game] Passage au niveau suivant:", this.map.currentLevelId);
         await this.initLevel(false); // Conserve les vies
     }
 
     async previousLevel() {
         if (this.state !== CONST.PLAYING) {
-            console.log("[Game] previousLevel: Ignoré, pas en mode PLAYING");
+            if (debug) console.log("[Game] previousLevel: Ignoré, pas en mode PLAYING");
             return;
         }
         if (this.map.currentLevelId <= 1) {
-            console.log("[Game] previousLevel: Déjà au niveau 1");
+            if (debug) console.log("[Game] previousLevel: Déjà au niveau 1");
             return;
         }
         this.map.currentLevelId -= 1;
-        console.log("[Game] Retour au niveau précédent:", this.map.currentLevelId);
+        if (debug) console.log("[Game] Retour au niveau précédent:", this.map.currentLevelId);
         await this.initLevel(false); // Conserve les vies
     }
 
     addLife() {
         if (this.state !== CONST.PLAYING) {
-            console.log("[Game] addLife: Ignoré, pas en mode PLAYING");
+            if (debug) console.log("[Game] addLife: Ignoré, pas en mode PLAYING");
             return;
         }
         
         if (this.player.lives < CONST.MAXLIVES) {
             this.player.lives += 1;
-            console.log("[Game] Vie ajoutée: lives=", this.player.lives);
+            if (debug) console.log("[Game] Vie ajoutée: lives=", this.player.lives);
         } else {
-            console.log("[Game] addLife: Maximum de vies atteint:", CONST.MAXLIVES);
+            if (debug) console.log("[Game] addLife: Maximum de vies atteint:", CONST.MAXLIVES);
         }
     }
 
     removeLife() {
         if (this.state !== CONST.PLAYING) {
-            console.log("[Game] removeLife: Ignoré, pas en mode PLAYING");
+            if (debug) console.log("[Game] removeLife: Ignoré, pas en mode PLAYING");
             return;
         }
         if (this.player.lives > 0) {
             this.player.lives -= 1;
-            console.log("[Game] Vie retirée: lives=", this.player.lives);
+            if (debug) console.log("[Game] Vie retirée: lives=", this.player.lives);
             if (this.player.lives <= 0) {
                 this.state = CONST.GAMEOVER;
-                console.log("[Game] GameOver déclenché");
+                if (debug) console.log("[Game] GameOver déclenché");
             }
         } else {
-            console.log("[Game] removeLife: Aucune vie restante");
+            if (debug) console.log("[Game] removeLife: Aucune vie restante");
         }
     }
     // ------------------------------------------------------------- GAMELOOP -------------------------------------------------------------
@@ -385,7 +385,7 @@ class Game {
                 this.levelEditorScene.updateLevelEditor(dt);
                 break;
         }
-        console.log(this.state);        
+        if (debug) console.log(this.state);        
     }
 
     draw(pCtx) {

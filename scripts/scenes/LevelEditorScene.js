@@ -39,7 +39,7 @@ class LevelEditorScene {
             // haut
             this.currentTileIndex = (this.currentTileIndex - 1 + this.tileTypes.length) % this.tileTypes.length;
         }
-        console.log("[LevelEditorScene] Tuile sélectionnée:", this.tileTypes[this.currentTileIndex], "Index:", this.currentTileIndex);
+        if (debug) console.log("[LevelEditorScene] Tuile sélectionnée:", this.tileTypes[this.currentTileIndex], "Index:", this.currentTileIndex);
     }
 
     setEventListener(mode) {
@@ -80,7 +80,7 @@ class LevelEditorScene {
     }
 
     startLevelEditor() {
-        console.log("init level editor");
+        if (debug) console.log("init level editor");
 
         game.grid.InitGrid(); // être sûr de repartir d'une grille vierge
         game.map.nbLines = game.grid.getGridNbLines();
@@ -159,10 +159,10 @@ class LevelEditorScene {
     handleMouseUp(e) {
         if (e.button === 0) {
             this.isPainting = false;
-            console.log("Peinture arrêtée");
+            if (debug) console.log("Peinture arrêtée");
         } else if (e.button === 2) {
             this.isErasing = false;
-            console.log("Effacement arrêté");
+            if (debug) console.log("Effacement arrêté");
         }
     }
 
