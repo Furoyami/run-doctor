@@ -68,19 +68,26 @@ class TitleScene {
         pCtx.fillStyle = "#020509";
         pCtx.fillRect(0, 0, canvas.width, canvas.height);
         pCtx.fillStyle = "#DFDFDF";
-        pCtx.font = "200px Pixel";
+
+        // image titre
         let imgTitle = game.imageLoader.getImage("images/title_screen.png");
         pCtx.drawImage(imgTitle, 0, 0);
+
+        // espace pour jouer
         pCtx.font = "75px Pixel";
         if (this.blinkVisible) game.centerText(pCtx, "Espace pour jouer", game.width / 2, game.height / 2 + 275);
+
+        // credits
+        pCtx.font = "50px Pixel";
+        pCtx.fillText("X : Crédits", game.width - 200, game.height - 25);
+
+        // mode time lord
         if (game.timeLord) {
             pCtx.fillStyle = "#FFD700";
             pCtx.font = "100px Pixel";
             game.centerText(pCtx, "Mode Time Lord", game.width / 2, game.height / 2 - 40);
         }
-        pCtx.font = "50px Pixel";
-        pCtx.fillText("X : Crédits", game.width - 200, game.height - 25)
-
+        
         // rectangle noir fondu
         pCtx.fillStyle = `rgba(2, 5, 9, ${this.alpha})`;
         pCtx.fillRect(0, 0, 1280, 720);
