@@ -51,7 +51,7 @@ class Game {
             this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true),
             this.mscTitleTheme = new Sound("sounds/titleTheme.wav", .25, true),
             this.mscLoseTheme = new Sound("sounds/loseTheme.wav", .25),
-            this.mscWinTheme = new Sound("sounds/winTheme.wav", .75)
+            this.mscWinTheme = new Sound("sounds/winTheme.wav", .5)
 
         ];
         this.isMainThemePlaying = false;
@@ -325,6 +325,7 @@ class Game {
         this.imageLoader.add("images/tardis_lt_tile.png");
         this.imageLoader.add("images/tardis_rb_tile.png");
         this.imageLoader.add("images/tardis_lb_tile.png");
+        this.imageLoader.add("images/tardis.png");
         this.imageLoader.add("images/metal.png");
         this.imageLoader.add("images/trap.png");
         this.imageLoader.add("images/energy_tile.png");

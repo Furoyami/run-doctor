@@ -191,7 +191,8 @@ class PlayingScene {
                 } else {
                     game.mscTheme.stop();
                 }
-                game.mscWinTheme.play();
+                game.gameWinScene.handleAudio();
+                game.gameWinScene.CreateStarField();
                 if (debug) console.log("Victoire ! Tous les niveaux terminés !");
             } else {
                 console.error("Erreur de chargement du niveau, retour au niveau 1");
