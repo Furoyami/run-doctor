@@ -371,6 +371,7 @@ class Player {
                 game.activeKeys = new Set();
                 game.keyOrder = [];
                 game.gameOverScene.handleAudio();
+                game.gameOverScene.addExplosion();
             }
         }
     }

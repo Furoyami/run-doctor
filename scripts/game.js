@@ -46,6 +46,7 @@ class Game {
             this.sndScrewdriver = new Sound("sounds/screwdriver.wav", .4),
             this.sndTardis = new Sound("sounds/tardis.wav", .6),
             this.sndFall = new Sound("sounds/fall.wav", .25),
+            this.sndExplosion = new Sound ("sounds/explosion.wav", .25),
 
             this.mscTheme = new Sound("sounds/theme.wav", .35, true),
             this.mscSpecialTheme = new Sound("sounds/specialTheme.wav", .25, true),
@@ -336,6 +337,7 @@ class Game {
         this.imageLoader.add("images/bubblelvl35.png");
         this.imageLoader.add("images/bubblelvl50.png");
         this.imageLoader.add("images/bubblelvl77.png");
+        this.imageLoader.add("images/explosion.png");
 
         this.imageLoader.add("images/icons/move.png");
         this.imageLoader.add("images/icons/dig.png");
@@ -378,6 +380,7 @@ class Game {
             case CONST.PAUSE:
                 break;
             case CONST.GAMEOVER:
+                this.gameOverScene.updateGameOver(dt);
                 break;
             case CONST.GAMEWIN:
                 this.gameWinScene.updateGameWin(dt);
