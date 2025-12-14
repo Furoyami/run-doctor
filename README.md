@@ -4,7 +4,8 @@ Clone de Lode Runner développé en JS / Canvas.
 
 🎮 **Jouer directement** : [lien itch.io](https://furoyami.itch.io/run-doctor)
 
---- ENGLISH ---
+**--- ENGLISH ---** 
+
 Run Doctor – Full solo 1-year project  
 Lode Runner × Doctor Who · 100+ levels (most faithfully recreated from the 1983 classic + 15 original checkpoint levels)  
 Pure JS/Canvas · dig, trap, run, collect keys, reach the TARDIS · old-school no-save challenge   
@@ -15,7 +16,8 @@ Pure JS/Canvas · dig, trap, run, collect keys, reach the TARDIS · old-school n
 
 Completed in September 2025.
 
---- FRANÇAIS ---
+**--- FRANÇAIS ---**  
+
 Run Doctor – Projet solo complet d’un an  
 Lode Runner × Doctor Who · +100 niveaux (recréations fidèles du classique 1983 + 15 niveaux originaux checkpoint)  
 JS/Canvas pur · creuse, pièges, cours, ramasse les clés, atteins le TARDIS · défi old-school sans sauvegarde  
